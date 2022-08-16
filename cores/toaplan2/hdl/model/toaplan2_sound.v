@@ -27,11 +27,11 @@ module toaplan2_sound (
     input                YM2151_CEN,
     input                YM2151_CEN2,
     input                OKI_CEN,
-    
+
     output               PCM_CS,
     input                PCM_OK,
     output        [19:0] PCM_ADDR,
-    input          [7:0] PCM_DOUT,
+    input         [ 7:0]  PCM_DOUT,
     output signed [15:0] left,
     output signed [15:0] right,
     output               sample,
@@ -69,11 +69,12 @@ wire [17:0] oki0_pcm_addr;
  initial fd = $fopen("logsound.txt", "w");
 `endif
 
-wire [7:0] 
+wire [7:0]
 fmgain = GAME == TRUXTON2 ? 8'h10 :
-         8'h10, 
+         8'h10,
 pcmgain = GAME == TRUXTON2 ? 8'h10 :
           8'h10;
+
 always @(posedge CLK) begin
     peak <= peak_l | peak_r;
 end
@@ -91,21 +92,21 @@ end
 assign right = left;
 assign peak_r = peak_l;
 jtframe_mixer #(.W0(16), .W1(14), .W2(16), .WOUT(16)) u_mix_left(
-    .rst    ( RESET96       ),
+    .rst    ( RESET96     ),
     .clk    ( CLK96       ),
-    .cen    ( 1'b1      ),
+    .cen    ( 1'b1        ),
     // input signals
-    .ch0    ( final_left   ),
-    .ch1    ( final_oki0 ),
+    .ch0    ( final_left  ),
+    .ch1    ( final_oki0  ),
     .ch2    ( final_right ),
     .ch3    ( 16'd0     ),
     // gain for each channel in 4.4 fixed point format
-    .gain0  ( fmgain    ),
-    .gain1  ( gain1 ),
-    .gain2  ( fmgain     ),
-    .gain3  ( 8'd0     ),
-    .mixed  ( left      ),
-    .peak   ( peak_l    )
+    .gain0  ( fmgain      ),
+    .gain1  ( gain1       ),
+    .gain2  ( fmgain      ),
+    .gain3  ( 8'd0        ),
+    .mixed  ( left        ),
+    .peak   ( peak_l      )
 );
 
 assign PCM_ADDR = GAME == TRUXTON2 ? (oki0_pcm_addr & 'h3FFFF) :
@@ -114,46 +115,46 @@ assign PCM_ADDR = GAME == TRUXTON2 ? (oki0_pcm_addr & 'h3FFFF) :
 assign PCM_CS = 1'b1;
 
 jt6295 #(.INTERPOL(1)) u_adpcm_0(
-    .rst        ( RESET96       ),
-    .clk        ( CLK96       ),
+    .rst        ( RESET96             ),
+    .clk        ( CLK96               ),
     .cen        ( OKI_CEN & DIP_PAUSE ),
-    .ss         ( 1'b0      ),
+    .ss         ( 1'b0                ),
     // CPU interface
-    .wrn        ( ~OKI_WE ),            // active low
-    .din        ( OKI_DIN      ),
-    .dout       ( OKI_DOUT  ),
+    .wrn        ( OKI_WE              ),         // active low
+    .din        ( OKI_DIN             ),
+    .dout       ( OKI_DOUT            ),
     // ROM interface
-    .rom_addr   ( oki0_pcm_addr ),
-    .rom_data   ( PCM_DOUT),
-    .rom_ok     ( PCM_OK  ),
+    .rom_addr   ( oki0_pcm_addr       ),
+    .rom_data   ( PCM_DOUT            ),
+    .rom_ok     ( PCM_OK              ),
     // Sound output
-    .sound      ( oki0_pre   ),
-    .sample     ( oki0_sample)          // ~26kHz
+    .sound      ( oki0_pre            ),
+    .sample     ( oki0_sample         )          // ~26kHz
 );
 
 jt51 u_jt51(
-    .rst        ( RESET96       ),               // reset
-    .clk        ( CLK96       ),                 // main clock
+    .rst        ( RESET96                   ),   // reset
+    .clk        ( CLK96                     ),   // main clock
     .cen        ( YM2151_CEN & DIP_PAUSE    ),   // 4mhz
     .cen_p1     ( YM2151_CEN2 & DIP_PAUSE   ),   // 2mhz, half clock
-    .cs_n       ( ~YM2151_CS    ),               // chip select
-    .wr_n       ( YM2151_WE      ),              // write
-    .a0         ( YM2151_WR_CMD     ),
-    .din        ( YM2151_DIN    ),               // data in
-    .dout       ( YM2151_DOUT   ),               // data out
-    .ct1        (           ),
-    .ct2        (           ),
-    .irq_n      (      ),                        // I do not synchronize this signal
+    .cs_n       ( ~YM2151_CS | YM2151_WE    ),   // chip select
+    .wr_n       ( YM2151_WE                 ),   // write
+    .a0         ( YM2151_WR_CMD             ),
+    .din        ( YM2151_DIN                ),   // data in
+    .dout       ( YM2151_DOUT               ),   // data out
+    .ct1        (                           ),
+    .ct2        (                           ),
+    .irq_n      (                           ),   // I do not synchronize this signal
     // Low resolution output (same as real chip)
-    .sample     ( sample    ),                   // marks new output sample
-    .left       (           ),
-    .right      (           ),
+    .sample     ( sample                    ),   // marks new output sample
+    .left       (                           ),
+    .right      (                           ),
     // Full resolution output
-    .xleft      ( fm_left   ),
-    .xright     ( fm_right  ),
+    .xleft      ( fm_left                   ),
+    .xright     ( fm_right                  ),
     // unsigned outputs for sigma delta converters, full resolution
-    .dacleft    (           ),
-    .dacright   (           )
+    .dacleft    (                           ),
+    .dacright   (                           )
 );
 
 endmodule

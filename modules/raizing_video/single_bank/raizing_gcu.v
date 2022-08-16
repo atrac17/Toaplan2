@@ -402,7 +402,7 @@ wire spriteram_we = GP9001RAM_WE && (GP9001RAM_ADDR>=14'h1800 && GP9001RAM_ADDR<
 
 //sprite lag fix
 reg [1:0] cur_buf = 0;
-wire [1:0] cur_buf_rd = GAME==GAREGGA ? 
+wire [1:0] cur_buf_rd = GAME==DEFAULT ? 
                         (cur_buf == 0 ? 3 :
                         cur_buf == 1 ? 0 :
                         cur_buf == 2 ? 1 :
@@ -440,7 +440,7 @@ always @(posedge CLK96, posedge RESET96) begin
         clear_buff<=0;
     end else begin
         last_vb<=is_vb;
-        if(is_vb && !last_vb && GAME == GAREGGA) begin //start of vblank, cut spriteram disable for sorcer and kingdom for now
+        if(is_vb && !last_vb && GAME == DEFAULT) begin //start of vblank, cut spriteram disable for sorcer and kingdom for now
             cur_buf<=((cur_buf+1)%4);
             clear_buff<=1;
         end
@@ -497,9 +497,9 @@ jtframe_dual_ram #(.dw(16), .aw(13)) u_spriteram(
         .clk0(CLK96),
         .clk1(CLK96),
         // Port 0
-        .data0(GAME == GAREGGA ? clear_buff_data : GP9001RAM_DIN),
-        .addr0(GAME == GAREGGA ? clear_buff_addr + spriteram_buff_offs : GP9001RAM_ADDR[9:0] + spriteram_buff_offs),
-        .we0(GAME == GAREGGA ? clear_buff && !clear_buff_done : spriteram_we),
+        .data0(GAME == DEFAULT ? clear_buff_data : GP9001RAM_DIN),
+        .addr0(GAME == DEFAULT ? clear_buff_addr + spriteram_buff_offs : GP9001RAM_ADDR[9:0] + spriteram_buff_offs),
+        .we0(GAME == DEFAULT ? clear_buff && !clear_buff_done : spriteram_we),
         .q0(),
         // Port 1
         .data1(16'h0),
@@ -512,9 +512,9 @@ jtframe_dual_ram #(.dw(16), .aw(13)) u_spriteram2(
         .clk0(CLK96),
         .clk1(CLK96),
         // Port 0
-        .data0(GAME == GAREGGA ? clear_buff_data : GP9001RAM_DIN),
-        .addr0(GAME == GAREGGA ? clear_buff_addr + spriteram_buff_offs : GP9001RAM_ADDR[9:0] + spriteram_buff_offs),
-        .we0(GAME == GAREGGA ? clear_buff && !clear_buff_done : spriteram_we),
+        .data0(GAME == DEFAULT ? clear_buff_data : GP9001RAM_DIN),
+        .addr0(GAME == DEFAULT ? clear_buff_addr + spriteram_buff_offs : GP9001RAM_ADDR[9:0] + spriteram_buff_offs),
+        .we0(GAME == DEFAULT ? clear_buff && !clear_buff_done : spriteram_we),
         .q0(),
         // Port 1
         .data1(16'h0),
@@ -608,24 +608,24 @@ AFBK_CT2 u_afbk_ct2(
 
     //GFX sdram interface
     .GFX_CS(GFX_CS),
-	.GFX_OK(GFX_OK),
+    .GFX_OK(GFX_OK),
     .GFX0_ADDR(GFX0_ADDR),
-	.GFX0_DOUT(GFX0_DOUT),
+    .GFX0_DOUT(GFX0_DOUT),
 
     .GFXSCR0_CS(GFXSCR0_CS),
-	.GFXSCR0_OK(GFXSCR0_OK),
+    .GFXSCR0_OK(GFXSCR0_OK),
     .GFX0SCR0_ADDR(GFX0SCR0_ADDR),
-	.GFX0SCR0_DOUT(GFX0SCR0_DOUT),
+    .GFX0SCR0_DOUT(GFX0SCR0_DOUT),
 
     .GFXSCR1_CS(GFXSCR1_CS),
-	.GFXSCR1_OK(GFXSCR1_OK),
+    .GFXSCR1_OK(GFXSCR1_OK),
     .GFX0SCR1_ADDR(GFX0SCR1_ADDR),
-	.GFX0SCR1_DOUT(GFX0SCR1_DOUT),
+    .GFX0SCR1_DOUT(GFX0SCR1_DOUT),
 
     .GFXSCR2_CS(GFXSCR2_CS),
-	.GFXSCR2_OK(GFXSCR2_OK),
+    .GFXSCR2_OK(GFXSCR2_OK),
     .GFX0SCR2_ADDR(GFX0SCR2_ADDR),
-	.GFX0SCR2_DOUT(GFX0SCR2_DOUT)
+    .GFX0SCR2_DOUT(GFX0SCR2_DOUT)
 );
 
 endmodule

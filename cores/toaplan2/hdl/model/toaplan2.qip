@@ -6,4 +6,3 @@ set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) toaplan
 set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) toaplan2_sdram.v]
 set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) toaplan2_sound.v]
 set_global_assignment -name QIP_FILE     modules/raizing_video/raizing_video_single_bank.qip
-set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) components/NMK112.v]

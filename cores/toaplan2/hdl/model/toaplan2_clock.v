@@ -26,26 +26,26 @@ module toaplan2_clock (
     output CEN675B,
     output CEN4,
     output CEN4B,
-    output CEN2,
-    output CEN2B,
+    //output CEN2,
+    //output CEN2B,
     output CEN3p375,
     output CEN3p375B,
-    output CEN1,
-    output CENp7575,
-    output CEN1B,
+    //output CEN1,
+    //output CENp7575,
+    //output CEN1B,
     output CEN1p6875,
     output CEN1p6875B,
     output reg CEN1350,
     output CEN1350B
 );
 
-// //6.75mhz for GP9001
-// //96*(9/128) == 6.75
+// 6.75mhz for GP9001 (TRUXTON 2)
+// 96*(9/128) == 6.75
 
-//13.50
-reg	[31:0]	counter;
+// 13.50
+reg	[31:0] counter;
 always @(posedge CLK96)
-	{ CEN1350, counter } <= counter + 32'd603979776;
+        { CEN1350, counter } <= counter + 32'd603979776;
 
 jtframe_cendiv u_cen_675 (
     .clk(CLK96),
@@ -53,8 +53,8 @@ jtframe_cendiv u_cen_675 (
     .cen_da(CEN675)
 );
 
-//4mhz for Z80
-//96*(1/24) == 4
+// oki 4mhz (TRUXTON 2)
+// 96*(1/24) == 4
 jtframe_frac_cen u_frac_cen_4(
     .clk(CLK96),
     .n(1),
@@ -63,17 +63,7 @@ jtframe_frac_cen u_frac_cen_4(
     .cenb(CEN4B)
 );
 
-//2mhz for OKI
-//96*(1/48) == 2
-jtframe_frac_cen u_frac_cen_2(
-    .clk(CLK96),
-    .n(1),
-    .m(48),
-    .cen(CEN2),
-    .cenb(CEN2B)
-);
-
-//kingdmgp ym2151 3.375mhz
+// ym2151 3.375mhz (TRUXTON 2)
 jtframe_cendiv u_cen_3375 (
     .clk(CLK96),
     .cen_in(CEN675),
@@ -85,24 +75,5 @@ jtframe_cendiv u_cen_16875 (
     .cen_in(CEN3p375),
     .cen_da(CEN1p6875)
 );
-
-//mahoudai oki .00757575mhz
-//shippumd oki 1
-jtframe_frac_cen #(.WC(16)) u_frac_cen_p7575(
-    .clk(CLK96),
-    .n(1),
-    .m(12672),
-    .cen(CENp7575),
-    .cenb(CEN1B)
-);
-
-jtframe_frac_cen #(.WC(16)) u_frac_cen_1(
-    .clk(CLK96),
-    .n(1),
-    .m(96),
-    .cen(CEN1),
-    .cenb(CEN1B)
-);
-
 
 endmodule

@@ -108,7 +108,7 @@ endfunction
 //object bankswitch
 reg [3:0] object_bank [0:7];
 
-//object bank write, garegga doesnt do it.
+//object bank write, DEFAULT doesnt do it.
 always @(posedge CLK96, posedge RESET96) begin
     object_bank[0] <= 4'h0;
     object_bank[1] <= 4'h1;

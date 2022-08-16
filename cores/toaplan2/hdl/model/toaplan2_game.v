@@ -21,85 +21,84 @@
 */
 module toaplan2_game(
     //clock and reset
-	input rst,
-	input rst48,
-	input rst96,
-	input clk,
-	input clk48,
-	input clk96,
+    input rst,
+    input rst48,
+    input rst96,
+    input clk,
+    input clk48,
+    input clk96,
     output pxl_cen,
     output pxl2_cen,
 
     //video outputs
-	output [7:0] red,
-	output [7:0] green,
-	output [7:0] blue,
+    output [7:0] red,
+    output [7:0] green,
+    output [7:0] blue,
     output LHBL,
     output LVBL,
     output HS,
     output VS,
-	
-	// Control I/O
-	input [3:0] start_button,
-	input [3:0] coin_input,
-	input [9:0] joystick1,
-	input [9:0] joystick2,
-	
-	// SDRAM interface
-	output [21:0] ba0_addr,
-	output [21:0] ba1_addr,
-	output [21:0] ba2_addr,
-	output [21:0] ba3_addr,
-	output  [3:0] ba_rd,
-	output        ba_wr,
-	output [15:0] ba0_din,
-	output  [1:0] ba0_din_m,
-	input   [3:0] ba_ack,
-	input   [3:0] ba_dst,
-	input   [3:0] ba_dok,
-	input   [3:0] ba_rdy,
-	input  [15:0] data_read,
-    
-	
-	//ROM loader
-	input         downloading,
-	output        dwnld_busy,
-	input  [25:0] ioctl_addr,
-	input   [7:0] ioctl_dout,
-	input         ioctl_wr,
-	output  [7:0] ioctl_din,
-	input         ioctl_ram,
-	output [21:0] prog_addr,
-	output [15:0] prog_data,
-	output  [1:0] prog_mask,
-	output  [1:0] prog_ba,
-	output        prog_we,
-	output        prog_rd,
-	input         prog_ack,
-	input         prog_dok,
-	input         prog_dst,
-	input         prog_rdy,
-	
-	//dip switches
-	input [31:0] status,
-	input        service,
-	input        dip_pause,
-	inout        dip_flip,
-	input        dip_test,
-	input  [1:0] dip_fxlevel,
+
+    // Control I/O
+    input [3:0] start_button,
+    input [3:0] coin_input,
+    input [9:0] joystick1,
+    input [9:0] joystick2,
+
+    // SDRAM interface
+    output [21:0] ba0_addr,
+    output [21:0] ba1_addr,
+    output [21:0] ba2_addr,
+    output [21:0] ba3_addr,
+    output  [3:0] ba_rd,
+    output        ba_wr,
+    output [15:0] ba0_din,
+    output  [1:0] ba0_din_m,
+    input   [3:0] ba_ack,
+    input   [3:0] ba_dst,
+    input   [3:0] ba_dok,
+    input   [3:0] ba_rdy,
+    input  [15:0] data_read,
+
+    //ROM loader
+    input         downloading,
+    output        dwnld_busy,
+    input  [25:0] ioctl_addr,
+    input   [7:0] ioctl_dout,
+    input         ioctl_wr,
+    output  [7:0] ioctl_din,
+    input         ioctl_ram,
+    output [21:0] prog_addr,
+    output [15:0] prog_data,
+    output  [1:0] prog_mask,
+    output  [1:0] prog_ba,
+    output        prog_we,
+    output        prog_rd,
+    input         prog_ack,
+    input         prog_dok,
+    input         prog_dst,
+    input         prog_rdy,
+
+    //dip switches
+    input [31:0] status,
+    input        service,
+    input        dip_pause,
+    inout        dip_flip,
+    input        dip_test,
+    input  [1:0] dip_fxlevel,
     input [31:0] dipsw,
-	
-	//sound
-	output signed [15:0] snd_left,
-	output signed [15:0] snd_right,
-	output               sample,
-	input                enable_psg,
+
+    //sound
+    output signed [15:0] snd_left,
+    output signed [15:0] snd_right,
+    output               sample,
+    input                enable_psg,
     input                enable_fm,
 
     //misc
-	output 			     game_led,
-	output				 user_led,
-	input 				 gfx_en
+    output       game_led,
+    output       user_led,
+    input        gfx_en
 );
 
 /*MAIN GLOBALS*/
@@ -112,8 +111,11 @@ wire CEN16, CEN16B;
 // assign game_led = downloading ? 1'b0 : 1'b1;
 
 /*CLOCKS*/
-wire CEN675, CEN675B, CEN4, CEN2, CEN2B, CEN4B, CEN1350, CEN1350B;
-wire CEN3p375, CEN3p375B, CEN1, CENp7575, CEN1B, CEN1p6875, CEN1p6875B;
+//wire CEN675, CEN675B, CEN4, CEN2, CEN2B, CEN4B, CEN1350, CEN1350B;
+//wire CEN3p375, CEN3p375B, CEN1, CENp7575, CEN1B, CEN1p6875, CEN1p6875B;
+
+wire CEN675, CEN675B, CEN4, CEN4B, CEN1350, CEN1350B;
+wire CEN3p375, CEN3p375B, CEN1p6875, CEN1p6875B;
 toaplan2_clock u_clocken (
     .CLK(CLK),
     .CLK96(CLK96),
@@ -121,13 +123,13 @@ toaplan2_clock u_clocken (
     .CEN675B(CEN675B),
     .CEN4(CEN4),
     .CEN4B(CEN4B),
-    .CEN2(CEN2),
-    .CEN2B(CEN2B),
+    //.CEN2(CEN2),
+    //.CEN2B(CEN2B),
     .CEN3p375(CEN3p375),
     .CEN3p375B(CEN3p375B),
-    .CEN1(CEN1),
-    .CENp7575(CENp7575),
-    .CEN1B(CEN1B),
+    //.CEN1(CEN1),
+    //.CENp7575(CENp7575),
+    //.CEN1B(CEN1B),
     .CEN1p6875(CEN1p6875),
     .CEN1p6875B(CEN1p6875B),
     .CEN1350(CEN1350),
@@ -154,8 +156,8 @@ wire                YM2151_WR_CMD;
 wire                OKI_WE;
 wire          [7:0] OKI_DIN;
 wire          [7:0] YM2151_DIN;
-wire         [7:0] YM2151_DOUT;
-wire         [7:0] OKI_DOUT;
+wire          [7:0] YM2151_DOUT;
+wire          [7:0] OKI_DOUT;
 
 //PCM
 wire PCM_CS;
@@ -253,7 +255,7 @@ toaplan2_cpu u_cpu (
     .DOUT(CPU_DOUT),
     .LVBL(LVBLL), //this is low active to the CPU
     .V(V),
-    
+
     //inputs
     .JOYMODE(0),
     .JOYSTICK1(joystick1),
@@ -330,22 +332,22 @@ raizing_video u_video(
     //graphics ROM
     .GFX_CS(GFX_CS),
     .GFX_OK(GFX_OK),
-    .GFX0_ADDR(GFX0_ADDR),     
+    .GFX0_ADDR(GFX0_ADDR),
     .GFX0_DOUT(GFX0_DOUT),
 
     .GFXSCR0_CS(GFXSCR0_CS),
     .GFXSCR0_OK(GFXSCR0_OK),
-    .GFX0SCR0_ADDR(GFX0SCR0_ADDR),     
+    .GFX0SCR0_ADDR(GFX0SCR0_ADDR),
     .GFX0SCR0_DOUT(GFX0SCR0_DOUT),
 
     .GFXSCR1_CS(GFXSCR1_CS),
     .GFXSCR1_OK(GFXSCR1_OK),
-    .GFX0SCR1_ADDR(GFX0SCR1_ADDR),     
+    .GFX0SCR1_ADDR(GFX0SCR1_ADDR),
     .GFX0SCR1_DOUT(GFX0SCR1_DOUT),
 
     .GFXSCR2_CS(GFXSCR2_CS),
     .GFXSCR2_OK(GFXSCR2_OK),
-    .GFX0SCR2_ADDR(GFX0SCR2_ADDR),     
+    .GFX0SCR2_ADDR(GFX0SCR2_ADDR),
     .GFX0SCR2_DOUT(GFX0SCR2_DOUT),
 
     .TEXTROM_ADDR(TEXTROM_ADDR),
@@ -357,12 +359,12 @@ raizing_video u_video(
     .VINT(VINT),
     .GP9001DIN(CPU_DOUT),
     .GP9001DOUT(GCU_DOUT),
-    .GP9001_OP_SELECT_REG(GP9001_OP_SELECT_REG), 
-    .GP9001_OP_WRITE_REG(GP9001_OP_WRITE_REG), 
-    .GP9001_OP_WRITE_RAM(GP9001_OP_WRITE_RAM), 
-    .GP9001_OP_READ_RAM_H(GP9001_OP_READ_RAM_H), 
-    .GP9001_OP_READ_RAM_L(GP9001_OP_READ_RAM_L), 
-    .GP9001_OP_SET_RAM_PTR(GP9001_OP_SET_RAM_PTR), 
+    .GP9001_OP_SELECT_REG(GP9001_OP_SELECT_REG),
+    .GP9001_OP_WRITE_REG(GP9001_OP_WRITE_REG),
+    .GP9001_OP_WRITE_RAM(GP9001_OP_WRITE_RAM),
+    .GP9001_OP_READ_RAM_H(GP9001_OP_READ_RAM_H),
+    .GP9001_OP_READ_RAM_L(GP9001_OP_READ_RAM_L),
+    .GP9001_OP_SET_RAM_PTR(GP9001_OP_SET_RAM_PTR),
     .GP9001OUT(GP9001OUT),
 
     //video signal
@@ -399,7 +401,7 @@ assign ym2151_cen2 = GAME == TRUXTON2 ? CEN1p6875 :
                      CEN1p6875;
 assign oki_cen = GAME == TRUXTON2 ? CEN4 :
                  CEN4;
-assign z80_cen = CEN4;
+//assign z80_cen = CEN4;
 
 toaplan2_sound u_sound(
     .CLK(CLK),
@@ -440,18 +442,18 @@ toaplan2_sdram u_sdram (
     .CLK_GFX(pxl_cen),
 
     //ROM loader
-	.IOCTL_ADDR(ioctl_addr),
-	.IOCTL_DOUT(ioctl_dout),
-	.IOCTL_DIN(ioctl_din),
-	.IOCTL_WR(ioctl_wr),
-	.IOCTL_RAM(ioctl_ram),
-	.PROG_ADDR(prog_addr),
-	.PROG_DATA(prog_data),
-	.PROG_MASK(prog_mask),
-	.PROG_BA(prog_ba),
-	.PROG_WE(prog_we),
-	.PROG_RD(prog_rd),
-	.PROG_RDY(prog_rdy),
+    .IOCTL_ADDR(ioctl_addr),
+    .IOCTL_DOUT(ioctl_dout),
+    .IOCTL_DIN(ioctl_din),
+    .IOCTL_WR(ioctl_wr),
+    .IOCTL_RAM(ioctl_ram),
+    .PROG_ADDR(prog_addr),
+    .PROG_DATA(prog_data),
+    .PROG_MASK(prog_mask),
+    .PROG_BA(prog_ba),
+    .PROG_WE(prog_we),
+    .PROG_RD(prog_rd),
+    .PROG_RDY(prog_rdy),
     .DOWNLOADING(downloading),
     .DWNLD_BUSY(dwnld_busy),
 
@@ -468,34 +470,34 @@ toaplan2_sdram u_sdram (
     .BA_DST(ba_dst),
     .BA_DOK(ba_dok),
     .BA_RDY(ba_rdy),
-	.DATA_READ(data_read),
+    .DATA_READ(data_read),
 
     //tiles
     .GFX_CS(GFX_CS),
-	.GFX_OK(GFX_OK),
-	.GFX0_ADDR(GFX0_ADDR),
-	.GFX0_DOUT(GFX0_DOUT),
+    .GFX_OK(GFX_OK),
+    .GFX0_ADDR(GFX0_ADDR),
+    .GFX0_DOUT(GFX0_DOUT),
 
     .GFXSCR0_CS(GFXSCR0_CS),
-	.GFXSCR0_OK(GFXSCR0_OK),
-	.GFX0SCR0_ADDR(GFX0SCR0_ADDR),
-	.GFX0SCR0_DOUT(GFX0SCR0_DOUT),
+    .GFXSCR0_OK(GFXSCR0_OK),
+    .GFX0SCR0_ADDR(GFX0SCR0_ADDR),
+    .GFX0SCR0_DOUT(GFX0SCR0_DOUT),
 
     .GFXSCR1_CS(GFXSCR1_CS),
-	.GFXSCR1_OK(GFXSCR1_OK),
-	.GFX0SCR1_ADDR(GFX0SCR1_ADDR),
-	.GFX0SCR1_DOUT(GFX0SCR1_DOUT),
+    .GFXSCR1_OK(GFXSCR1_OK),
+    .GFX0SCR1_ADDR(GFX0SCR1_ADDR),
+    .GFX0SCR1_DOUT(GFX0SCR1_DOUT),
 
     .GFXSCR2_CS(GFXSCR2_CS),
-	.GFXSCR2_OK(GFXSCR2_OK),
-	.GFX0SCR2_ADDR(GFX0SCR2_ADDR),
-	.GFX0SCR2_DOUT(GFX0SCR2_DOUT),
+    .GFXSCR2_OK(GFXSCR2_OK),
+    .GFX0SCR2_ADDR(GFX0SCR2_ADDR),
+    .GFX0SCR2_DOUT(GFX0SCR2_DOUT),
 
     //68k program
     .ROM68K_CS(ROM68K_CS),
-	.ROM68K_OK(ROM68K_OK),
-	.ROM68K_ADDR(ROM68K_ADDR),
-	.ROM68K_DOUT(ROM68K_DOUT),
+    .ROM68K_OK(ROM68K_OK),
+    .ROM68K_ADDR(ROM68K_ADDR),
+    .ROM68K_DOUT(ROM68K_DOUT),
 
     //PCM data
     .PCM_CS(PCM_CS),

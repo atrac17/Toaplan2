@@ -14,10 +14,10 @@
     <catver>Shooter / Flying Vertical</catver>
     <mraauthor>atrac17</mraauthor>
     <rom index="0" zip="truxton2.zip" md5="None" address="0x30000000">
-        <!-- mapper for game 00 - bgaregga, 01 - sstriker, 02 - kingdmgp -->
+        <!-- mapper for game 00 - default, 01 - truxton2 -->
         <part>01</part>
         <!-- maincpu - starts at 0x0 -->
-            <part name="tp024_1.bin" crc="f5cfe6ee"/>
+        <part name="tp024_1.bin" crc="f5cfe6ee"/>
         <!-- gp9001_0 - starts at 0x80000 -->
         <interleave output="16">
             <part name="tp024_4.bin" crc="805c449e" map="01"/>
@@ -31,22 +31,22 @@
     <rom index="1">
         <part>01</part>
     </rom>
-    <switches page_id="1" page_name="Switches" base="8" default="00,00,00">
+    <switches page_id="1" page_name="Switches" base="8" default="00,00,F0">
         <!-- DSWA -->
         <dip name="Rapid Fire" bits="0" ids="On,Off"/>
-        <dip name="Flip Screen" bits="1" ids="Off,On"/>
-        <dip name="Service Mode" bits="2" ids="Off,On"/>
-        <dip name="Demo Sounds" bits="3" ids="On,Off"/>
+        <dip name="Screen Flip" bits="1" ids="Normal,Invert"/>
+        <dip name="Test Mode" bits="2" ids="Off,On"/>
+        <dip name="Advertise Sound" bits="3" ids="On,Off"/>
         <dip name="Coin A" bits="4,5" ids="1/1,2/1,1/2,3/1,2/1,4/1,2/3"/>
         <dip name="Coin B" bits="6,7" ids="1/1,1/2,1/2,1/3,2/1,1/4,2/3,1/6"/>
         <!-- DSWB -->
         <dip name="Difficulty" bits="8,9" ids="Normal,Easy,Hard,Very Hard"/>
-        <dip name="Bonus Life" bits="10,11" ids="70k and 200k,100k and 250k,100k only,200k only"/>
-        <dip name="Lives" bits="12,13" ids="3,5,4,2"/>
-        <dip name="Invulnerability (Cheat)" bits="14" ids="Off,On"/>
-        <dip name="Allow Continue" bits="15" ids="Yes,No"/>
-        <!-- SYS -->
-        <dip name="Test Switch" bits="18" ids="Off,On"/>
+        <dip name="Extend" bits="10,11" ids="70k and 200k,100k and 250k,100k only,200k only"/>
+        <dip name="Hero Counts" bits="12,13" ids="3,5,4,2"/>
+        <dip name="Invulnerability" bits="14" ids="Off,On"/>
+        <dip name="Continue Play" bits="15" ids="Yes,No"/>
+        <!-- JMPR -->
+        <dip name="Region" bits="16,19" ids="Japan,USA,EU,HK,Korea,Taiwan,SEA,USA (ROMSTAR),HK (Honest Trading Co.),Korea (JC Trading Co.),USA (Fabtek),No Use,No Use,No Use,No Use,Japan (Taito Corp.)"/>
     </switches>
-    <buttons names="Shot,Bomb,Formation,Start,Coin,Pause" default="Y,X,B,R,L,Start" count="3"/>
+    <buttons names="Shot,Bomb,Kill Player,Start,Coin,Pause" default="Y,X,B,R,L,Start" count="3"/>
 </misterromdescription>
