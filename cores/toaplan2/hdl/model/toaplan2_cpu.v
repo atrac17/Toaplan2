@@ -135,8 +135,8 @@ localparam DEFAULT = 'h0, TRUXTON2 = 'h1; // SSTRIKER USED AS BASIS FOR TRUXTON2
 //	map(0x700006, 0x700007).portr("IN1");
 //	map(0x700008, 0x700009).portr("IN2");
 //	map(0x70000a, 0x70000b).portr("SYS");
-//	map(0x700011, 0x700011).rw(m_oki[0], FUNC(okim6295_device::read), FUNC(okim6295_device::write));                // NOT MAPPED
-//	map(0x700014, 0x700017).rw("ymsnd", FUNC(ym2151_device::read), FUNC(ym2151_device::write)).umask16(0x00ff);     // NOT MAPPED
+//	map(0x700011, 0x700011).rw(m_oki[0], FUNC(okim6295_device::read), FUNC(okim6295_device::write));                // VERIFY
+//	map(0x700014, 0x700017).rw("ymsnd", FUNC(ym2151_device::read), FUNC(ym2151_device::write)).umask16(0x00ff);     // VERIFY
 //	map(0x70001f, 0x70001f).w(FUNC(toaplan2_state::coin_w));
 //}
 
@@ -284,7 +284,7 @@ always @(posedge CLK96 or posedge RESET96) begin
             
             //68k ROM
             pre_sel_rom <= GAME == TRUXTON2 ? addr_8 <= 'h7FFFF : // (TRUXTON2)
-                                              addr_8 <= 'hFFFFF; //0x0 - 0xFFFFF for GAREGGA and KINGDMGP, 0x0-0x7FFFF for SSTRIKER
+                                              addr_8 <= 'h7FFFF;  // 0x0-0x7FFFF for SSTRIKER
             CPU_PRG_ADDR <= A[19:1];
 
             //RAM

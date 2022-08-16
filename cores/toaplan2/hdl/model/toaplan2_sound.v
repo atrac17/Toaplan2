@@ -49,7 +49,7 @@ module toaplan2_sound (
 
     input          [7:0] GAME,
     input          [1:0] FX_LEVEL,
-    input		         DIP_PAUSE
+    input                DIP_PAUSE
 );
 
 localparam DEFAULT = 'h0, TRUXTON2 = 'h1;
@@ -119,7 +119,7 @@ jt6295 #(.INTERPOL(1)) u_adpcm_0(
     .cen        ( OKI_CEN & DIP_PAUSE ),
     .ss         ( 1'b0      ),
     // CPU interface
-    .wrn        ( ~OKI_WE ),  // active low
+    .wrn        ( ~OKI_WE ),            // active low
     .din        ( OKI_DIN      ),
     .dout       ( OKI_DOUT  ),
     // ROM interface
@@ -128,24 +128,24 @@ jt6295 #(.INTERPOL(1)) u_adpcm_0(
     .rom_ok     ( PCM_OK  ),
     // Sound output
     .sound      ( oki0_pre   ),
-    .sample     ( oki0_sample)   // ~26kHz
+    .sample     ( oki0_sample)          // ~26kHz
 );
 
 jt51 u_jt51(
-    .rst        ( RESET96       ), // reset
-    .clk        ( CLK96       ), // main clock
-    .cen        ( YM2151_CEN & DIP_PAUSE    ), // 4mhz
-    .cen_p1     ( YM2151_CEN2 & DIP_PAUSE   ), //2mhz, half clock
-    .cs_n       ( ~YM2151_CS    ), // chip select
-    .wr_n       ( YM2151_WE      ), // write
+    .rst        ( RESET96       ),               // reset
+    .clk        ( CLK96       ),                 // main clock
+    .cen        ( YM2151_CEN & DIP_PAUSE    ),   // 4mhz
+    .cen_p1     ( YM2151_CEN2 & DIP_PAUSE   ),   // 2mhz, half clock
+    .cs_n       ( ~YM2151_CS    ),               // chip select
+    .wr_n       ( YM2151_WE      ),              // write
     .a0         ( YM2151_WR_CMD     ),
-    .din        ( YM2151_DIN    ), // data in
-    .dout       ( YM2151_DOUT   ), // data out
+    .din        ( YM2151_DIN    ),               // data in
+    .dout       ( YM2151_DOUT   ),               // data out
     .ct1        (           ),
     .ct2        (           ),
-    .irq_n      (      ),  // I do not synchronize this signal
+    .irq_n      (      ),                        // I do not synchronize this signal
     // Low resolution output (same as real chip)
-    .sample     ( sample    ), // marks new output sample
+    .sample     ( sample    ),                   // marks new output sample
     .left       (           ),
     .right      (           ),
     // Full resolution output
