@@ -40,7 +40,7 @@ The intent is for this core to be a 1:1 playable implementation of Toaplan V2 ha
 
 - Reference TP-023 schematics and compare variations with TP-024 PCB  
 - Verify clock domains for TP-024  
-- Sprite flicker on left side TP-024  <br><br>
+- ~~Sprite flicker on left side TP-024~~  <br><br>
 - **Please do not report issues at this time, this FPGA implementation is in an alpha state.**  
 
 # PCB Check List

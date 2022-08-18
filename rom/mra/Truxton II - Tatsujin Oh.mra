@@ -15,7 +15,7 @@
     <mraauthor>atrac17</mraauthor>
     <rom index="0" zip="truxton2.zip" md5="None" address="0x30000000">
         <!-- mapper for game 00 - default, 01 - truxton2 -->
-        <part>01</part>
+        <part>00</part>
         <!-- maincpu - starts at 0x0 -->
         <part name="tp024_1.bin" crc="f5cfe6ee"/>
         <!-- gp9001_0 - starts at 0x80000 -->
@@ -46,7 +46,7 @@
         <dip name="Invulnerability" bits="14" ids="Off,On"/>
         <dip name="Continue Play" bits="15" ids="Yes,No"/>
         <!-- JMPR -->
-        <dip name="Region" bits="16,19" ids="Japan,USA,EU,HK,Korea,Taiwan,SEA,USA (ROMSTAR),HK (Honest Trading Co.),Korea (JC Trading Co.),USA (Fabtek),No Use,No Use,No Use,No Use,Japan (Taito Corp.)"/>
+        <dip name="Region" bits="16,19" ids="JPN,USA,EU,HK,KOR,TWN,SEA,USA (ROMSTAR),HK (Honest Trading),KOR (JC Trading),USA (Fabtek),No Use,No Use,No Use,No Use,JPN (Taito Corp.)"/>
     </switches>
     <buttons names="Shot,Bomb,Kill Player,Start,Coin,Pause" default="Y,X,B,R,L,Start" count="3"/>
 </misterromdescription>
