@@ -41,30 +41,30 @@ module raizing_video (
     //graphics ROM
     output  [1:0] GFX_CS,
     input   [1:0] GFX_OK,
-    output [21:0] GFX0_ADDR,     
+    output [21:0] GFX0_ADDR,
     input  [31:0] GFX0_DOUT,
-    output [21:0] GFX1_ADDR,     
+    output [21:0] GFX1_ADDR,
     input  [31:0] GFX1_DOUT,
 
     output  [1:0] GFXSCR0_CS,
     input   [1:0] GFXSCR0_OK,
-    output [21:0] GFX0SCR0_ADDR,     
+    output [21:0] GFX0SCR0_ADDR,
     input  [31:0] GFX0SCR0_DOUT,
-    output [21:0] GFX1SCR0_ADDR,     
+    output [21:0] GFX1SCR0_ADDR,
     input  [31:0] GFX1SCR0_DOUT,
 
     output  [1:0] GFXSCR1_CS,
     input   [1:0] GFXSCR1_OK,
-    output [21:0] GFX0SCR1_ADDR,     
+    output [21:0] GFX0SCR1_ADDR,
     input  [31:0] GFX0SCR1_DOUT,
-    output [21:0] GFX1SCR1_ADDR,     
+    output [21:0] GFX1SCR1_ADDR,
     input  [31:0] GFX1SCR1_DOUT,
 
     output  [1:0] GFXSCR2_CS,
     input   [1:0] GFXSCR2_OK,
-    output [21:0] GFX0SCR2_ADDR,     
+    output [21:0] GFX0SCR2_ADDR,
     input  [31:0] GFX0SCR2_DOUT,
-    output [21:0] GFX1SCR2_ADDR,     
+    output [21:0] GFX1SCR2_ADDR,
     input  [31:0] GFX1SCR2_DOUT,
 
     //gp9001
@@ -73,12 +73,12 @@ module raizing_video (
     output        VINT,
     input  [15:0] GP9001DIN,
     output [15:0] GP9001DOUT,
-    input         GP9001_OP_SELECT_REG, 
-    input         GP9001_OP_WRITE_REG, 
-    input         GP9001_OP_WRITE_RAM, 
-    input         GP9001_OP_READ_RAM_H, 
-    input         GP9001_OP_READ_RAM_L, 
-    input         GP9001_OP_SET_RAM_PTR, 
+    input         GP9001_OP_SELECT_REG,
+    input         GP9001_OP_WRITE_REG,
+    input         GP9001_OP_WRITE_RAM,
+    input         GP9001_OP_READ_RAM_H,
+    input         GP9001_OP_READ_RAM_L,
+    input         GP9001_OP_SET_RAM_PTR,
     input         GP9001_OP_OBJECTBANK_WR,
     input   [2:0] GP9001_OBJECTBANK_SLOT,
     output [10:0] GP9001OUT,
@@ -101,7 +101,8 @@ module raizing_video (
     input   [8:0] HS_START,
     input   [8:0] HS_END,
     input   [8:0] VS_START,
-    input   [8:0] VS_END
+    input   [8:0] VS_END,
+    input   FLIP
 );
 
 wire ACTIVE;
@@ -132,7 +133,8 @@ hvsync_generator u_hvsync(
     .display_on(ACTIVE),
     .hpos(H),
     .vpos(V),
-    .vrender(VRENDER)
+    .vrender(VRENDER),
+    .flip(FLIP)
 );
 
 raizing_pal u_pal (
@@ -180,6 +182,7 @@ raizing_extratext u_extratext(
     .ACTIVE(ACTIVE),
     .HB(HB),
     .VB(VB),
+    .FLIPX(FLIP),
 
     //text rom
     .TEXTROM_ADDR(TEXTROM_ADDR),
@@ -268,6 +271,7 @@ raizing_obj u_obj(
     .ACTIVE(ACTIVE),
     .HB(HB),
     .VB(VB),
+    .FLIPX(FLIP),
 
     //interface with GP9001 RAM Mirror
     .GP9001RAM_GCU_ADDR(GP9001RAM_GCU_ADDR),
@@ -303,6 +307,7 @@ raizing_scroll u_scroll(
     .ACTIVE(ACTIVE),
     .HB(HB),
     .VB(VB),
+    .FLIPX(FLIP),
 
     .SCR0_GP9001RAM_GCU_ADDR(SCR0_GP9001RAM_GCU_ADDR),
     .SCR0_GP9001RAM_GCU_DOUT(SCR0_GP9001RAM_GCU_DOUT),
@@ -441,30 +446,30 @@ raizing_gcu u_gcu(
     //GFX ROM
     .GFX_CS(GFX_CS),
     .GFX_OK(GFX_OK),
-    .GFX0_ADDR(GFX0_ADDR),     
+    .GFX0_ADDR(GFX0_ADDR),
     .GFX0_DOUT(GFX0_DOUT),
-    .GFX1_ADDR(GFX1_ADDR),     
+    .GFX1_ADDR(GFX1_ADDR),
     .GFX1_DOUT(GFX1_DOUT),
 
     .GFXSCR0_CS(GFXSCR0_CS),
     .GFXSCR0_OK(GFXSCR0_OK),
-    .GFX0SCR0_ADDR(GFX0SCR0_ADDR),     
+    .GFX0SCR0_ADDR(GFX0SCR0_ADDR),
     .GFX0SCR0_DOUT(GFX0SCR0_DOUT),
-    .GFX1SCR0_ADDR(GFX1SCR0_ADDR),     
+    .GFX1SCR0_ADDR(GFX1SCR0_ADDR),
     .GFX1SCR0_DOUT(GFX1SCR0_DOUT),
 
     .GFXSCR1_CS(GFXSCR1_CS),
     .GFXSCR1_OK(GFXSCR1_OK),
-    .GFX0SCR1_ADDR(GFX0SCR1_ADDR),     
+    .GFX0SCR1_ADDR(GFX0SCR1_ADDR),
     .GFX0SCR1_DOUT(GFX0SCR1_DOUT),
-    .GFX1SCR1_ADDR(GFX1SCR1_ADDR),     
+    .GFX1SCR1_ADDR(GFX1SCR1_ADDR),
     .GFX1SCR1_DOUT(GFX1SCR1_DOUT),
 
     .GFXSCR2_CS(GFXSCR2_CS),
     .GFXSCR2_OK(GFXSCR2_OK),
-    .GFX0SCR2_ADDR(GFX0SCR2_ADDR),     
+    .GFX0SCR2_ADDR(GFX0SCR2_ADDR),
     .GFX0SCR2_DOUT(GFX0SCR2_DOUT),
-    .GFX1SCR2_ADDR(GFX1SCR2_ADDR),     
+    .GFX1SCR2_ADDR(GFX1SCR2_ADDR),
     .GFX1SCR2_DOUT(GFX1SCR2_DOUT),
 
     .HS_START(HS_START),

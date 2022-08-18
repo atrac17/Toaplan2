@@ -108,6 +108,10 @@ wire CLK = clk48;
 wire CLK96 = clk;
 wire RESET96 = rst;
 wire CEN16, CEN16B;
+wire FLIP = GAME==DEFAULT  ? dipsw[1]:  // Placeholder
+            GAME==TRUXTON2 ? dipsw[1]:  // Screen inversion for TRUXTON2
+            0;
+
 // assign game_led = downloading ? 1'b0 : 1'b1;
 
 /*CLOCKS*/
@@ -206,10 +210,12 @@ wire BUSACK;
 wire BR = 1'b0;
 
 //dip switch
-wire [23:0] DIPSW = dipsw[23:0];
+wire [23:0] DIPSW = GAME == DEFAULT ? {dipsw[23:2], 1'b0, dipsw[0]} :    // Placeholder
+                    GAME == TRUXTON2 ? {dipsw[23:2], 1'b0, dipsw[0]} :   // Screen inversion for TRUXTON2
+                    dipsw[23:0];
 wire DIP_TEST = dip_test;
 wire DIP_PAUSE = dip_pause;
-wire [ 7:0] DIPSW_C, DIPSW_B, DIPSW_A;
+wire [7:0] DIPSW_C, DIPSW_B, DIPSW_A;
 assign { DIPSW_C, DIPSW_B, DIPSW_A } = DIPSW[23:0];
 
 //video timings
@@ -242,7 +248,7 @@ wire   [1:0]  TEXTROM_CPU_WE;
 wire  [14:0] TEXTROM_CPU_ADDR;
 
 
-
+    //cpu
 toaplan2_cpu u_cpu (
     .CLK(CLK),
     .CLK96(CLK96),
@@ -255,6 +261,7 @@ toaplan2_cpu u_cpu (
     .DOUT(CPU_DOUT),
     .LVBL(LVBLL), //this is low active to the CPU
     .V(V),
+    .FLIP(FLIP),
 
     //inputs
     .JOYMODE(0),
@@ -391,7 +398,8 @@ raizing_video u_video(
     .TEXTSCROLL_ADDR(TEXTSCROLL_ADDR),
     .TEXTSCROLL_DATA(TEXTSCROLL_DATA),
 
-    .GAME(GAME)
+    .GAME(GAME),
+    .FLIP(FLIP)
 );
 
 wire ym2151_cen, ym2151_cen2, oki_cen, z80_cen;

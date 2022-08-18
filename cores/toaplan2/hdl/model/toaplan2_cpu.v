@@ -31,6 +31,7 @@ module toaplan2_cpu (
     input [8:0] V,
     output BUSACK,
     input LVBL,
+    input FLIP,
 
     output [19:1] ADDR,
     output [15:0] DOUT,
@@ -57,9 +58,9 @@ module toaplan2_cpu (
     // DIP switches
     input        DIP_TEST,
     input        DIP_PAUSE,
-    input [7:0]     DIPSW_A,
-    input [7:0]     DIPSW_B,
-    input [7:0]     DIPSW_C,
+    input [7:0]  DIPSW_A,
+    input [7:0]  DIPSW_B,
+    input [7:0]  DIPSW_C,
 
     //68k rom interface
     output            CPU_PRG_CS,
