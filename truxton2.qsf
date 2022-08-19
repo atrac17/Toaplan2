@@ -269,7 +269,7 @@ set_global_assignment -name SDC_FILE sys_top.sdc
 
 # MiSTer Framework
 set_global_assignment -name QIP_FILE modules/jtframe/target/mister/mister.qip
-set_global_assignment -name QIP_FILE cores/toaplan2/hdl/model/toaplan2.qip
+set_global_assignment -name QIP_FILE cores/truxton2/hdl/model/truxton2.qip
 set_global_assignment -name QIP_FILE game.qip
 
 set_global_assignment -name VERILOG_MACRO "MISTER=1"
@@ -283,10 +283,10 @@ set_instance_assignment -name FAST_INPUT_REGISTER ON -to "emu:emu|jtframe_mister
 set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to SDRAM_DQ[*]
 set_global_assignment -name FORCE_SYNCH_CLEAR ON
 
-set_global_assignment -name VERILOG_MACRO "CORENAME=TOAPLAN2"
-set_global_assignment -name VERILOG_MACRO "TOAPLAN2=1"
+set_global_assignment -name VERILOG_MACRO "CORENAME=truxton2"
+set_global_assignment -name VERILOG_MACRO "truxton2=1"
 set_global_assignment -name VERILOG_MACRO "TARGET=mister"
-set_global_assignment -name VERILOG_MACRO "GAMETOP=toaplan2_game"
+set_global_assignment -name VERILOG_MACRO "GAMETOP=truxton2_game"
 set_global_assignment -name VERILOG_MACRO "JTFRAME_RELEASE=1"
 
 set_global_assignment -name VERILOG_MACRO "JTFRAME_COLORW=8"

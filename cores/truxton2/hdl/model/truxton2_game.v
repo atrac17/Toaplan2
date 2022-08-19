@@ -19,7 +19,7 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-module toaplan2_game(
+module truxton2_game(
     //clock and reset
     input rst,
     input rst48,
@@ -120,7 +120,7 @@ wire FLIP = GAME==DEFAULT  ? dipsw[1]:  // Placeholder
 
 wire CEN675, CEN675B, CEN4, CEN4B, CEN1350, CEN1350B;
 wire CEN3p375, CEN3p375B, CEN1p6875, CEN1p6875B;
-toaplan2_clock u_clocken (
+truxton2_clock u_clocken (
     .CLK(CLK),
     .CLK96(CLK96),
     .CEN675(CEN675),
@@ -249,7 +249,7 @@ wire  [14:0] TEXTROM_CPU_ADDR;
 
 
     //cpu
-toaplan2_cpu u_cpu (
+truxton2_cpu u_cpu (
     .CLK(CLK),
     .CLK96(CLK96),
     .CEN16(CEN16),
@@ -411,7 +411,7 @@ assign oki_cen = GAME == TRUXTON2 ? CEN4 :
                  CEN4;
 //assign z80_cen = CEN4;
 
-toaplan2_sound u_sound(
+truxton2_sound u_sound(
     .CLK(CLK),
     .CLK96(CLK96),
     .RESET(RESET),
@@ -442,7 +442,7 @@ toaplan2_sound u_sound(
 );
 
 //sdram
-toaplan2_sdram u_sdram (
+truxton2_sdram u_sdram (
     .RESET(RESET96),
     .CLK(CLK96),
     .RESET48(RESET),

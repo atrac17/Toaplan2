@@ -19,7 +19,7 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-module toaplan2_sound (
+module truxton2_sound (
     input                CLK,
     input                CLK96,
     input                RESET,

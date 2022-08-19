@@ -19,7 +19,7 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-module toaplan2_cpu (
+module truxton2_cpu (
     input CLK,
     input CLK96,
     input RESET,
@@ -226,7 +226,7 @@ wire bus_busy = |{ (sel_ram || sel_palram || sel_txgfxram ||
 //i/o bus ports
 reg gp9001_vdp_device_r_cs, gp9001_vdp_device_w_cs, read_port_in1_r_cs, read_port_in2_r_cs, 
     read_port_sys_r_cs, read_port_dswa_r_cs, read_port_dswb_r_cs, read_port_jmpr_r_cs, 
-    toaplan2_coinword_w_cs, soundlatch_w, video_count_r_cs;
+    truxton2_coinword_w_cs, soundlatch_w, video_count_r_cs;
 
 //debugging 
  wire debug = 1'b1;
@@ -315,7 +315,7 @@ always @(*) begin
     read_port_sys_r_cs = sel_io && (addr_8[11:0] == 11'h00A) && RW;  // 0x70000A-0B (TRUXTON2)
 
     //coin
-    toaplan2_coinword_w_cs = sel_io && (addr_8[11:0] == 11'h01F);    // 0x70001F (TRUXTON2)
+    truxton2_coinword_w_cs = sel_io && (addr_8[11:0] == 11'h01F);    // 0x70001F (TRUXTON2)
 
     //sound
     sel_ym2151<= sel_io && (addr_8[7:0] == 'h14 || addr_8[7:0] == 'h16);
@@ -359,7 +359,7 @@ always @(posedge CLK96, posedge RESET96) begin
                    read_port_dswb_r_cs ? {2{DIPSW_B}} :
                    read_port_jmpr_r_cs ? {2{DIPSW_C}} :
                    video_count_r_cs ? video_status : // blanking trigger
-                   toaplan2_coinword_w_cs ? 16'h0000 : //ignore coin counter.
+                   truxton2_coinword_w_cs ? 16'h0000 : //ignore coin counter.
 
                    sel_oki && RW ? {2{OKI_DOUT}} :
                    sel_ym2151 && RW ? {2{YM2151_DOUT}} :

@@ -19,7 +19,7 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-module toaplan2_sdram #(
+module truxton2_sdram #(
     //8 bit addressing
     parameter TRUXTON2_ROM01_PRG_LEN = 25'h80000,
               TRUXTON2_GP9001_TILE_LEN = 25'h200000,

@@ -451,8 +451,8 @@ assign joystick2 = joyusb_2;
 wire [9:0] cfg_addr;
 wire [7:0] cfg_dout;
 
-`ifdef TOAPLAN2
-jtframe_ram #(.synfile("cfgstr_toaplan2.hex")) u_cfgstr(
+`ifdef truxton2
+jtframe_ram #(.synfile("cfgstr_truxton2.hex")) u_cfgstr(
     .clk    ( clk_rom   ),
     .cen    ( 1'b1      ),
     .data   (           ),

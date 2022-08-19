@@ -19,7 +19,7 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-module toaplan2_clock (
+module truxton2_clock (
     input CLK, //48mhz
     input CLK96,
     output CEN675,

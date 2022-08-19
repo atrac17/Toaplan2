@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OUTDIR="toaplan2"
+OUTDIR="truxton2"
 
 mkdir -p "$OUTDIR"
 mkdir -p "${OUTDIR}/$ALTD"
@@ -27,7 +27,7 @@ function mra {
 
     echo -----------------------------------------------
     echo "Dumping $GAME"
-    ./mame2dip xml/$GAME.xml -rbf toaplan2 -outdir $OUTDIR -altfolder "$ALTD" \
+    ./mame2dip xml/$GAME.xml -rbf truxton2 -outdir $OUTDIR -altfolder "$ALTD" \
         -order maincpu gp9001_0 oki1 \
         -dipbase 8                   \
         -start maincpu    0x0        \

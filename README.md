@@ -2,9 +2,9 @@
 
 FPGA compatible core of Toaplan Version 2 arcade hardware for [**MiSTerFPGA**](https://github.com/MiSTer-devel/Main_MiSTer/wiki) based on work by [**Pramod Somashekar**](https://github.com/MiSTer-devel/Arcade-Raizing_MiSTer). Without his extensive work on the GP9001, none of this would be possible.
 
-FPGA implementation will reference Knuckle Bash (TP-023) schematics and will be verified against Knuckle Bash (TP-023), Tatsujin Ō (TP-024), Dogyūn!! (TP-022), FixEight (TP-026) and Batsugun (TP-030).
+FPGA implementation will reference Knuckle Bash (TP-023) schematics and will be verified against Dogyūn!! (TP-022), Knuckle Bash (TP-023), Tatsujin Ō (TP-024), FixEight (TP-026) and Batsugun (TP-030).
 
-The intent is for this core to be a 1:1 playable implementation of Toaplan V2 hardware. Currently in alpha state, this core is in active development by [**atrac17**](https://github.com/atrac17) and [**Darren Olafson**](https://twitter.com/Darren__O).
+The intent is for this core to be a 1:1 playable implementation of Toaplan V2 hardware. Currently in alpha state, this core is in active development by [**atrac17**](https://github.com/atrac17) and [**Darren Olafson**](https://twitter.com/Darren__O) (Time Permitting).
 
 **The development process for this core will take time, understand that we have other obligations and active projects outside of the Toaplan V2 hardware.**
 
@@ -12,18 +12,18 @@ The intent is for this core to be a 1:1 playable implementation of Toaplan V2 ha
 
 ## Supported Games
 
-| Title | Status  | Protection | MCU Usage | Released |
-|-------|---------|------------|-----------|----------|
-| [**Teki Paki**](https://en.wikipedia.org/wiki/Teki_Paki)                             | Pending         | HD647180 | Audio       | No      |
-| [**Ghox**](https://en.wikipedia.org/wiki/Ghox)                                       | Pending         | HD647180 | Audio & I/O | No      |
-| [**Whoopee!!**](https://en.wikipedia.org/wiki/Pipi_%26_Bibi's)                       | **W.I.P**       | None     | N/A         | No      |
-| [**Dogyūn!!**](https://en.wikipedia.org/wiki/Dogyuun)                                | Pending         | NEC V25  | Audio       | No      |
-| [**Tatsujin Ō**](https://en.wikipedia.org/wiki/Truxton_II)                           | **Implemented** | **None** | **N/A**     | **Yes** |
-| [**FixEight**](https://en.wikipedia.org/wiki/FixEight)                               | Pending         | NEC V25  | Audio & I/O | No      |
-| [**V-V**](https://en.wikipedia.org/wiki/Grind_Stormer)                               | Pending         | NEC V25  | Audio       | No      |
-| [**Knuckle Bash**](https://en.wikipedia.org/wiki/Knuckle_Bash)                       | Pending         | NEC V25  | Audio       | No      |
-| [**Batsugun**](https://en.wikipedia.org/wiki/Batsugun)                               | Pending         | NEC V25  | Audio       | No      |
-| [**Otenki Paradise**](https://en.wikipedia.org/wiki/Snow_Bros._2:_With_New_Elves)    | **W.I.P**       | None     | N/A         | No      |
+| Title | PCB Number | Status  | Protection | MCU Usage | Released |
+|-------|------------|---------|------------|-----------|----------|
+| [**Teki Paki**](https://en.wikipedia.org/wiki/Teki_Paki)                             | Pending         | TP-020 | HD647180 | Audio       | No      |
+| [**Ghox**](https://en.wikipedia.org/wiki/Ghox)                                       | Pending         | TP-021 | HD647180 | Audio & I/O | No      |
+| [**Dogyūn!!**](https://en.wikipedia.org/wiki/Dogyuun)                                | Pending         | TP-022 | NEC V25  | Audio       | No      |
+| [**Knuckle Bash**](https://en.wikipedia.org/wiki/Knuckle_Bash)                       | Pending         | TP-023 | NEC V25  | Audio       | No      |
+| [**Tatsujin Ō**](https://en.wikipedia.org/wiki/Truxton_II)                           | **Implemented** | TP-024 | **None** | **N/A**     | **Yes** |
+| [**Whoopee!!**](https://en.wikipedia.org/wiki/Pipi_%26_Bibi's)                       | **W.I.P**       | TP-025 | None     | N/A         | No      |
+| [**FixEight**](https://en.wikipedia.org/wiki/FixEight)                               | Pending         | TP-026 | NEC V25  | Audio & I/O | No      |
+| [**V-V**](https://en.wikipedia.org/wiki/Grind_Stormer)                               | Pending         | TP-027 | NEC V25  | Audio       | No      |
+| [**Batsugun**](https://en.wikipedia.org/wiki/Batsugun)                               | Pending         | TP-030 | NEC V25  | Audio       | No      |
+| [**Otenki Paradise**](https://en.wikipedia.org/wiki/Snow_Bros._2:_With_New_Elves)    | **W.I.P**       | TP-033 | None     | N/A         | No      |
 
 ## External Modules
 
@@ -49,13 +49,14 @@ The intent is for this core to be a 1:1 playable implementation of Toaplan V2 ha
 
 H-Sync | V-Sync | Source | Title |
 -------|--------|--------|-------|
-15.625kHZ | 59.637404 | TBD | Tatsujin Ō |
+15.625kHZ | 59.637404 | DSLogic + | Tatsujin Ō |
 
 ### Crystal Oscillators
 
-Location | Freq (MHz) | Use   |
----------|------------|-------|
- TBD     | TBD        | TBD   |
+Location | Freq (MHz) | Use   | PCB Number     |
+---------|------------|-------|----------------|
+ X1      | 16.000 MHz | M68000 / OKI MSM5295   | TP-024 |
+ X2      | 27.000 MHz | GP9001 / YM2151        | TP-024 |
 
 **Pixel clock:** 6.75 MHz
 
@@ -65,31 +66,35 @@ Location | Freq (MHz) | Use   |
   
     262 lines/frame  
 
-### Main Components
+### Main Components (Board Dependent)
 
-Location | Chip | Use | PCB |
+Location | Chip | Use | PCB Number |
 ---------|------|-----|-----|
- TBD     | TBD  | TBD | TBD |
+3-4 A-D | [**Motorola 68000 CPU**](https://en.wikipedia.org/wiki/Motorola_68000)     | Main CPU    | TP-024 |
+U 53    | [**Yamaha YM2151**](https://en.wikipedia.org/wiki/Yamaha_YM2151)           | OPM Sound   | TP-024 |
+U 20    | [**OKI MSM6295**](https://dtsheet.com/doc/957023/oki-m6295)                | ADPCM Sound | TP-024 |
 
-### Custom Components
+### Custom Components (Board Dependent)
 
-Location | Chip | Use | PCB |
+Location | Chip | Use | PCB Number |
 ---------|------|-----|-----|
- TBD     | TBD  | TBD | TBD |
+U 67     | **GP9001** | Graphics VDP | TP-024 |
 
-### Additional Components
+### Additional Components (Board Dependent)
 
-Location | Chip | Use | PCB |
+Location | Chip | Use | PCB Number |
 ---------|------|-----|-----|
- TBD     | TBD  | TBD | TBD |
+N/A | [**Zilog Z80 CPU**](https://en.wikipedia.org/wiki/Zilog_Z80)           | Sound CPU |
+N/A | [**NEC V25**](https://en.wikipedia.org/wiki/NEC_V25)                   | Sound CPU & I/O Handling |
+N/A | [**HD647180X**](https://en.wikipedia.org/wiki/Zilog_Z180)              | Sound CPU & I/O Handling |
 
 # PCB Information
 
-- TBD
+- TBD, alpha implementation.
 
 # Control Layout
 
-- TBD
+- TBD, alpha implementation.
 
 ### Keyboard Handler
 
@@ -110,7 +115,9 @@ Location | Chip | Use | PCB |
 
 # Support
 
-Please consider showing support for this and future projects by contributing to [**atrac17's Patreon**](https://www.patreon.com/atrac17) and [**Darren Olafson's Ko-fi**](https://ko-fi.com/darreno). While it isn't necessary, it's greatly appreciated.
+Please consider showing support for this and future projects by contributing to the developers. While it isn't necessary, it's greatly appreciated.<br><br>
+[**atrac17's Patreon**](https://www.patreon.com/atrac17)<br>
+[**Darren Olafson's Ko-fi**](https://ko-fi.com/darreno)
 
 # License
 
