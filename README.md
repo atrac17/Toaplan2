@@ -12,18 +12,18 @@ The intent is for this core to be a 1:1 playable implementation of Toaplan V2 ha
 
 ## Supported Games
 
-| Title | PCB Number | Status  | Protection | MCU Usage | Released |
-|-------|------------|---------|------------|-----------|----------|
-| [**Teki Paki**](https://en.wikipedia.org/wiki/Teki_Paki)                             | Pending         | TP-020 | HD647180 | Audio       | No      |
-| [**Ghox**](https://en.wikipedia.org/wiki/Ghox)                                       | Pending         | TP-021 | HD647180 | Audio & I/O | No      |
-| [**Dogyūn!!**](https://en.wikipedia.org/wiki/Dogyuun)                                | Pending         | TP-022 | NEC V25  | Audio       | No      |
-| [**Knuckle Bash**](https://en.wikipedia.org/wiki/Knuckle_Bash)                       | Pending         | TP-023 | NEC V25  | Audio       | No      |
-| [**Tatsujin Ō**](https://en.wikipedia.org/wiki/Truxton_II)                           | **Implemented** | TP-024 | **None** | **N/A**     | **Yes** |
-| [**Whoopee!!**](https://en.wikipedia.org/wiki/Pipi_%26_Bibi's)                       | **W.I.P**       | TP-025 | None     | N/A         | No      |
-| [**FixEight**](https://en.wikipedia.org/wiki/FixEight)                               | Pending         | TP-026 | NEC V25  | Audio & I/O | No      |
-| [**V-V**](https://en.wikipedia.org/wiki/Grind_Stormer)                               | Pending         | TP-027 | NEC V25  | Audio       | No      |
-| [**Batsugun**](https://en.wikipedia.org/wiki/Batsugun)                               | Pending         | TP-030 | NEC V25  | Audio       | No      |
-| [**Otenki Paradise**](https://en.wikipedia.org/wiki/Snow_Bros._2:_With_New_Elves)    | **W.I.P**       | TP-033 | None     | N/A         | No      |
+| Title | PCB Number | Protection | MCU Usage | Status  | Released |
+|-------|------------|------------|-----------|---------|----------|
+| [**Teki Paki**](https://en.wikipedia.org/wiki/Teki_Paki)                             | TP-020 | HD647180 | Audio       | Pending         | No      |
+| [**Ghox**](https://en.wikipedia.org/wiki/Ghox)                                       | TP-021 | HD647180 | Audio & I/O | Pending         | No      |
+| [**Dogyūn!!**](https://en.wikipedia.org/wiki/Dogyuun)                                | TP-022 | NEC V25  | Audio       | Pending         | No      |
+| [**Knuckle Bash**](https://en.wikipedia.org/wiki/Knuckle_Bash)                       | TP-023 | NEC V25  | Audio       | Pending         | No      |
+| [**Tatsujin Ō**](https://en.wikipedia.org/wiki/Truxton_II)                           | TP-024 | **None** | **N/A**     | **Implemented** | **Yes** |
+| [**Whoopee!!**](https://en.wikipedia.org/wiki/Pipi_%26_Bibi's)                       | TP-025 | None     | N/A         | **W.I.P**       | No      |
+| [**FixEight**](https://en.wikipedia.org/wiki/FixEight)                               | TP-026 | NEC V25  | Audio & I/O | Pending         | No      |
+| [**V-V**](https://en.wikipedia.org/wiki/Grind_Stormer)                               | TP-027 | NEC V25  | Audio       | Pending         | No      |
+| [**Batsugun**](https://en.wikipedia.org/wiki/Batsugun)                               | TP-030 | NEC V25  | Audio       | Pending         | No      |
+| [**Otenki Paradise**](https://en.wikipedia.org/wiki/Snow_Bros._2:_With_New_Elves)    | TP-033 | None     | N/A         | **W.I.P**       | No      |
 
 ## External Modules
 
