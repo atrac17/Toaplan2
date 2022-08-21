@@ -55,7 +55,7 @@ H-Sync | V-Sync | Source | Title |
 
 Location | Freq (MHz) | Use   | PCB Number     |
 ---------|------------|-------|----------------|
- X1      | 16.000 MHz | M68000 / OKI MSM5295   | TP-024 |
+ X1      | 16.000 MHz | M68000 / OKI MSM6295   | TP-024 |
  X2      | 27.000 MHz | GP9001 / YM2151        | TP-024 |
 
 **Pixel clock:** 6.75 MHz

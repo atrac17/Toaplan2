@@ -461,6 +461,16 @@ jtframe_ram #(.synfile("cfgstr_truxton2.hex")) u_cfgstr(
     .q      ( cfg_dout  )
 );
 `else
+`ifdef snowbro2
+jtframe_ram #(.synfile("cfgstr_snowbro2.hex")) u_cfgstr(
+    .clk    ( clk_rom   ),
+    .cen    ( 1'b1      ),
+    .data   (           ),
+    .addr   ( cfg_addr  ),
+    .we     ( 1'b0      ),
+    .q      ( cfg_dout  )
+);
+`else
 jtframe_ram #(.synfile("cfgstr.hex")) u_cfgstr(
     .clk    ( clk_rom   ),
     .cen    ( 1'b1      ),
@@ -469,6 +479,7 @@ jtframe_ram #(.synfile("cfgstr.hex")) u_cfgstr(
     .we     ( 1'b0      ),
     .q      ( cfg_dout  )
 );
+`endif
 `endif
 
 hps_io #( .STRLEN(0), .PS2DIV(32), .WIDE(JTFRAME_MR_FASTIO) ) u_hps_io
