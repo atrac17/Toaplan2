@@ -184,8 +184,8 @@ reg sel_ym2151, sel_oki;
 assign YM2151_CS = sel_ym2151;
 assign OKI_CS = sel_oki;
 assign YM2151_WE = RW;
-assign YM2151_WR_CMD = YM2151_CS && !RW && addr_8[7:0] == 'h14 ? 0 : //select reg
-                       YM2151_CS && !RW && addr_8[7:0] == 'h16 ? 1 : //write reg
+assign YM2151_WR_CMD = YM2151_CS && !RW && addr_8[7:0] == 'h00 ? 0 : //select reg
+                       YM2151_CS && !RW && addr_8[7:0] == 'h02 ? 1 : //write reg
                        'hx;
 assign OKI_WE = ~(OKI_CS && !RW);
 assign OKI_DIN = cpu_dout[7:0];
@@ -304,8 +304,8 @@ end
 // I/O
 always @(*) begin
     //gp9001
-    gp9001_vdp_device_r_cs = sel_gp9001 && RW;                       // 0x200000-D Read (SNOWBRO2)
-    gp9001_vdp_device_w_cs = sel_gp9001 && !RW;                      // 0x200000-D Write (SNOWBRO2)
+    gp9001_vdp_device_r_cs = sel_gp9001 && RW;                       // 0x300000-D Read (SNOWBRO2)
+    gp9001_vdp_device_w_cs = sel_gp9001 && !RW;                      // 0x300000-D Write (SNOWBRO2)
 
     //vcount
     //video_count_r_cs = (addr_8[23:20] == 4'b0110) && RW;             // 0x600000-01 (SNOWBRO2)
@@ -314,7 +314,7 @@ always @(*) begin
     read_port_dswa_r_cs = sel_io && (addr_8[11:0] == 11'h004) && RW; // 0x700004-05 (SNOWBRO2)
     read_port_dswb_r_cs = sel_io && (addr_8[11:0] == 11'h008) && RW; // 0x700008-09 (SNOWBRO2)
     read_port_jmpr_r_cs = sel_io && (addr_8[11:0] == 11'h000) && RW; // 0x700000-01 (SNOWBRO2)
-    read_port_in1_r_cs = sel_io && (addr_8[11:0] == 11'h00C) && RW;  // 0x70000c-0D (SNOWBRO2)
+    read_port_in1_r_cs = sel_io && (addr_8[11:0] == 11'h00C) && RW;  // 0x70000C-0D (SNOWBRO2)
     read_port_in2_r_cs = sel_io && (addr_8[11:0] == 11'h010) && RW;  // 0x700010-11 (SNOWBRO2)
     read_port_in3_r_cs = sel_io && (addr_8[11:0] == 11'h014) && RW;  // 0x700014-15 (SNOWBRO2)
     read_port_in4_r_cs = sel_io && (addr_8[11:0] == 11'h018) && RW;  // 0x700018-19 (SNOWBRO2)
@@ -336,11 +336,10 @@ wire [15:0] video_status_vs = (16'hFF00 & (!VSYNC ? ~16'h4000 : 16'hFFFF));
 wire [15:0] video_status_fb = (16'hFF00 & (!FBLANK ? ~16'h100 : 16'hFFFF));
 wire [15:0] video_status = V < 256 ? (video_status_hs & video_status_vs & video_status_fb) | (V & 8'hFF) :
                                      (video_status_hs & video_status_vs & video_status_fb) | 8'hFF;
-wire vint_n, int1;
 
 //JTFRAME is low active, but batrider is high active.
-wire [7:0] p1_ctrl = {1'b0, ~JOYSTICK1[6],~JOYSTICK1[5],~JOYSTICK1[4],~JOYSTICK1[0],~JOYSTICK1[1],~JOYSTICK1[2],~JOYSTICK1[3]};
-wire [7:0] p2_ctrl = {1'b0, ~JOYSTICK2[6],~JOYSTICK2[5],~JOYSTICK2[4],~JOYSTICK2[0],~JOYSTICK2[1],~JOYSTICK2[2],~JOYSTICK2[3]};
+wire [7:0] p1_ctrl = {1'b0, ~JOYSTICK1[5],~JOYSTICK1[4],~JOYSTICK1[0],~JOYSTICK1[1],~JOYSTICK1[2],~JOYSTICK1[3]};
+wire [7:0] p2_ctrl = {1'b0, ~JOYSTICK2[5],~JOYSTICK2[4],~JOYSTICK2[0],~JOYSTICK2[1],~JOYSTICK2[2],~JOYSTICK2[3]};
 wire [7:0] p3_ctrl = {1'b0, ~JOYSTICK2[6],~JOYSTICK2[5],~JOYSTICK2[4],~JOYSTICK2[0],~JOYSTICK2[1],~JOYSTICK2[2],~JOYSTICK2[3]};
 wire [7:0] p4_ctrl = {1'b0, ~JOYSTICK2[6],~JOYSTICK2[5],~JOYSTICK2[4],~JOYSTICK2[0],~JOYSTICK2[1],~JOYSTICK2[2],~JOYSTICK2[3]};
 
@@ -362,8 +361,8 @@ always @(posedge CLK96, posedge RESET96) begin
 
                    read_port_in1_r_cs ? {2{p1_ctrl}} : //controller inputs
                    read_port_in2_r_cs ? {2{p2_ctrl}} :
-                   read_port_in3_r_cs ? {2{p2_ctrl}} :
-                   read_port_in4_r_cs ? {2{p2_ctrl}} :
+                   read_port_in3_r_cs ? {2{p3_ctrl}} :
+                   read_port_in4_r_cs ? {2{p4_ctrl}} :
                    read_port_sys_r_cs ? {2{DIPSW_C, 1'b0, ~START_BUTTON[1], ~START_BUTTON[0], ~COIN_INPUT[1], ~COIN_INPUT[0], ~DIP_TEST, 1'b0, ~SERVICE}} :
                    read_port_dswa_r_cs ? {2{DIPSW_A}} :
                    read_port_dswb_r_cs ? {2{DIPSW_B}} :
@@ -393,7 +392,7 @@ always @(posedge CLK96) begin
         if(GAME == DEFAULT && toaplan2_coinword_w_cs && !RW) begin
             OKI_BANK <= cpu_dout[7:0];
             OKI_BANK <= cpu_dout[4];
-        end				
+        end
         else if(gp9001_vdp_device_r_cs) begin
             case(addr_8[3:0])
                 4'b0100: GP9001_OP_READ_RAM_H <= 1'b1; //4
@@ -408,7 +407,7 @@ always @(posedge CLK96) begin
                 4'b0000: GP9001_OP_SET_RAM_PTR <= 1'b1; //0
             endcase
         end
-        else begin       
+        else begin
             if(GP9001ACK) begin
                 GP9001_OP_SELECT_REG <= 1'b0;
                 GP9001_OP_WRITE_REG <= 1'b0;
@@ -422,7 +421,7 @@ always @(posedge CLK96) begin
 end
 
 //address bits 19 to 23 go to the E68DEC1B chip.
-
+wire vint_n, int1;
 jtframe_ff u_int_ff(
     .clk      ( CLK96       ),
     .rst      ( RESET96     ),
@@ -513,8 +512,8 @@ fx68k u_011 (
 
     .DTACKn     (DTACKn),
     .IPL0n      (1'b1),
-    .IPL1n      (int1),
-    .IPL2n      (1'b1),
+    .IPL1n      (1'b1),
+    .IPL2n      (int1),
 
     // Unused
     .oRESETn    (),

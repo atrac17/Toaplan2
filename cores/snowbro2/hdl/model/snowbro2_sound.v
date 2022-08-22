@@ -119,7 +119,7 @@ jt6295 #(.INTERPOL(1)) u_adpcm_0(
     .rst        ( RESET96             ),
     .clk        ( CLK96               ),
     .cen        ( OKI_CEN & DIP_PAUSE ),
-    .ss         ( 1'b0                ),
+    .ss         ( 1'b1                ),
     // CPU interface
     .wrn        ( OKI_WE              ),         // active low
     .din        ( OKI_DIN             ),

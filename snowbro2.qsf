@@ -292,11 +292,8 @@ set_global_assignment -name VERILOG_MACRO "JTFRAME_RELEASE=1"
 set_global_assignment -name VERILOG_MACRO "JTFRAME_COLORW=8"
 set_global_assignment -name VERILOG_MACRO "VIDEO_HEIGHT=240"
 set_global_assignment -name VERILOG_MACRO "VIDEO_WIDTH=320"
-set_global_assignment -name VERILOG_MACRO "JTFRAME_ROTATE=1"
 set_global_assignment -name VERILOG_MACRO "JTFRAME_ARX=4"
 set_global_assignment -name VERILOG_MACRO "JTFRAME_ARY=3"
-set_global_assignment -name VERILOG_MACRO "JTFRAME_MR_ROTCCW=1"
-set_global_assignment -name VERILOG_MACRO "JTFRAME_VERTICAL=1"
 
 set_global_assignment -name VERILOG_MACRO "JTFRAME_BA0_AUTOPRECH=1"
 #set_global_assignment -name VERILOG_MACRO "JTFRAME_BA1_AUTOPRECH=1"
@@ -320,7 +317,7 @@ set_global_assignment -name VERILOG_MACRO "JTFRAME_ADPCM=1"
 set_global_assignment -name VERILOG_MACRO "JTFRAME_OSD_VOL=1"
 set_global_assignment -name VERILOG_MACRO "JTFRAME_OSD_SND_EN=1"
 set_global_assignment -name VERILOG_MACRO "STEREO_GAME=1"
-set_global_assignment -name VERILOG_MACRO "JTFRAME_BUTTONS=3"
+set_global_assignment -name VERILOG_MACRO "JTFRAME_BUTTONS=2"
 set_global_assignment -name VERILOG_MACRO "JTFRAME_MRA_DIP=1"
 
 set_global_assignment -name VERILOG_MACRO "JTFRAME_IOCTL_RD=128"
@@ -335,7 +332,7 @@ set_global_assignment -name VERILOG_MACRO "SEPARATOR=-;"
 
 set_global_assignment -name VERILOG_MACRO "SYNTHESIS=1"
 
-set_global_assignment -name SEED 232
+set_global_assignment -name SEED 1
 
 set_global_assignment -name DEVICE 5CSEBA6U23I7
 
