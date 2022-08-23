@@ -167,7 +167,7 @@ assign LDSWn = RW | LDSn;
 // that causes a false read request to the SDRAM. In order
 // to avoid that a little bit of logic is needed:
 assign sel_ram   = pre_sel_ram; //~BUSn & (dsn_dly ? reg_sel_ram  : pre_sel_ram);
-//assign sel_txgfxram = pre_sel_oki_bankswitch;
+assign read_port_oki_bankswitch = pre_sel_oki_bankswitch;
 assign sel_rom   = ~BUSn & (dsn_dly ? reg_sel_rom : pre_sel_rom);
 assign sel_palram = pre_sel_palram;
 assign sel_txvram = pre_sel_txvram;
@@ -319,14 +319,14 @@ always @(*) begin
     read_port_in3_r_cs = sel_io && (addr_8[11:0] == 11'h014) && RW;  // 0x700014-15 (SNOWBRO2)
     read_port_in4_r_cs = sel_io && (addr_8[11:0] == 11'h018) && RW;  // 0x700018-19 (SNOWBRO2)
     read_port_sys_r_cs = sel_io && (addr_8[11:0] == 11'h01C) && RW;  // 0x70001C-1D (SNOWBRO2)
-    //pre_sel_oki_bankswitch = sel_io && (addr_8[11:0] == 11'h030);    // 0x700030-31 (SNOWBRO2)
+    read_port_oki_bankswitch = sel_io && (addr_8[11:0] == 11'h030);  // 0x700030-31 (SNOWBRO2)
 
     //coin
     toaplan2_coinword_w_cs = sel_io && (addr_8[11:0] == 11'h034);    // 0x700034 (SNOWBRO2)
 
     //sound
-    sel_ym2151<= sel_io && (addr_8[7:0] == 'h00 || addr_8[7:0] == 'h02);  // 0x500000-03 (SNOWBRO2)
-    sel_oki<= sel_io && (addr_8[7:0] == 'h00);                            // 0x600001-01 (SNOWBRO2)
+    sel_ym2151 <= (addr_8[23:8] == 'h5000);                          // 0x500000-03 (SNOWBRO2)
+    sel_oki <= (addr_8[23:8] == 'h6000);                             // 0x600001-01 (SNOWBRO2)
 
     //soundlatch
     //soundlatch_w = addr_8[23:20] == 4'b0110 && !RW; //0x600001
