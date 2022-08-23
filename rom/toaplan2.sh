@@ -71,12 +71,12 @@ function mra {
         -setword maincpu  16 reverse \
         -setword gp9001_0 16 reverse \
         -frac 1 gp9001_0 2           \
-        -order-roms gp9001_0 0 1 2 3 \
+        -order-roms gp9001_0 0 2 1 3 \
         -dipdef $DIP                 \
         -corebuttons 2               \
         -buttons $BUTSTR
 }
 
-mra  snowbro2 "Snow Bros. 2 - With New Elves"  "B1,B2" "00,00,00"
+mra  snowbro2 "Snow Bros. 2 - With New Elves"  "Attack,Jump" "00,00,00"
 
 exit 0

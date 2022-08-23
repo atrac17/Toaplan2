@@ -117,7 +117,7 @@ module snowbro2_cpu (
 );
 
 localparam DEFAULT  = 'h0;  // DEFAULT (GAREGGA)
-localparam SNOWBRO2 = 'h1;  // SNOWBRO2 MODULE
+localparam SNOWBRO2 = 'h2;  // SNOWBRO2 MODULE
 
 //address bus
 wire [23:1] A;

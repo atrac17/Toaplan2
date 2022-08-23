@@ -136,7 +136,7 @@ module raizing_gcu (
     input   [8:0] VS_END
 );
 
-localparam DEFAULT = 'h0, TRUXTON2 = 'h1;
+localparam DEFAULT = 'h0, TRUXTON2 = 'h1, SNOWBRO2 = 'h2;
 
 //debugging 
 //  wire debug = 1'b1;
@@ -160,6 +160,7 @@ wire signed [12:0] foreground_scroll_yoffs_f = -12'h210;
 wire signed [12:0] text_scroll_yoffs = -12'h1EF;
 wire signed [12:0] text_scroll_yoffs_f = -12'h210;
 wire signed [12:0] sprite_scroll_yoffs = GAME == TRUXTON2 ? 12'h001 :
+                                         GAME == SNOWBRO2 ? 12'h011 :
                                          12'h001; //-12'h1EF;
 wire signed [12:0] sprite_scroll_yoffs_f = -12'h108;
 
@@ -402,7 +403,7 @@ wire spriteram_we = GP9001RAM_WE && (GP9001RAM_ADDR>=14'h1800 && GP9001RAM_ADDR<
 
 //sprite lag fix
 reg [1:0] cur_buf = 0;
-wire [1:0] cur_buf_rd = GAME==DEFAULT || TRUXTON2 ? 
+wire [1:0] cur_buf_rd = GAME==DEFAULT ? 
                         (cur_buf == 0 ? 3 :
                         cur_buf == 1 ? 0 :
                         cur_buf == 2 ? 1 :
@@ -440,7 +441,7 @@ always @(posedge CLK96, posedge RESET96) begin
         clear_buff<=0;
     end else begin
         last_vb<=is_vb;
-        if(is_vb && !last_vb && GAME == DEFAULT) begin //start of vblank, cut spriteram disable for sorcer and kingdom for now
+        if(is_vb && !last_vb && (GAME == DEFAULT || TRUXTON 2 || SNOWBRO2)) begin //start of vblank, cut spriteram disable for sorcer and kingdom for now
             cur_buf<=((cur_buf+1)%4);
             clear_buff<=1;
         end

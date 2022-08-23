@@ -10,11 +10,11 @@
     <rotation>horizontal</rotation>
     <region>World</region>
     <platform>Toaplan 2</platform>
-    <category></category>
-    <catver></catver>
+    <category>Platform</category>
+    <catver>Platform / Run Jump</catver>
     <mraauthor>atrac17</mraauthor>
     <rom index="0" zip="snowbro2.zip" md5="None" address="0x30000000">
-        <!-- mapper for game 00 - default, 01 - snowbro2 -->
+        <!-- mapper for game 02 - default, 02 - snowbro2 -->
         <part>00</part>
         <!-- maincpu - starts at 0x0 -->
         <interleave output="16">
@@ -23,15 +23,16 @@
         <!-- gp9001_0 - starts at 0x80000 -->
         <interleave output="16">
             <part name="rom2-l" crc="e9d366a9" map="01"/>
-            <part name="rom2-h" crc="9aab7a62" map="10"/>
+            <part name="rom3-l" crc="eb06e332" map="10"/>
         </interleave>
         <interleave output="16">
-            <part name="rom3-l" crc="eb06e332" map="01"/>
+            <part name="rom2-h" crc="9aab7a62" map="01"/>
             <part name="rom3-h" crc="df4a952a" map="10"/>
         </interleave>
         <!-- oki1 - starts at 0x380000 -->
         <part name="rom4" crc="638f341e"/>
         <!-- Total 0x400000 bytes - 4096 kBytes -->
+    </rom>
     </rom>
     <rom index="1">
         <part>00</part>
@@ -46,13 +47,12 @@
         <dip name="Coin B" bits="6,7" ids="1/1,1/2,1/2,1/3,2/1,1/4,2/3,1/6"/>
         <!-- DSWB -->
         <dip name="Difficulty" bits="8,9" ids="Normal,Easy,Hard,Very Hard"/>
-        <dip name="Bonus Life" bits="10,11" ids="100k only,100k and every 500k,200k only,None"/>
+        <dip name="Bonus Life" bits="10,11" ids="100k,100k/500k,200k,None"/>
         <dip name="Lives" bits="12,13" ids="3,4,2,1"/>
-        <dip name="Invulnerability (Cheat)" bits="14" ids="Off,On"/>
+        <dip name="Invulnerable" bits="14" ids="Off,On"/>
         <dip name="Maximum Players" bits="15" ids="4,2"/>
         <!-- JMPR -->
-        <dip name="Copyright" bits="16" ids="No,Yes"/>
-        <dip name="Region" bits="17,19" ids="JPN,USA,EU,KOR,HK,TWN,SEA,No Use,No Use"/>
+        <dip name="Region" bits="18,20" ids="JPN,USA,EU,KOR,HK,TWN"/>
     </switches>
-    <buttons names="B1,B2,Start,Coin,Pause" default="Y,X,R,L,Start" count="2"/>
+    <buttons names="Attack,Jump,Start,Coin,Pause" default="Y,X,R,L,Start" count="2"/>
 </misterromdescription>
