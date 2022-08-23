@@ -83,20 +83,20 @@ module snowbro2_cpu (
 
     //text VRAM interface
     //text vram
-    input  [11:0] TEXTVRAM_ADDR,
-    output [15:0] TEXTVRAM_DATA,
+//    input  [11:0] TEXTVRAM_ADDR,
+//    output [15:0] TEXTVRAM_DATA,
 
     //palette ram
     input  [10:0] PALRAM_ADDR,
     output [15:0] PALRAM_DATA,
 
     //text select ram
-    input  [7:0]  TEXTSELECT_ADDR,
-    output [15:0] TEXTSELECT_DATA,
+//    input  [7:0]  TEXTSELECT_ADDR,
+//    output [15:0] TEXTSELECT_DATA,
 
     //text scroll ram
-    input  [7:0]  TEXTSCROLL_ADDR,
-    output [15:0] TEXTSCROLL_DATA,
+//    input  [7:0]  TEXTSCROLL_ADDR,
+//    output [15:0] TEXTSCROLL_DATA,
 
     //sound interface
     output                YM2151_CS,
@@ -110,10 +110,10 @@ module snowbro2_cpu (
     input           [7:0] OKI_DOUT,
     output reg            OKI_BANK,
 
-    output  [15:0] TEXTROM_CPU_DIN,
-    input   [15:0] TEXTROM_CPU_DOUT,
-    output   [1:0] TEXTROM_CPU_WE,
-    output  [13:0] TEXTROM_CPU_ADDR
+//    output  [15:0] TEXTROM_CPU_DIN,
+//    input   [15:0] TEXTROM_CPU_DOUT,
+//    output   [1:0] TEXTROM_CPU_WE,
+//    output  [13:0] TEXTROM_CPU_ADDR
 );
 
 localparam DEFAULT  = 'h0;  // DEFAULT (GAREGGA)
@@ -175,9 +175,9 @@ assign sel_ram2 = pre_sel_ram2;
 assign CPU_PRG_CS = sel_rom;
 
 //txgfxram assigns
-assign TEXTROM_CPU_DIN = {2{wram_cpu_data[7:0]}};
-assign TEXTROM_CPU_WE = {sel_txgfxram && !RW && !A[1], sel_txgfxram && !RW && A[1]};
-assign TEXTROM_CPU_ADDR = (addr_8&'hFFFF)>>2;
+//assign TEXTROM_CPU_DIN = {2{wram_cpu_data[7:0]}};
+//assign TEXTROM_CPU_WE = {sel_txgfxram && !RW && !A[1], sel_txgfxram && !RW && A[1]};
+//assign TEXTROM_CPU_ADDR = (addr_8&'hFFFF)>>2;
 
 //sound assigns
 reg sel_ym2151, sel_oki;
@@ -351,7 +351,7 @@ always @(posedge CLK96, posedge RESET96) begin
 
                    //todo: ram hookups
                    sel_ram && RW ? main_ram_q0 ://ram reads
-                   sel_txgfxram && RW ? {8'h00, A[1] ? TEXTROM_CPU_DOUT[7:0] : TEXTROM_CPU_DOUT[15:8]} :
+//                   sel_txgfxram && RW ? {8'h00, A[1] ? TEXTROM_CPU_DOUT[7:0] : TEXTROM_CPU_DOUT[15:8]} :
                    sel_palram && RW ? main_palram_q0 :
                    sel_txvram && RW ? main_txvram_q0 :
                    sel_txlineselect && RW ? main_txlineselect_q0 :
@@ -431,7 +431,7 @@ jtframe_ff u_int_ff(
     .qn       ( vint_n      ),
     .set      ( 1'b0        ),    // active high
     .clr      ( ~inta_n     ),    // active high
-    .sigedge  ( VINT        ) // signal whose edge will trigger the FF
+    .sigedge  ( VINT        )     // signal whose edge will trigger the FF
 );
 
 jtframe_virq u_virq(
@@ -555,52 +555,52 @@ jtframe_dual_ram16 #(.aw(11)) u_palram_ram(
 );
 
 //Text VRAM 0x500000 - 0x501FFF
-jtframe_dual_ram16 #(.aw(12)) u_txvram_ram(
-    .clk0(CLK96),
-    .clk1(CLK96),
-    // Port 0 writes
-    .data0(wram_cpu_data),
-    .addr0(A[12:1]),
-    .we0({sel_txvram && !RW && !UDSn, sel_txvram && !RW && !LDSn}),
-    .q0(main_txvram_q0),
-    // Port 1
-    .data1(),
-    .addr1(TEXTVRAM_ADDR),
-    .we1(2'b00),
-    .q1(TEXTVRAM_DATA)
-);
+//jtframe_dual_ram16 #(.aw(12)) u_txvram_ram(
+//    .clk0(CLK96),
+//    .clk1(CLK96),
+//    // Port 0 writes
+//    .data0(wram_cpu_data),
+//    .addr0(A[12:1]),
+//    .we0({sel_txvram && !RW && !UDSn, sel_txvram && !RW && !LDSn}),
+//    .q0(main_txvram_q0),
+//    // Port 1
+//    .data1(),
+//    .addr1(TEXTVRAM_ADDR),
+//    .we1(2'b00),
+//    .q1(TEXTVRAM_DATA)
+//);
 
 //Text Lineselect 0x502000 - 0x502FFF (first 0x200)
-jtframe_dual_ram16 #(.aw(11)) u_txlineselect_ram(
-    .clk0(CLK96),
-    .clk1(CLK96),
-    // Port 0 writes
-    .data0(wram_cpu_data),
-    .addr0(A[11:1]),
-    .we0({sel_txlineselect && !RW && !UDSn, sel_txlineselect && !RW && !LDSn}),
-    .q0(main_txlineselect_q0),
-    // Port 1
-    .data1(),
-    .addr1(TEXTSELECT_ADDR),
-    .we1(2'b00),
-    .q1(TEXTSELECT_DATA)
-);
+//jtframe_dual_ram16 #(.aw(11)) u_txlineselect_ram(
+//    .clk0(CLK96),
+//    .clk1(CLK96),
+//    // Port 0 writes
+//    .data0(wram_cpu_data),
+//    .addr0(A[11:1]),
+//    .we0({sel_txlineselect && !RW && !UDSn, sel_txlineselect && !RW && !LDSn}),
+//    .q0(main_txlineselect_q0),
+//    // Port 1
+//    .data1(),
+//    .addr1(TEXTSELECT_ADDR),
+//    .we1(2'b00),
+//    .q1(TEXTSELECT_DATA)
+//);
 
 //Text Linescroll 0x403000 - 0x403FFF (first 0x200)
-jtframe_dual_ram16 #(.aw(11)) u_txlinescroll_ram(
-    .clk0(CLK96),
-    .clk1(CLK96),
-    // Port 0 writes
-    .data0(wram_cpu_data),
-    .addr0(A[11:1]),
-    .we0({sel_txlinescroll && !RW && !UDSn, sel_txlinescroll && !RW && !LDSn}),
-    .q0(main_txlinescroll_q0),
-    // Port 1
-    .data1(),
-    .addr1(TEXTSCROLL_ADDR),
-    .we1(2'b00),
-    .q1(TEXTSCROLL_DATA)
-);
+//jtframe_dual_ram16 #(.aw(11)) u_txlinescroll_ram(
+//    .clk0(CLK96),
+//    .clk1(CLK96),
+//    // Port 0 writes
+//    .data0(wram_cpu_data),
+//    .addr0(A[11:1]),
+//    .we0({sel_txlinescroll && !RW && !UDSn, sel_txlinescroll && !RW && !LDSn}),
+//    .q0(main_txlinescroll_q0),
+//    // Port 1
+//    .data1(),
+//    .addr1(TEXTSCROLL_ADDR),
+//    .we1(2'b00),
+//    .q1(TEXTSCROLL_DATA)
+//);
 
 //RAM2, but not used 0x401000 - 0x4017FF
 jtframe_dual_ram16 #(.aw(10)) u_cpu_wram2(

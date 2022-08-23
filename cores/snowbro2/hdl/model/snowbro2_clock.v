@@ -53,12 +53,12 @@ jtframe_cendiv u_cen_675 (
     .cen_da(CEN675)
 );
 
-// oki 4mhz (SNOWBRO2)
-// 96*(1/24) == 4
+// oki 2.7mhz (SNOWBRO2)
+// 96*(1/24) == 2.7
 jtframe_frac_cen u_frac_cen_4(
     .clk(CLK96),
-    .n(1),
-    .m(24),
+    .n(9),
+    .m(320),
     .cen(CEN4),
     .cenb(CEN4B)
 );
