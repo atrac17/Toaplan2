@@ -44,6 +44,8 @@ module snowbro2_game(
     input [3:0] coin_input,
     input [9:0] joystick1,
     input [9:0] joystick2,
+    input [9:0] joystick3,
+    input [9:0] joystick4,
 
     // SDRAM interface
     output [21:0] ba0_addr,
@@ -267,6 +269,8 @@ snowbro2_cpu u_cpu (
     .JOYMODE(0),
     .JOYSTICK1(joystick1),
     .JOYSTICK2(joystick2),
+    .JOYSTICK3(joystick3),
+    .JOYSTICK4(joystick4),
     .START_BUTTON(start_button),
     .COIN_INPUT(coin_input),
     .SERVICE(service),

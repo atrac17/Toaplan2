@@ -50,6 +50,8 @@ module snowbro2_cpu (
     input [1:0]  JOYMODE,
     input [9:0]  JOYSTICK1,
     input [9:0]  JOYSTICK2,
+    input [9:0]  JOYSTICK3,
+    input [9:0]  JOYSTICK4,
     input [3:0]  START_BUTTON,
     input [3:0]  COIN_INPUT,
     input        SERVICE,
@@ -339,8 +341,8 @@ wire [15:0] video_status = V < 256 ? (video_status_hs & video_status_vs & video_
 //JTFRAME is low active, but batrider is high active.
 wire [7:0] p1_ctrl = {1'b0, ~JOYSTICK1[5],~JOYSTICK1[4],~JOYSTICK1[0],~JOYSTICK1[1],~JOYSTICK1[2],~JOYSTICK1[3]};
 wire [7:0] p2_ctrl = {1'b0, ~JOYSTICK2[5],~JOYSTICK2[4],~JOYSTICK2[0],~JOYSTICK2[1],~JOYSTICK2[2],~JOYSTICK2[3]};
-wire [7:0] p3_ctrl = {1'b0, ~JOYSTICK2[6],~JOYSTICK2[5],~JOYSTICK2[4],~JOYSTICK2[0],~JOYSTICK2[1],~JOYSTICK2[2],~JOYSTICK2[3]};
-wire [7:0] p4_ctrl = {1'b0, ~JOYSTICK2[6],~JOYSTICK2[5],~JOYSTICK2[4],~JOYSTICK2[0],~JOYSTICK2[1],~JOYSTICK2[2],~JOYSTICK2[3]};
+wire [7:0] p3_ctrl = {~JOYSTICK3[6],~JOYSTICK3[5],~JOYSTICK3[4],~JOYSTICK3[0],~JOYSTICK3[1],~JOYSTICK3[2],~JOYSTICK3[3]};
+wire [7:0] p4_ctrl = {~JOYSTICK4[6],~JOYSTICK4[5],~JOYSTICK4[4],~JOYSTICK4[0],~JOYSTICK4[1],~JOYSTICK4[2],~JOYSTICK4[3]};
 
 always @(posedge CLK96, posedge RESET96) begin
     if(RESET96) cpu_din <= 16'h0000;
