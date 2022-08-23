@@ -77,6 +77,6 @@ function mra {
         -buttons $BUTSTR
 }
 
-mra  snowbro2 "Snow Bros. 2 - With New Elves"  "Attack,Jump" "00,00,00"
+mra  snowbro2 "Snow Bros. 2 - With New Elves"  "Shot,Jump" "00,00,00"
 
 exit 0

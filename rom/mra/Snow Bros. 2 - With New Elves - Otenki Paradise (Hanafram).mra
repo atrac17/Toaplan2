@@ -14,8 +14,8 @@
     <catver>Platform / Run Jump</catver>
     <mraauthor>atrac17</mraauthor>
     <rom index="0" zip="snowbro2.zip" md5="None" address="0x30000000">
-        <!-- mapper for game 02 - default, 02 - snowbro2 -->
-        <part>00</part>
+        <!-- mapper for game 00 - default, 02 - snowbro2 -->
+        <part>02</part>
         <!-- maincpu - starts at 0x0 -->
         <interleave output="16">
             <part name="pro-4" crc="4c7ee341" map="12"/>
@@ -54,5 +54,5 @@
         <!-- JMPR -->
         <dip name="Region" bits="18,20" ids="JPN,USA,EU,KOR,HK,TWN"/>
     </switches>
-    <buttons names="Attack,Jump,Start,Coin,Pause" default="Y,X,R,L,Start" count="2"/>
+    <buttons names="Shot,Jump,Start,Coin,Pause" default="Y,X,R,L,Start" count="2"/>
 </misterromdescription>
