@@ -165,7 +165,7 @@ assign LDSWn = RW | LDSn;
 // that causes a false read request to the SDRAM. In order
 // to avoid that a little bit of logic is needed:
 assign sel_ram   = pre_sel_ram; //~BUSn & (dsn_dly ? reg_sel_ram  : pre_sel_ram);
-assign sel_txgfxram = pre_sel_oki_bankswitch;
+//assign sel_txgfxram = pre_sel_oki_bankswitch;
 assign sel_rom   = ~BUSn & (dsn_dly ? reg_sel_rom : pre_sel_rom);
 assign sel_palram = pre_sel_palram;
 assign sel_txvram = pre_sel_txvram;
@@ -256,8 +256,9 @@ always @(posedge CLK96 or posedge RESET96) begin
         if(!ASn && BGACKn) begin
             //debugging 
             // $display("time: %t, addr: %h, uds: %h, lds: %h, rw: %h, cpu_dout: %h, cpu_din: %h, sel_status: %b\n", $time/1000, addr_8, UDSn, LDSn, RW, cpu_dout, cpu_din, {sel_rom, sel_ram, sel_sram, sel_z80, sel_gp9001, sel_io});
+                //$fwrite(fd, "time: %t, addr: %h, uds: %h, lds: %h, rw: %h, cpu_dout: %h, cpu_din: %h, sel_status: %b\n", $time/1000, addr_8, UDSn, LDSn, RW, cpu_dout, cpu_din, {sel_rom, sel_ram, sel_txgfxram, sel_gp9001, sel_io});
              if(debug)
-                $fwrite(fd, "time: %t, addr: %h, uds: %h, lds: %h, rw: %h, cpu_dout: %h, cpu_din: %h, sel_status: %b\n", $time/1000, addr_8, UDSn, LDSn, RW, cpu_dout, cpu_din, {sel_rom, sel_ram, sel_txgfxram, sel_gp9001, sel_io});
+                $fwrite(fd, "time: %t, addr: %h, uds: %h, lds: %h, rw: %h, cpu_dout: %h, cpu_din: %h, sel_status: %b\n", $time/1000, addr_8, UDSn, LDSn, RW, cpu_dout, cpu_din, {sel_rom, sel_ram, sel_gp9001, sel_io});
 
             //68k ROM
             pre_sel_rom <= GAME == SNOWBRO2 ? addr_8 <= 'h7FFFF :                              // (SNOWBRO2)
@@ -281,10 +282,10 @@ always @(posedge CLK96 or posedge RESET96) begin
             //pre_sel_ram2 <= addr_8[23:12] == 12'b0100_0000_0011;                               // 0x403200 - 0x403FFF
 
             //oki_bankswitch
-            pre_sel_oki_bankswitch <= addr_8[23:20] == 4'b0101;                                // 0x700030 - 0x700031 (SNOWBRO2)
+            pre_sel_oki_bankswitch <= addr_8[23:20] == 'h700030;                                // 0x700030 - 0x700031 (SNOWBRO2)
 
             //IO
-            sel_io <= addr_8[23:12] == 12'b0111_0000_0000;                                     // 0x700034 - 0x700035 (SNOWBRO2)
+            sel_io <= addr_8[23:12] == 12'h700034;                                     // 0x700034 - 0x700035 (SNOWBRO2)
 
         end else begin
             pre_sel_rom<=0;
@@ -353,9 +354,9 @@ always @(posedge CLK96, posedge RESET96) begin
                    sel_ram && RW ? main_ram_q0 ://ram reads
 //                   sel_txgfxram && RW ? {8'h00, A[1] ? TEXTROM_CPU_DOUT[7:0] : TEXTROM_CPU_DOUT[15:8]} :
                    sel_palram && RW ? main_palram_q0 :
-                   sel_txvram && RW ? main_txvram_q0 :
-                   sel_txlineselect && RW ? main_txlineselect_q0 :
-                   sel_txlinescroll && RW ? main_txlinescroll_q0 :
+//                   sel_txvram && RW ? main_txvram_q0 :
+//                   sel_txlineselect && RW ? main_txlineselect_q0 :
+//                   sel_txlinescroll && RW ? main_txlinescroll_q0 :
                    sel_ram2 && RW ? main_ram2_q0 :
                    gp9001_vdp_device_r_cs && addr_8[3:0] == 'b1100 ? {15'b0, ~int1} : //VBLANK reg
 
