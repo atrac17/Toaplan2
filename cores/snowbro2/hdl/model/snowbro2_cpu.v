@@ -108,7 +108,7 @@ module snowbro2_cpu (
     output          [7:0] YM2151_DIN,
     input           [7:0] YM2151_DOUT,
     input           [7:0] OKI_DOUT,
-    output reg            OKI_BANK,
+    output reg            OKI_BANK
 
 //    output  [15:0] TEXTROM_CPU_DIN,
 //    input   [15:0] TEXTROM_CPU_DOUT,
@@ -281,11 +281,8 @@ always @(posedge CLK96 or posedge RESET96) begin
             //pre_sel_txlinescroll <= addr_8 >= 'h403000 && addr_8 <= 'h4031FF;                  // 0x403000 - 0x4031FF // first 0x200 is linescroll
             //pre_sel_ram2 <= addr_8[23:12] == 12'b0100_0000_0011;                               // 0x403200 - 0x403FFF
 
-            //oki_bankswitch
-            pre_sel_oki_bankswitch <= addr_8[23:20] == 'h700030;                                // 0x700030 - 0x700031 (SNOWBRO2)
-
             //IO
-            sel_io <= addr_8[23:12] == 12'h700034;                                     // 0x700034 - 0x700035 (SNOWBRO2)
+            sel_io <= addr_8[23:12] == 12'b0111_0000_0000;                                     // 0x700034 - 0x700035 (SNOWBRO2)
 
         end else begin
             pre_sel_rom<=0;
@@ -320,6 +317,7 @@ always @(*) begin
     read_port_in3_r_cs = sel_io && (addr_8[11:0] == 11'h014) && RW;  // 0x700014-15 (SNOWBRO2)
     read_port_in4_r_cs = sel_io && (addr_8[11:0] == 11'h018) && RW;  // 0x700018-19 (SNOWBRO2)
     read_port_sys_r_cs = sel_io && (addr_8[11:0] == 11'h01C) && RW;  // 0x70001C-1D (SNOWBRO2)
+    pre_sel_oki_bankswitch = sel_io && (addr_8[11:0] == 11'h030);    // 0x700030-31 (SNOWBRO2)
 
     //coin
     toaplan2_coinword_w_cs = sel_io && (addr_8[11:0] == 11'h034);    // 0x700034 (SNOWBRO2)
