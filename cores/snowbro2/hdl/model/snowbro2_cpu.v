@@ -25,7 +25,6 @@ module snowbro2_cpu (
     input RESET,
     input RESET96,
     input GP9001ACK,
-    input Z80ACK,
     input VINT,
     input BR,
     input [8:0] V,
@@ -42,7 +41,6 @@ module snowbro2_cpu (
     output GP9001CS,
     output LTABLECS,
     output VCOUNTCS,
-    output Z80RST,
     output CEN16,
     output CEN16B,
 
@@ -114,22 +112,13 @@ reg dsn_dly;
 reg pre_sel_ram, pre_sel_rom, pre_sel_zrom, read_port_oki_bankswitch,
     reg_sel_ram, reg_sel_rom, reg_sel_zrom, reg_sel_oki_bankswitch;
 reg pre_sel_palram,
-    pre_sel_txvram,
-    pre_sel_txlineselect,
-    pre_sel_txlinescroll,
     pre_sel_ram2;
 reg reg_sel_palram,
-    reg_sel_txvram,
-    reg_sel_txlineselect,
-    reg_sel_txlinescroll,
     reg_sel_ram2;
-wire sel_palram, sel_txvram, sel_txlineselect, sel_txlinescroll, sel_txram;
-wire [15:0] wram_cpu_data = !RW && (sel_ram || sel_txgfxram || sel_palram || sel_txvram || sel_txlineselect || sel_txlinescroll || sel_ram2) ? cpu_dout : 16'h0000;
+wire sel_palram;
+wire [15:0] wram_cpu_data = !RW && (sel_ram || sel_txgfxram || sel_palram || sel_ram2) ? cpu_dout : 16'h0000;
 wire [15:0] main_ram_q0;
 wire [15:0] main_palram_q0;
-wire [15:0] main_txvram_q0;
-wire [15:0] main_txlineselect_q0;
-wire [15:0] main_txlinescroll_q0;
 wire [15:0] main_ram2_q0;
 
 wire [15:0] main_vram_q1;
@@ -151,9 +140,6 @@ assign LDSWn = RW | LDSn;
 assign sel_ram   = pre_sel_ram; //~BUSn & (dsn_dly ? reg_sel_ram  : pre_sel_ram);
 assign sel_rom   = ~BUSn & (dsn_dly ? reg_sel_rom : pre_sel_rom);
 assign sel_palram = pre_sel_palram;
-assign sel_txvram = pre_sel_txvram;
-assign sel_txlineselect = pre_sel_txlineselect;
-assign sel_txlinescroll = pre_sel_txlinescroll;
 assign sel_ram2 = pre_sel_ram2;
 assign CPU_PRG_CS = sel_rom;
 
@@ -175,9 +161,6 @@ always @(posedge CLK96, posedge RESET96) begin
         reg_sel_ram  <= 0;
         reg_sel_oki_bankswitch <= 0;
         reg_sel_palram <= 0;
-        reg_sel_txvram <= 0;
-        reg_sel_txlineselect <= 0;
-        reg_sel_txlinescroll <= 0;
         reg_sel_ram2 <= 0;
         dsn_dly  <= 1;
     end else if(CEN16) begin
@@ -185,9 +168,6 @@ always @(posedge CLK96, posedge RESET96) begin
         reg_sel_ram  <= pre_sel_ram;
         reg_sel_oki_bankswitch <= read_port_oki_bankswitch;
         reg_sel_palram <= pre_sel_palram;
-        reg_sel_txvram <= pre_sel_txvram;
-        reg_sel_txlineselect <= pre_sel_txlineselect;
-        reg_sel_txlinescroll <= pre_sel_txlineselect;
         reg_sel_ram2 <= pre_sel_ram2;
         dsn_dly     <= &{UDSWn,LDSWn}; // low if any DSWn was low
     end
@@ -196,11 +176,8 @@ end
 wire FC0, FC1, FC2;
 wire VPAn = ~&{ FC0, FC1, FC2, ~ASn};
 wire BRn, BGACKn, BGn, DTACKn;
-wire bus_cs = |{ pre_sel_rom, pre_sel_ram, pre_sel_palram, pre_sel_txvram || pre_sel_txlineselect,
-                 pre_sel_txlinescroll, pre_sel_ram2, sel_gp9001, sel_io};
-wire bus_busy = |{ (sel_ram || sel_palram || sel_txgfxram ||
-                    sel_txvram || sel_txlineselect || 
-                    sel_txlinescroll || sel_ram2) & ~ram_ok, sel_rom & ~CPU_PRG_OK, sel_gp9001 & ~GP9001ACK};
+wire bus_cs = |{ pre_sel_rom, pre_sel_ram, pre_sel_palram || pre_sel_ram2, sel_gp9001, sel_io};
+wire bus_busy = |{ (sel_ram || sel_palram || sel_ram2) & ~ram_ok, sel_rom & ~CPU_PRG_OK, sel_gp9001 & ~GP9001ACK};
 
 //i/o bus ports
 reg gp9001_vdp_device_r_cs,
@@ -231,9 +208,6 @@ always @(posedge CLK96 or posedge RESET96) begin
         pre_sel_ram<=0;
         read_port_oki_bankswitch<=0;
         pre_sel_palram<=0;
-        pre_sel_txvram<=0;
-        pre_sel_txlineselect<=0;
-        pre_sel_txlinescroll<=0;
         pre_sel_ram2<=0;
         sel_gp9001<=0;
         sel_io<=0;
@@ -270,9 +244,6 @@ always @(posedge CLK96 or posedge RESET96) begin
             pre_sel_ram<=0;
             read_port_oki_bankswitch<=0;
             pre_sel_palram<=0;
-            pre_sel_txvram<=0;
-            pre_sel_txlineselect<=0;
-            pre_sel_txlinescroll<=0;
             pre_sel_ram2<=0;
             sel_gp9001<=0;
             sel_io<=0;

@@ -370,7 +370,7 @@ raizing_video u_video(
     .FLIP(FLIP)
 );
 
-wire ym2151_cen, ym2151_cen2, oki_cen, z80_cen;
+wire ym2151_cen, ym2151_cen2, oki_cen;
 assign ym2151_cen = GAME == SNOWBRO2 ? CEN3p375 :
                     CEN3p375;
 assign ym2151_cen2 = GAME == SNOWBRO2 ? CEN1p6875 :
