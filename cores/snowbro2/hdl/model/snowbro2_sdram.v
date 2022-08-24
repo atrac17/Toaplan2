@@ -102,16 +102,6 @@ module snowbro2_sdram #(
     input  [19:0] PCM_ADDR,
     output [7:0]  PCM_DOUT,
 
-    //Text ROM
-//    input  [13:0] TEXTROM_ADDR,
-//    output [15:0] TEXTROM_DOUT,
-
-    //textrom cpu accesses
-//    input  [15:0] TEXTROM_CPU_DIN,
-//    output [15:0] TEXTROM_CPU_DOUT,
-//    input  [1:0]  TEXTROM_CPU_WE,
-//    input  [13:0] TEXTROM_CPU_ADDR,
-
     output reg [7:0] GAME
 );
 
@@ -282,21 +272,5 @@ jtframe_rom_4slots #(
     .data_rdy    (BA_RDY[1]),
     .data_read   (DATA_READ)
 );
-
-//TEXT ROM
-//jtframe_dual_ram16 #(.aw(14)) u_textrom(
-//    .clk0(CLK),
-//    .clk1(CLK),
-//    // CPU access
-//    .data0(TEXTROM_CPU_DIN),
-//    .addr0(TEXTROM_CPU_ADDR),
-//    .we0(TEXTROM_CPU_WE),
-//    .q0(TEXTROM_CPU_DOUT),
-//    // Port 1
-//    .data1(16'd0),
-//    .addr1(TEXTROM_ADDR),
-//    .we1(2'b00),
-//    .q1(TEXTROM_DOUT)
-//);
 
 endmodule

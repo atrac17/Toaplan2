@@ -4,7 +4,7 @@ FPGA compatible core of Toaplan Version 2 arcade hardware for [**MiSTerFPGA**](h
 
 FPGA implementation will reference Knuckle Bash (TP-023) schematics and will be verified against Dogyūn!! (TP-022), Knuckle Bash (TP-023), Tatsujin Ō (TP-024), FixEight (TP-026) and Batsugun (TP-030).
 
-The intent is for this core to be a 1:1 playable implementation of Toaplan V2 hardware. Currently in alpha state, this core is in active development by [**atrac17**](https://github.com/atrac17) and [**Darren Olafson**](https://twitter.com/Darren__O) (Time Permitting).
+The intent is for this core to be a 1:1 playable implementation of Toaplan V2 hardware. Currently in alpha state, this core is in active development by [**atrac17**](https://github.com/atrac17) with assistance from [**Darren Olafson**](https://twitter.com/Darren__O) **(Time Permitting)**.
 
 **The development process for this core will take time, understand that we have other obligations and active projects outside of the Toaplan V2 hardware.**
 
@@ -23,7 +23,7 @@ The intent is for this core to be a 1:1 playable implementation of Toaplan V2 ha
 | [**FixEight**](https://en.wikipedia.org/wiki/FixEight)                               | TP-026 | NEC V25  | Audio & I/O | Pending         | No      |
 | [**V-V**](https://en.wikipedia.org/wiki/Grind_Stormer)                               | TP-027 | NEC V25  | Audio       | Pending         | No      |
 | [**Batsugun**](https://en.wikipedia.org/wiki/Batsugun)                               | TP-030 | NEC V25  | Audio       | Pending         | No      |
-| [**Otenki Paradise**](https://en.wikipedia.org/wiki/Snow_Bros._2:_With_New_Elves)    | TP-033 | None     | N/A         | **W.I.P**       | No      |
+| [**Otenki Paradise**](https://en.wikipedia.org/wiki/Snow_Bros._2:_With_New_Elves)    | TP-033 | **None** | **N/A**     | **Implemented** | **No**  |
 
 ## External Modules
 
@@ -33,13 +33,15 @@ The intent is for this core to be a 1:1 playable implementation of Toaplan V2 ha
 | [**t80**](https://opencores.org/projects/t80)                 | [**Zilog Z80 CPU**](https://en.wikipedia.org/wiki/Zilog_Z80)                 | Daniel Wallner                             |
 | [**jt51**](https://github.com/jotego/jt51)                    | [**Yamaha YM2151**](https://en.wikipedia.org/wiki/Yamaha_YM2151)             | Jose Tejada                                |
 | [**jt6295**](https://github.com/jotego/jt6295)                | [**OKI MSM6295**](https://dtsheet.com/doc/957023/oki-m6295)                  | Jose Tejada                                |
-| [**jtframe**](https://github.com/jotego/jtframe)              | [**FPGA Framework**](https://github.com/jotego/jtframe)                      | Jose Tejada, modified by Pramod Somashekar |
+| [**jtopl2**](https://github.com/jotego/jtopl)                 | [**Yamaha OPL 2**](https://en.wikipedia.org/wiki/Yamaha_OPL#OPL2)            | Jose Tejada                                |
+| [**jtframe**](https://github.com/jotego/jtframe)              | [**FPGA Framework**](https://github.com/jotego/jtframe)                      | Jose Tejada; modified by Pramod Somashekar |
 | [**GP9001**](https://gamerepair.info/parts/77_toaplan_gp9001) | [**Toaplan Graphics ASIC**](https://gamerepair.info/parts/77_toaplan_gp9001) | Pramod Somashekar                          |
 
 # Known Issues / Tasks
 
 - Reference TP-023 schematics and compare variations with TP-024 PCB  
 - Verify clock domains for TP-024  
+- Audio drift; occurs on TP-024 and TP-033 (Reference clk implementation)  
 - ~~Sprite flicker on left side TP-024~~  <br><br>
 - **Please do not report issues at this time, this FPGA implementation is in an alpha state.**  
 
@@ -55,8 +57,11 @@ H-Sync | V-Sync | Source | Title |
 
 Location | Freq (MHz) | Use   | PCB Number     |
 ---------|------------|-------|----------------|
- X1      | 16.000 MHz | M68000 / OKI MSM6295   | TP-024 |
- X2      | 27.000 MHz | GP9001 / YM2151        | TP-024 |
+ X1      | 16.000 MHz | M68000 / OKI MSM6295   | **TP-024** |
+ X1      | 27.000 MHz | GP9001 / YM2151        | **TP-033** |
+ X2      | 27.000 MHz | GP9001 / YM2151        | **TP-024** |
+ X2      | 16.000 MHz | M68000 / OKI MSM6295   | **TP-033** |
+ X3      | 32.000 MHz | Not Utilized on TP-033 | **TP-033** |
 
 **Pixel clock:** 6.75 MHz
 
@@ -70,21 +75,25 @@ Location | Freq (MHz) | Use   | PCB Number     |
 
 Location | Chip | Use | PCB Number |
 ---------|------|-----|-----|
-3-4 A-D | [**Motorola 68000 CPU**](https://en.wikipedia.org/wiki/Motorola_68000)     | Main CPU    | TP-024 |
-U 53    | [**Yamaha YM2151**](https://en.wikipedia.org/wiki/Yamaha_YM2151)           | OPM Sound   | TP-024 |
-U 20    | [**OKI MSM6295**](https://dtsheet.com/doc/957023/oki-m6295)                | ADPCM Sound | TP-024 |
+U 90 | [**Motorola 68000 CPU**](https://en.wikipedia.org/wiki/Motorola_68000)     | Main CPU    | **TP-024** |
+U 57 | [**Motorola 68000 CPU**](https://en.wikipedia.org/wiki/Motorola_68000)     | Main CPU    | **TP-033** |
+U 53 | [**Yamaha YM2151**](https://en.wikipedia.org/wiki/Yamaha_YM2151)           | OPM Sound   | **TP-024** |
+U 29 | [**Yamaha YM2151**](https://en.wikipedia.org/wiki/Yamaha_YM2151)           | OPM Sound   | **TP-033** |
+U 20 | [**OKI MSM6295**](https://dtsheet.com/doc/957023/oki-m6295)                | ADPCM Sound | **TP-024** |
+U 30 | [**OKI MSM6295**](https://dtsheet.com/doc/957023/oki-m6295)                | ADPCM Sound | **TP-033** |
 
 ### Custom Components (Board Dependent)
 
 Location | Chip | Use | PCB Number |
 ---------|------|-----|-----|
 U 67     | **GP9001** | Graphics VDP | TP-024 |
+U 18     | **GP9001** | Graphics VDP | TP-033 |
 
 ### Additional Components (Board Dependent)
 
 Location | Chip | Use | PCB Number |
 ---------|------|-----|-----|
-N/A | [**Zilog Z80 CPU**](https://en.wikipedia.org/wiki/Zilog_Z80)           | Sound CPU |
+N/A | [**Zilog Z80 CPU**](https://en.wikipedia.org/wiki/Zilog_Z80)           | Sound CPU                |
 N/A | [**NEC V25**](https://en.wikipedia.org/wiki/NEC_V25)                   | Sound CPU & I/O Handling |
 N/A | [**HD647180X**](https://en.wikipedia.org/wiki/Zilog_Z180)              | Sound CPU & I/O Handling |
 
@@ -98,7 +107,7 @@ N/A | [**HD647180X**](https://en.wikipedia.org/wiki/Zilog_Z180)              | S
 
 ### Keyboard Handler
 
-- Keyboard inputs mapped to mame defaults for all functions.
+- Keyboard inputs mapped to mame defaults for all functions up to the third player which is not listed below.
 
 |Services|Coin/Start|
 |--|--|
@@ -111,6 +120,7 @@ N/A | [**HD647180X**](https://en.wikipedia.org/wiki/Zilog_Z180)              | S
 # Acknowledgments
 
 [**Pramod Somashekar**](https://github.com/MiSTer-devel/Arcade-Raizing_MiSTer) for his extensive work on the GP9001, Raizing FPGA implementation, general knowledge, and assistance with implementing Tatsujin Ō.<br><br>
+[**Jose Tejada**](https://github.com/MiSTer-devel/Arcade-Raizing_MiSTer) for his extensive work on FPGA modules utilized in this implementation, general knowledge, and assistance over the last two years.<br><br>
 [**@90s_cyber_thriller**](https://www.instagram.com/90s_cyber_thriller/) for loaning all Toaplan V2 hardware used in the development process.
 
 # Support

@@ -70,10 +70,10 @@ jtframe_cendiv u_cen_3375 (
     .cen_da(CEN3p375)
 );
 
+// ym2151 3.375mhz (SNOWBRO2)
 jtframe_cendiv u_cen_16875 (
     .clk(CLK96),
     .cen_in(CEN3p375),
     .cen_da(CEN1p6875)
 );
-
 endmodule
