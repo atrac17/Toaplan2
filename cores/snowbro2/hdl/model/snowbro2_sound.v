@@ -31,7 +31,7 @@ module snowbro2_sound (
     output               PCM_CS,
     input                PCM_OK,
     output        [19:0] PCM_ADDR,
-    input         [ 7:0]  PCM_DOUT,
+    input         [ 7:0] PCM_DOUT,
     output signed [15:0] left,
     output signed [15:0] right,
     output               sample,

@@ -109,8 +109,7 @@ wire sel_ram, sel_txgfxram, sel_rom, sel_ram2;
 reg ram_ok = 1'b1;
 reg sel_gp9001, sel_io;
 reg dsn_dly;
-reg pre_sel_ram, pre_sel_rom, pre_sel_zrom, read_port_oki_bankswitch,
-    reg_sel_ram, reg_sel_rom, reg_sel_zrom, reg_sel_oki_bankswitch;
+reg pre_sel_ram, pre_sel_rom, reg_sel_ram, reg_sel_rom, reg_sel_oki_bankswitch;
 reg pre_sel_palram,
     pre_sel_ram2;
 reg reg_sel_palram,
@@ -154,6 +153,7 @@ assign YM2151_WR_CMD = YM2151_CS && !RW && addr_8[7:0] == 'h00 ? 0 : //select re
 assign OKI_WE = ~(OKI_CS && !RW);
 assign OKI_DIN = cpu_dout[7:0];
 assign YM2151_DIN = cpu_dout[7:0];
+reg read_port_oki_bankswitch;
 
 always @(posedge CLK96, posedge RESET96) begin
     if( RESET96 ) begin
@@ -206,7 +206,6 @@ always @(posedge CLK96 or posedge RESET96) begin
     if(RESET96) begin
         pre_sel_rom<=0;
         pre_sel_ram<=0;
-        read_port_oki_bankswitch<=0;
         pre_sel_palram<=0;
         pre_sel_ram2<=0;
         sel_gp9001<=0;
@@ -242,7 +241,6 @@ always @(posedge CLK96 or posedge RESET96) begin
         end else begin
             pre_sel_rom<=0;
             pre_sel_ram<=0;
-            read_port_oki_bankswitch<=0;
             pre_sel_palram<=0;
             pre_sel_ram2<=0;
             sel_gp9001<=0;
@@ -257,16 +255,16 @@ always @(*) begin
     gp9001_vdp_device_r_cs = sel_gp9001 && RW;                       // 0x300000-D Read (SNOWBRO2)
     gp9001_vdp_device_w_cs = sel_gp9001 && !RW;                      // 0x300000-D Write (SNOWBRO2)
 
-    //dips, controls
-    read_port_dswa_r_cs = sel_io && (addr_8[11:0] == 11'h004) && RW; // 0x700004-05 (SNOWBRO2)
-    read_port_dswb_r_cs = sel_io && (addr_8[11:0] == 11'h008) && RW; // 0x700008-09 (SNOWBRO2)
-    read_port_jmpr_r_cs = sel_io && (addr_8[11:0] == 11'h000) && RW; // 0x700000-01 (SNOWBRO2)
-    read_port_in1_r_cs = sel_io && (addr_8[11:0] == 11'h00C) && RW;  // 0x70000C-0D (SNOWBRO2)
-    read_port_in2_r_cs = sel_io && (addr_8[11:0] == 11'h010) && RW;  // 0x700010-11 (SNOWBRO2)
-    read_port_in3_r_cs = sel_io && (addr_8[11:0] == 11'h014) && RW;  // 0x700014-15 (SNOWBRO2)
-    read_port_in4_r_cs = sel_io && (addr_8[11:0] == 11'h018) && RW;  // 0x700018-19 (SNOWBRO2)
-    read_port_sys_r_cs = sel_io && (addr_8[11:0] == 11'h01C) && RW;  // 0x70001C-1D (SNOWBRO2)
-    read_port_oki_bankswitch <= sel_io && (addr_8[11:0] == 11'h030); // 0x700030-31 (SNOWBRO2)
+    //dips, controls, oki banking
+    read_port_dswa_r_cs = sel_io && (addr_8[11:0] == 11'h004) && RW;       // 0x700004-05 (SNOWBRO2)
+    read_port_dswb_r_cs = sel_io && (addr_8[11:0] == 11'h008) && RW;       // 0x700008-09 (SNOWBRO2)
+    read_port_jmpr_r_cs = sel_io && (addr_8[11:0] == 11'h000) && RW;       // 0x700000-01 (SNOWBRO2)
+    read_port_in1_r_cs = sel_io && (addr_8[11:0] == 11'h00C) && RW;        // 0x70000C-0D (SNOWBRO2)
+    read_port_in2_r_cs = sel_io && (addr_8[11:0] == 11'h010) && RW;        // 0x700010-11 (SNOWBRO2)
+    read_port_in3_r_cs = sel_io && (addr_8[11:0] == 11'h014) && RW;        // 0x700014-15 (SNOWBRO2)
+    read_port_in4_r_cs = sel_io && (addr_8[11:0] == 11'h018) && RW;        // 0x700018-19 (SNOWBRO2)
+    read_port_sys_r_cs = sel_io && (addr_8[11:0] == 11'h01C) && RW;        // 0x70001C-1D (SNOWBRO2)
+    read_port_oki_bankswitch = sel_io && (addr_8[11:0] == 11'h030) && RW; // 0x700030-31 (SNOWBRO2)
 
     //coin
     toaplan2_coinword_w_cs = sel_io && (addr_8[11:0] == 11'h034);    // 0x700034 (SNOWBRO2)

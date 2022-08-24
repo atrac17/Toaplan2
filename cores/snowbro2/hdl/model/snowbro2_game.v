@@ -117,25 +117,17 @@ wire FLIP = GAME==DEFAULT  ? dipsw[1]:  // Placeholder
 // assign game_led = downloading ? 1'b0 : 1'b1;
 
 /*CLOCKS*/
-//wire CEN675, CEN675B, CEN4, CEN2, CEN2B, CEN4B, CEN1350, CEN1350B;
-//wire CEN3p375, CEN3p375B, CEN1, CENp7575, CEN1B, CEN1p6875, CEN1p6875B;
-
-wire CEN675, CEN675B, CEN4, CEN4B, CEN1350, CEN1350B;
+wire CEN675, CEN675B, CEN2p7, CEN2p7B, CEN1350, CEN1350B;
 wire CEN3p375, CEN3p375B, CEN1p6875, CEN1p6875B;
 snowbro2_clock u_clocken (
     .CLK(CLK),
     .CLK96(CLK96),
     .CEN675(CEN675),
     .CEN675B(CEN675B),
-    .CEN4(CEN4),
-    .CEN4B(CEN4B),
-    //.CEN2(CEN2),
-    //.CEN2B(CEN2B),
+    .CEN2p7(CEN2p7),
+    .CEN2p7B(CEN2p7B),
     .CEN3p375(CEN3p375),
     .CEN3p375B(CEN3p375B),
-    //.CEN1(CEN1),
-    //.CENp7575(CENp7575),
-    //.CEN1B(CEN1B),
     .CEN1p6875(CEN1p6875),
     .CEN1p6875B(CEN1p6875B),
     .CEN1350(CEN1350),
@@ -375,8 +367,8 @@ assign ym2151_cen = GAME == SNOWBRO2 ? CEN3p375 :
                     CEN3p375;
 assign ym2151_cen2 = GAME == SNOWBRO2 ? CEN1p6875 :
                      CEN1p6875;
-assign oki_cen = GAME == SNOWBRO2 ? CEN4 :
-                 CEN4;
+assign oki_cen = GAME == SNOWBRO2 ? CEN2p7 :
+                 CEN2p7;
 
 snowbro2_sound u_sound(
     .CLK(CLK),
