@@ -111,7 +111,7 @@ wire sel_ram, sel_txgfxram, sel_rom, sel_ram2;
 reg ram_ok = 1'b1;
 reg sel_gp9001, sel_io;
 reg dsn_dly;
-reg pre_sel_ram, pre_sel_rom, pre_sel_zrom, pre_sel_oki_bankswitch,
+reg pre_sel_ram, pre_sel_rom, pre_sel_zrom, read_port_oki_bankswitch,
     reg_sel_ram, reg_sel_rom, reg_sel_zrom, reg_sel_oki_bankswitch;
 reg pre_sel_palram,
     pre_sel_txvram,
@@ -183,7 +183,7 @@ always @(posedge CLK96, posedge RESET96) begin
     end else if(CEN16) begin
         reg_sel_rom <= pre_sel_rom;
         reg_sel_ram  <= pre_sel_ram;
-        reg_sel_oki_bankswitch <= pre_sel_oki_bankswitch;
+        reg_sel_oki_bankswitch <= read_port_oki_bankswitch;
         reg_sel_palram <= pre_sel_palram;
         reg_sel_txvram <= pre_sel_txvram;
         reg_sel_txlineselect <= pre_sel_txlineselect;
@@ -196,7 +196,7 @@ end
 wire FC0, FC1, FC2;
 wire VPAn = ~&{ FC0, FC1, FC2, ~ASn};
 wire BRn, BGACKn, BGn, DTACKn;
-wire bus_cs = |{ pre_sel_rom, pre_sel_ram, pre_sel_palram, pre_sel_txvram, pre_sel_oki_bankswitch || pre_sel_txlineselect,
+wire bus_cs = |{ pre_sel_rom, pre_sel_ram, pre_sel_palram, pre_sel_txvram || pre_sel_txlineselect,
                  pre_sel_txlinescroll, pre_sel_ram2, sel_gp9001, sel_io};
 wire bus_busy = |{ (sel_ram || sel_palram || sel_txgfxram ||
                     sel_txvram || sel_txlineselect || 
@@ -213,7 +213,6 @@ reg gp9001_vdp_device_r_cs,
     read_port_dswa_r_cs,
     read_port_dswb_r_cs,
     read_port_jmpr_r_cs,
-    read_port_oki_bankswitch,
     toaplan2_coinword_w_cs,
     soundlatch_w,
     video_count_r_cs;
@@ -230,7 +229,7 @@ always @(posedge CLK96 or posedge RESET96) begin
     if(RESET96) begin
         pre_sel_rom<=0;
         pre_sel_ram<=0;
-        pre_sel_oki_bankswitch<=0;
+        read_port_oki_bankswitch<=0;
         pre_sel_palram<=0;
         pre_sel_txvram<=0;
         pre_sel_txlineselect<=0;
@@ -269,7 +268,7 @@ always @(posedge CLK96 or posedge RESET96) begin
         end else begin
             pre_sel_rom<=0;
             pre_sel_ram<=0;
-            pre_sel_oki_bankswitch<=0;
+            read_port_oki_bankswitch<=0;
             pre_sel_palram<=0;
             pre_sel_txvram<=0;
             pre_sel_txlineselect<=0;
@@ -361,8 +360,7 @@ always @(posedge CLK96) begin
         OKI_BANK<=0;
     end else begin
         if(GAME == DEFAULT && toaplan2_coinword_w_cs && !RW) begin
-            OKI_BANK <= cpu_dout[7:0];
-            OKI_BANK <= cpu_dout[4];
+            OKI_BANK <= cpu_dout[0];
         end
         else if(gp9001_vdp_device_r_cs) begin
             case(addr_8[3:0])
