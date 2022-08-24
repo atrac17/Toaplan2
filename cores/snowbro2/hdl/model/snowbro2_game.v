@@ -104,7 +104,7 @@ module snowbro2_game(
 );
 
 /*MAIN GLOBALS*/
-localparam DEFAULT = 0, SNOWBRO2 = 1;
+localparam DEFAULT = 0, SNOWBRO2 = 2;
 wire RESET = rst48;
 wire CLK = clk48;
 wire CLK96 = clk;

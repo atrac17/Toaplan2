@@ -73,10 +73,10 @@ function mra {
         -frac 1 gp9001_0 2           \
         -order-roms gp9001_0 0 2 1 3 \
         -dipdef $DIP                 \
-        -corebuttons 2               \
+        -corebuttons 3               \
         -buttons $BUTSTR
 }
 
-mra  snowbro2 "Snow Bros. 2 - With New Elves"  "Shot,Jump" "00,00,00"
+mra  snowbro2 "Snow Bros. 2 - With New Elves"  "Shot,Jump,Start 3/4" "00,00,00"
 
 exit 0

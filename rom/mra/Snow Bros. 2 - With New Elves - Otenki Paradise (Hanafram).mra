@@ -54,5 +54,5 @@
         <!-- JMPR -->
         <dip name="Region" bits="18,20" ids="JPN,USA,EU,KOR,HK,TWN"/>
     </switches>
-    <buttons names="Shot,Jump,Start,Coin,Pause" default="Y,X,R,L,Start" count="2"/>
+    <buttons names="Shot,Jump,Start 3/4,Start 1/2,Coin,Pause" default="Y,X,R,L,Start" count="2"/>
 </misterromdescription>

@@ -167,7 +167,7 @@ assign LDSWn = RW | LDSn;
 // that causes a false read request to the SDRAM. In order
 // to avoid that a little bit of logic is needed:
 assign sel_ram   = pre_sel_ram; //~BUSn & (dsn_dly ? reg_sel_ram  : pre_sel_ram);
-assign read_port_oki_bankswitch = pre_sel_oki_bankswitch;
+//assign read_port_oki_bankswitch = pre_sel_oki_bankswitch;
 assign sel_rom   = ~BUSn & (dsn_dly ? reg_sel_rom : pre_sel_rom);
 assign sel_palram = pre_sel_palram;
 assign sel_txvram = pre_sel_txvram;
@@ -227,9 +227,20 @@ wire bus_busy = |{ (sel_ram || sel_palram || sel_txgfxram ||
                     sel_txlinescroll || sel_ram2) & ~ram_ok, sel_rom & ~CPU_PRG_OK, sel_gp9001 & ~GP9001ACK};
 
 //i/o bus ports
-reg gp9001_vdp_device_r_cs, gp9001_vdp_device_w_cs, read_port_in1_r_cs, read_port_in2_r_cs, read_port_in3_r_cs, read_port_in4_r_cs,
-    read_port_sys_r_cs, read_port_dswa_r_cs, read_port_dswb_r_cs, read_port_jmpr_r_cs, 
-    toaplan2_coinword_w_cs, soundlatch_w, video_count_r_cs;
+reg gp9001_vdp_device_r_cs,
+    gp9001_vdp_device_w_cs,
+    read_port_in1_r_cs,
+    read_port_in2_r_cs,
+    read_port_in3_r_cs,
+    read_port_in4_r_cs,
+    read_port_sys_r_cs,
+    read_port_dswa_r_cs,
+    read_port_dswb_r_cs,
+    read_port_jmpr_r_cs,
+    read_port_oki_bankswitch,
+    toaplan2_coinword_w_cs,
+    soundlatch_w,
+    video_count_r_cs;
 
 //debugging 
  wire debug = 1'b1;
@@ -319,7 +330,7 @@ always @(*) begin
     read_port_in3_r_cs = sel_io && (addr_8[11:0] == 11'h014) && RW;  // 0x700014-15 (SNOWBRO2)
     read_port_in4_r_cs = sel_io && (addr_8[11:0] == 11'h018) && RW;  // 0x700018-19 (SNOWBRO2)
     read_port_sys_r_cs = sel_io && (addr_8[11:0] == 11'h01C) && RW;  // 0x70001C-1D (SNOWBRO2)
-    read_port_oki_bankswitch = sel_io && (addr_8[11:0] == 11'h030);  // 0x700030-31 (SNOWBRO2)
+    read_port_oki_bankswitch <= sel_io && (addr_8[11:0] == 11'h030);  // 0x700030-31 (SNOWBRO2)
 
     //coin
     toaplan2_coinword_w_cs = sel_io && (addr_8[11:0] == 11'h034);    // 0x700034 (SNOWBRO2)
