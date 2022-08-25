@@ -22,13 +22,13 @@
 module snowbro2_clock (
     input CLK, //48mhz
     input CLK96,
-    output CEN675,
+    output reg CEN675,
     output CEN675B,
     output CEN2p7,
     output CEN2p7B,
     output reg CEN3p375,
     output CEN3p375B,
-    output CEN1p6875,
+    output reg CEN1p6875,
     output CEN1p6875B,
     output reg CEN1350,
     output CEN1350B
@@ -41,11 +41,9 @@ always @(posedge CLK96)
         { CEN1350, vid_counter } <= vid_counter + 32'd603979776;
 
 // 6.75mhz for GP9001, half clocked
-jtframe_cendiv u_cen_675 (
-    .clk(CLK96),
-    .cen_in(CEN1350),
-    .cen_da(CEN675)
-);
+reg [31:0] vid2_counter;
+always @(posedge CLK96)
+       { CEN675, vid2_counter } <= vid2_counter + 32'd301989888;
 
 //Audio
 // 3.375mhz for ym2151 (SNOWBRO2)
@@ -54,11 +52,9 @@ always @(posedge CLK96)
         { CEN3p375, aud_counter } <= aud_counter + 32'd150994946;
 
 // ym2151 3.375mhz, half clock for audio pause (SNOWBRO2)
-jtframe_cendiv u_cen_16875 (
-    .clk(CLK96),
-    .cen_in(CEN3p375),
-    .cen_da(CEN1p6875)
-);
+reg [31:0] aud2_counter;
+always @(posedge CLK96)
+        { CEN1p6875, aud2_counter } <= aud2_counter + 32'd75497472;
 
 // 2.7mhz oki (SNOWBRO2)
 // 96*(9/320) == 2.7
