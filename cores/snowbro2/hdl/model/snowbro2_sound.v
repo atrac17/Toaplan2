@@ -72,8 +72,8 @@ wire [17:0] oki0_pcm_addr;
 `endif
 
 wire [7:0]
-fmgain = GAME == SNOWBRO2 ? 8'h10 :
-         8'h10,
+fmgain = GAME == SNOWBRO2 ? 8'h08 :
+         8'h08,
 pcmgain = GAME == SNOWBRO2 ? 8'h10 :
           8'h10;
 
@@ -136,8 +136,8 @@ jt6295 #(.INTERPOL(1)) u_adpcm_0(
 jt51 u_jt51(
     .rst        ( RESET96                   ),   // reset
     .clk        ( CLK96                     ),   // main clock
-    .cen        ( YM2151_CEN & DIP_PAUSE    ),   // 4mhz
-    .cen_p1     ( YM2151_CEN2 & DIP_PAUSE   ),   // 2mhz, half clock
+    .cen        ( YM2151_CEN & DIP_PAUSE    ),   // 3.375mhz
+    .cen_p1     ( YM2151_CEN2 & DIP_PAUSE   ),   // 1.6875mhz, half clock
     .cs_n       ( ~YM2151_CS | YM2151_WE    ),   // chip select
     .wr_n       ( YM2151_WE                 ),   // write
     .a0         ( YM2151_WR_CMD             ),
@@ -148,11 +148,11 @@ jt51 u_jt51(
     .irq_n      ( YM2151_INT                ),   // I do not synchronize this signal
     // Low resolution output (same as real chip)
     .sample     ( sample                    ),   // marks new output sample
-    .left       (                           ),
-    .right      (                           ),
+    .left       ( fm_left                   ),
+    .right      ( fm_right                  ),
     // Full resolution output
-    .xleft      ( fm_left                   ),
-    .xright     ( fm_right                  ),
+    .xleft      (                           ),
+    .xright     (                           ),
     // unsigned outputs for sigma delta converters, full resolution
     .dacleft    (                           ),
     .dacright   (                           )
