@@ -110,7 +110,7 @@ wire sel_ram, sel_txgfxram, sel_rom, sel_ram2;
 reg ram_ok = 1'b1;
 reg sel_gp9001, sel_io;
 reg dsn_dly;
-reg pre_sel_ram, pre_sel_rom, reg_sel_ram, reg_sel_rom, reg_sel_oki_bankswitch;
+reg pre_sel_ram, pre_sel_rom, reg_sel_ram, reg_sel_rom;
 reg pre_sel_palram,
     pre_sel_ram2;
 reg reg_sel_palram,
@@ -154,20 +154,18 @@ assign YM2151_WR_CMD = YM2151_CS && !RW && addr_8[7:0] == 'h00 ? 0 : //select re
 assign OKI_WE = ~(OKI_CS && !RW);
 assign OKI_DIN = cpu_dout[7:0];
 assign YM2151_DIN = cpu_dout[7:0];
-reg read_port_oki_bankswitch;
+reg oki_bankswitch;
 
 always @(posedge CLK96, posedge RESET96) begin
     if( RESET96 ) begin
         reg_sel_rom <= 0;
         reg_sel_ram  <= 0;
-        reg_sel_oki_bankswitch <= 0;
         reg_sel_palram <= 0;
         reg_sel_ram2 <= 0;
         dsn_dly  <= 1;
     end else if(CEN16) begin
         reg_sel_rom <= pre_sel_rom;
         reg_sel_ram  <= pre_sel_ram;
-        reg_sel_oki_bankswitch <= read_port_oki_bankswitch;
         reg_sel_palram <= pre_sel_palram;
         reg_sel_ram2 <= pre_sel_ram2;
         dsn_dly     <= &{UDSWn,LDSWn}; // low if any DSWn was low
@@ -265,7 +263,7 @@ always @(*) begin
     read_port_in3_r_cs = sel_io && (addr_8[11:0] == 11'h014) && RW;        // 0x700014-15 (SNOWBRO2)
     read_port_in4_r_cs = sel_io && (addr_8[11:0] == 11'h018) && RW;        // 0x700018-19 (SNOWBRO2)
     read_port_sys_r_cs = sel_io && (addr_8[11:0] == 11'h01C) && RW;        // 0x70001C-1D (SNOWBRO2)
-    read_port_oki_bankswitch = sel_io && (addr_8[11:0] == 11'h030) && !RW; // 0x700030-31 (SNOWBRO2)
+    
 
     //coin
     toaplan2_coinword_w_cs = sel_io && (addr_8[11:0] == 11'h034);    // 0x700034 (SNOWBRO2)
@@ -273,6 +271,7 @@ always @(*) begin
     //sound
     sel_ym2151 <= (addr_8[23:8] == 'h5000);                          // 0x500000-03 (SNOWBRO2)
     sel_oki <= (addr_8[23:8] == 'h6000);                             // 0x600001-01 (SNOWBRO2)
+    oki_bankswitch = sel_io && (addr_8[11:0] == 11'h030) && !LDSn && !RW; // 0x700031 (SNOWBRO2)
 end
 
 wire [15:0] video_status_hs = (16'hFF00 & (!HSYNC ? ~16'h8000 : 16'hFFFF));
@@ -329,7 +328,7 @@ always @(posedge CLK96) begin
         GP9001_OP_SET_RAM_PTR <= 1'b0;
         OKI_BANK<=0;
     end else begin
-        if(GAME == DEFAULT && toaplan2_coinword_w_cs && !RW) begin
+        if(oki_bankswitch && !RW) begin
             OKI_BANK <= cpu_dout[0];
         end
         else if(gp9001_vdp_device_r_cs) begin
