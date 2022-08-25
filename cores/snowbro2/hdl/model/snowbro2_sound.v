@@ -111,8 +111,7 @@ jtframe_mixer #(.W0(16), .W1(14), .W2(16), .WOUT(16)) u_mix_left(
     .peak   ( peak_l      )
 );
 
-assign PCM_ADDR = GAME == SNOWBRO2 ? (OKI_BANK * 'h40000) +  (oki0_pcm_addr & 'h3FFFF) :
-                  (oki0_pcm_addr & 'h3FFFF);
+assign PCM_ADDR = GAME == SNOWBRO2 ? { OKI_BANK , oki0_pcm_addr[17:0] } :  oki0_pcm_addr[17:0];
 
 assign PCM_CS = 1'b1;
 
@@ -146,7 +145,7 @@ jt51 u_jt51(
     .dout       ( YM2151_DOUT               ),   // data out
     .ct1        (                           ),
     .ct2        (                           ),
-    .irq_n      (                           ),   // I do not synchronize this signal
+    .irq_n      ( YM2151_INT                ),   // I do not synchronize this signal
     // Low resolution output (same as real chip)
     .sample     ( sample                    ),   // marks new output sample
     .left       (                           ),
