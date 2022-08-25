@@ -296,7 +296,8 @@ snowbro2_cpu u_cpu (
     .OKI_DIN(OKI_DIN),
     .YM2151_DIN(YM2151_DIN),
     .YM2151_DOUT(YM2151_DOUT),
-    .OKI_DOUT(OKI_DOUT)
+    .OKI_DOUT(OKI_DOUT),
+    .OKI_BANK(OKI_BANK)
 );
 
 raizing_video u_video(
@@ -398,7 +399,8 @@ snowbro2_sound u_sound(
     .OKI_DOUT(OKI_DOUT),
     .GAME(GAME),
     .FX_LEVEL(dip_fxlevel),
-    .DIP_PAUSE(DIP_PAUSE)
+    .DIP_PAUSE(DIP_PAUSE),
+    .OKI_BANK(OKI_BANK)
 );
 
 //sdram
