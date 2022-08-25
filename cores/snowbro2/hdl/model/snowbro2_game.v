@@ -157,6 +157,7 @@ wire          [7:0] YM2151_DIN;
 wire          [7:0] YM2151_DOUT;
 wire          [7:0] OKI_DOUT;
 wire                OKI_BANK;
+wire                YM2151_INT;
 
 //PCM
 wire PCM_CS;

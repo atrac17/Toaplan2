@@ -95,6 +95,7 @@ module snowbro2_cpu (
     output          [7:0] YM2151_DIN,
     input           [7:0] YM2151_DOUT,
     input           [7:0] OKI_DOUT,
+    input                 YM2151_INT,
     output reg            OKI_BANK
 );
 
@@ -264,7 +265,7 @@ always @(*) begin
     read_port_in3_r_cs = sel_io && (addr_8[11:0] == 11'h014) && RW;        // 0x700014-15 (SNOWBRO2)
     read_port_in4_r_cs = sel_io && (addr_8[11:0] == 11'h018) && RW;        // 0x700018-19 (SNOWBRO2)
     read_port_sys_r_cs = sel_io && (addr_8[11:0] == 11'h01C) && RW;        // 0x70001C-1D (SNOWBRO2)
-    read_port_oki_bankswitch = sel_io && (addr_8[11:0] == 11'h030) && RW; // 0x700030-31 (SNOWBRO2)
+    read_port_oki_bankswitch = sel_io && (addr_8[11:0] == 11'h030) && !RW; // 0x700030-31 (SNOWBRO2)
 
     //coin
     toaplan2_coinword_w_cs = sel_io && (addr_8[11:0] == 11'h034);    // 0x700034 (SNOWBRO2)
@@ -450,7 +451,7 @@ fx68k u_011 (
 
     .DTACKn     (DTACKn),
     .IPL0n      (1'b1),
-    .IPL1n      (1'b1),
+    .IPL1n      (YM2151_INT),
     .IPL2n      (int1),
 
     // Unused

@@ -45,6 +45,7 @@ module snowbro2_sound (
     input          [7:0] OKI_DIN,
     input          [7:0] YM2151_DIN,
     output         [7:0] YM2151_DOUT,
+    output               YM2151_INT,
     output         [7:0] OKI_DOUT,
 
     input                OKI_BANK,
