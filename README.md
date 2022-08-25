@@ -12,18 +12,18 @@ The intent is for this core to be a 1:1 playable implementation of Toaplan V2 ha
 
 ## Supported Games
 
-| Title | PCB Number | Protection | MCU Usage | Status  | Released |
-|-------|------------|------------|-----------|---------|----------|
-| [**Teki Paki**](https://en.wikipedia.org/wiki/Teki_Paki)                             | TP-020 | HD647180 | Audio       | Pending         | No      |
-| [**Ghox**](https://en.wikipedia.org/wiki/Ghox)                                       | TP-021 | HD647180 | Audio & I/O | Pending         | No      |
-| [**Dogyūn!!**](https://en.wikipedia.org/wiki/Dogyuun)                                | TP-022 | NEC V25  | Audio       | Pending         | No      |
-| [**Knuckle Bash**](https://en.wikipedia.org/wiki/Knuckle_Bash)                       | TP-023 | NEC V25  | Audio       | Pending         | No      |
-| [**Tatsujin Ō**](https://en.wikipedia.org/wiki/Truxton_II)                           | TP-024 | **None** | **N/A**     | **Implemented** | **Yes** |
-| [**Whoopee!!**](https://en.wikipedia.org/wiki/Pipi_%26_Bibi's)                       | TP-025 | None     | N/A         | **W.I.P**       | No      |
-| [**FixEight**](https://en.wikipedia.org/wiki/FixEight)                               | TP-026 | NEC V25  | Audio & I/O | Pending         | No      |
-| [**V-V**](https://en.wikipedia.org/wiki/Grind_Stormer)                               | TP-027 | NEC V25  | Audio       | Pending         | No      |
-| [**Batsugun**](https://en.wikipedia.org/wiki/Batsugun)                               | TP-030 | NEC V25  | Audio       | Pending         | No      |
-| [**Otenki Paradise**](https://en.wikipedia.org/wiki/Snow_Bros._2:_With_New_Elves)    | TP-033 | **None** | **N/A**     | **Implemented** | **No**  |
+| Title | PCB Number | Encrypted<br>Program | MCU | MCU Usage | Status  | Released |
+|-------|------------|----------------------|-----|-----------|---------|----------|
+| [**Teki Paki**](https://en.wikipedia.org/wiki/Teki_Paki)                                           | TP-020 | No  | HD647180 | Audio       | Pending         | No      |
+| [**Ghox**](https://en.wikipedia.org/wiki/Ghox)                                                     | TP-021 | No  | HD647180 | Audio & I/O | Pending         | No      |
+| [**Dogyūn!!**](https://en.wikipedia.org/wiki/Dogyuun)                                              | TP-022 | Yes | NEC V25  | Audio       | Pending         | No      |
+| [**Knuckle Bash**](https://en.wikipedia.org/wiki/Knuckle_Bash)                                     | TP-023 | Yes | NEC V25  | Audio       | Pending         | No      |
+| [**Tatsujin Ō**](https://en.wikipedia.org/wiki/Truxton_II)                                         | TP-024 | No  | None     | N/A         | Implemented     | Yes     |
+| [**Whoopee!!**](https://en.wikipedia.org/wiki/Pipi_%26_Bibi's)                                     | TP-025 | No  | None     | N/A         | W.I.P           | No      |
+| [**FixEight**](https://en.wikipedia.org/wiki/FixEight)                                             | TP-026 | No  | NEC V25  | Audio & I/O | Pending         | No      |
+| [**V-V**](https://en.wikipedia.org/wiki/Grind_Stormer)                                             | TP-027 | Yes | NEC V25  | Audio       | Pending         | No      |
+| [**Batsugun**](https://en.wikipedia.org/wiki/Batsugun)                                             | TP-030 | No  | NEC V25  | Audio       | Pending         | No      |
+| [**Otenki Paradise: Snow Bros. 2**](https://en.wikipedia.org/wiki/Snow_Bros._2:_With_New_Elves)    | TP-033 | No  | None     | N/A         | Implemented     | No      |
 
 ## External Modules
 
@@ -41,7 +41,9 @@ The intent is for this core to be a 1:1 playable implementation of Toaplan V2 ha
 
 - Reference TP-023 schematics and compare variations with TP-024 PCB  
 - Verify clock domains for TP-024  
-- Audio drift; occurs on TP-024 and TP-033 (Reference clk implementation)  
+- Update to precision clocking for 96Mhz  
+- Audio drift; occurs on TP-024 and TP-033 (verify int on YM2151)  
+- ~~Analog screen flip cuts one row of pixels~~  
 - ~~Sprite flicker on left side TP-024~~  <br><br>
 - **Please do not report issues at this time, this FPGA implementation is in an alpha state.**  
 
