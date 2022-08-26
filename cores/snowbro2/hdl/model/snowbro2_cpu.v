@@ -399,7 +399,6 @@ jtframe_68kdtack u_dtack(
     .num        (4'd1),
     .den        (5'd6),
     .DTACKn     (DTACKn),
-    .wait2(1),                    // high for 2 wait states
     // unused
     .fave       (),
     .fworst     (),
