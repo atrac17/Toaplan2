@@ -450,8 +450,8 @@ fx68k u_011 (
 
     .DTACKn     (DTACKn),
     .IPL0n      (1'b1),
-    .IPL1n      (YM2151_INT),
-    .IPL2n      (int1),
+    .IPL1n      (1'b1),
+    .IPL2n      (int1 && YM2151_INT),
 
     // Unused
     .oRESETn    (),
