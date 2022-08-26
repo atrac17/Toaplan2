@@ -251,8 +251,8 @@ end
 // I/O
 always @(*) begin
     //gp9001
-    gp9001_vdp_device_r_cs = sel_gp9001 && RW;                       // 0x300000-D Read (SNOWBRO2)
-    gp9001_vdp_device_w_cs = sel_gp9001 && !RW;                      // 0x300000-D Write (SNOWBRO2)
+    gp9001_vdp_device_r_cs = sel_gp9001 && RW;                             // 0x300000-D Read (SNOWBRO2)
+    gp9001_vdp_device_w_cs = sel_gp9001 && !RW;                            // 0x300000-D Write (SNOWBRO2)
 
     //dips, controls, oki banking
     read_port_dswa_r_cs = sel_io && (addr_8[11:0] == 11'h004) && RW;       // 0x700004-05 (SNOWBRO2)
@@ -266,12 +266,12 @@ always @(*) begin
     
 
     //coin
-    toaplan2_coinword_w_cs = sel_io && (addr_8[11:0] == 11'h034);    // 0x700034 (SNOWBRO2)
+    toaplan2_coinword_w_cs = sel_io && (addr_8[11:0] == 11'h034);          // 0x700034 (SNOWBRO2)
 
     //sound
-    sel_ym2151 = (addr_8[23:8] == 'h5000);                          // 0x500000-03 (SNOWBRO2)
-    sel_oki = (addr_8[23:8] == 'h6000);                             // 0x600001-01 (SNOWBRO2)
-    oki_bankswitch = sel_io && (addr_8[11:0] == 11'h030) && !LDSn && !RW; // 0x700031 (SNOWBRO2)
+    sel_ym2151 = (addr_8[23:8] == 'h5000);                                 // 0x500000-03 (SNOWBRO2)
+    sel_oki = (addr_8[23:8] == 'h6000);                                    // 0x600001-01 (SNOWBRO2)
+    oki_bankswitch = sel_io && (addr_8[11:0] == 11'h030) && !LDSn && !RW;  // 0x700031 (SNOWBRO2)
 end
 
 wire [15:0] video_status_hs = (16'hFF00 & (!HSYNC ? ~16'h8000 : 16'hFFFF));
@@ -449,7 +449,7 @@ fx68k u_011 (
     .BGn        (BGn),
 
     .DTACKn     (DTACKn),
-    .IPL0n      (1'b1),
+    .IPL0n      (YM2151_INT),
     .IPL1n      (1'b1),
     .IPL2n      (int1),
 
