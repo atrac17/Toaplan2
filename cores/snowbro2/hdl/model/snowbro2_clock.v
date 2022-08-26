@@ -49,7 +49,7 @@ always @(posedge CLK96)
 // 3.375mhz for ym2151 (SNOWBRO2)
 reg [31:0] aud_counter;
 always @(posedge CLK96)
-        { CEN3p375, aud_counter } <= aud_counter + 32'd150994946;
+        { CEN3p375, aud_counter } <= aud_counter + 32'd150994944;
 
 // ym2151 3.375mhz, half clock for audio pause (SNOWBRO2)
 reg [31:0] aud2_counter;
@@ -58,7 +58,10 @@ always @(posedge CLK96)
 
 // 2.7mhz oki (SNOWBRO2)
 // 96*(9/320) == 2.7
-jtframe_frac_cen u_frac_cen_4(
+// reg [31:0] oki_counter;
+// always @(posedge CLK96)
+//         { CEN2p7, oki_counter } <= oki_counter + 32'd120795955;
+jtframe_frac_cen u_frac_cen_27(
     .clk(CLK96),
     .n(9),
     .m(320),

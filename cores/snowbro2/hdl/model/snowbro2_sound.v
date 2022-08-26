@@ -138,7 +138,7 @@ jt51 u_jt51(
     .clk        ( CLK96                     ),   // main clock
     .cen        ( YM2151_CEN & DIP_PAUSE    ),   // 3.375mhz
     .cen_p1     ( YM2151_CEN2 & DIP_PAUSE   ),   // 1.6875mhz, half clock
-    .cs_n       ( ~YM2151_CS | YM2151_WE    ),   // chip select
+    .cs_n       ( ~YM2151_CS    ),   // chip select
     .wr_n       ( YM2151_WE                 ),   // write
     .a0         ( YM2151_WR_CMD             ),
     .din        ( YM2151_DIN                ),   // data in
@@ -148,11 +148,11 @@ jt51 u_jt51(
     .irq_n      ( YM2151_INT                ),   // I do not synchronize this signal
     // Low resolution output (same as real chip)
     .sample     ( sample                    ),   // marks new output sample
-    .left       ( fm_left                   ),
-    .right      ( fm_right                  ),
+    .left       (                    ),
+    .right      (                   ),
     // Full resolution output
-    .xleft      (                           ),
-    .xright     (                           ),
+    .xleft      ( fm_left                          ),
+    .xright     ( fm_right                          ),
     // unsigned outputs for sigma delta converters, full resolution
     .dacleft    (                           ),
     .dacright   (                           )

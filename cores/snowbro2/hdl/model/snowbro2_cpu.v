@@ -148,8 +148,8 @@ reg sel_ym2151, sel_oki;
 assign YM2151_CS = sel_ym2151;
 assign OKI_CS = sel_oki;
 assign YM2151_WE = RW;
-assign YM2151_WR_CMD = YM2151_CS && !RW && addr_8[7:0] == 'h00 ? 0 : //select reg
-                       YM2151_CS && !RW && addr_8[7:0] == 'h02 ? 1 : //write reg
+assign YM2151_WR_CMD = YM2151_CS && !RW && !LDSn && addr_8[7:0] == 'h00 ? 0 : //select reg
+                       YM2151_CS && !RW && !LDSn && addr_8[7:0] == 'h02 ? 1 : //write reg
                        'hx;
 assign OKI_WE = ~(OKI_CS && !RW);
 assign OKI_DIN = cpu_dout[7:0];
@@ -399,7 +399,6 @@ jtframe_68kdtack u_dtack(
     .num        (4'd1),
     .den        (5'd6),
     .DTACKn     (DTACKn),
-    .wait1      (wait2), // high for 2 wait states
     // unused
     .fave       (),
     .fworst     (),
