@@ -449,8 +449,8 @@ fx68k u_011 (
     .BGn        (BGn),
 
     .DTACKn     (DTACKn),
-    .IPL0n      (YM2151_INT),
-    .IPL1n      (1'b1),
+    .IPL0n      (1'b1),
+    .IPL1n      (YM2151_INT),
     .IPL2n      (int1),
 
     // Unused
