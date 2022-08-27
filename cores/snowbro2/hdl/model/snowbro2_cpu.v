@@ -401,7 +401,7 @@ assign BUSACK = ~BGACKn;
 
 jtframe_68kdma #(.BW(1)) u_arbitration(
     .clk        (CLK96),
-    .cen        (CEN16B),
+    .cen        (CEN16),
     .rst        (RESET96),
     .cpu_BRn    (BRn),
     .cpu_BGACKn (BGACKn),

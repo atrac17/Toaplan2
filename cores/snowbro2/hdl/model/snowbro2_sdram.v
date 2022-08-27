@@ -187,12 +187,12 @@ jtframe_rom_3slots #(
 
     .SLOT0_AW    (19), //68k rom (16 bit addressing)
     .SLOT0_DW    (16),
-    .SLOT0_LATCH (1),
+    .SLOT0_LATCH (0),
     .SLOT0_DOUBLE(1),
 
     .SLOT1_AW    (20), //PCM rom (8 bit addressing)
     .SLOT1_DW    (8),
-    .SLOT1_LATCH (1),
+    .SLOT1_LATCH (0),
     .SLOT1_DOUBLE(1),
 
     .SLOT0_OFFSET(0),
