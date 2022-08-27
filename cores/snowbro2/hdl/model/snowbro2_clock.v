@@ -58,9 +58,11 @@ always @(posedge CLK96)
 
 // 2.7mhz oki (SNOWBRO2)
 // 96*(9/320) == 2.7
+
 // reg [31:0] oki_counter;
 // always @(posedge CLK96)
 //         { CEN2p7, oki_counter } <= oki_counter + 32'd120795955;
+
 jtframe_frac_cen u_frac_cen_27(
     .clk(CLK96),
     .n(9),
