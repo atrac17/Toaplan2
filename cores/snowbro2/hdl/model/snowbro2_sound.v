@@ -77,7 +77,7 @@ fmgain = GAME == SNOWBRO2 ? 8'h08 :
 pcmgain = GAME == SNOWBRO2 ? 8'h10 :
           8'h10;
 
-always @(posedge CLK) begin
+always @(posedge CLK96) begin
     peak <= peak_l | peak_r;
 end
 

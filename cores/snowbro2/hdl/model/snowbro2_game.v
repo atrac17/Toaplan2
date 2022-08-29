@@ -24,9 +24,13 @@ module snowbro2_game(
     input rst,
     input rst48,
     input rst96,
+    input rst24, //27mhz
+    input rst6, //6.75mhz
     input clk,
     input clk48,
     input clk96,
+    input clk24,
+    input clk6,
     output pxl_cen,
     output pxl2_cen,
 
@@ -108,7 +112,12 @@ localparam DEFAULT = 0, SNOWBRO2 = 2;
 wire RESET = rst48;
 wire CLK = clk48;
 wire CLK96 = clk;
+wire CLK24 = clk24;
+wire CLK6 = clk6;
 wire RESET96 = rst;
+wire RESET24 = rst24;
+wire RESET6 = rst6;
+
 wire CEN16, CEN16B;
 wire FLIP = GAME==DEFAULT  ? dipsw[1]:  // Placeholder
             GAME==SNOWBRO2 ? dipsw[1]:  // Screen inversion for SNOWBRO2
@@ -122,6 +131,8 @@ wire CEN3p375, CEN3p375B, CEN1p6875, CEN1p6875B;
 snowbro2_clock u_clocken (
     .CLK(CLK),
     .CLK96(CLK96),
+    .CLK24(CLK24),
+    .CLK6(CLK6),
     .CEN675(CEN675),
     .CEN675B(CEN675B),
     .CEN2p7(CEN2p7),
