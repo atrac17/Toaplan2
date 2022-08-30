@@ -141,7 +141,6 @@ assign sel_palram = pre_sel_palram;
 assign CPU_PRG_CS = pre_sel_rom;
 
 //sound assigns
-reg sel_ym2151;
 reg sel_oki;
 assign YM2151_CS = (addr_8[23:20] == 'b0101);
 assign OKI_CS = sel_oki;
@@ -151,6 +150,7 @@ assign OKI_WE = ~(OKI_CS && !RW);
 assign OKI_DIN = cpu_dout[7:0];
 assign YM2151_DIN = cpu_dout[7:0];
 reg oki_bankswitch;
+wire sel_ym2151 = YM2151_CS & ~RW;
 
 always @(posedge CLK96, posedge RESET96) begin
     if( RESET96 ) begin
@@ -169,8 +169,8 @@ end
 wire FC0, FC1, FC2;
 wire VPAn = ~&{ FC0, FC1, FC2, ~ASn};
 wire BRn, BGACKn, BGn, DTACKn;
-wire bus_cs = |{ pre_sel_rom, pre_sel_ram, pre_sel_palram, sel_gp9001, sel_io};
-wire bus_busy = |{ (sel_ram || sel_palram) & ~ram_ok, sel_rom & ~CPU_PRG_OK, sel_gp9001 & ~GP9001ACK};
+wire bus_cs = |{ pre_sel_rom, pre_sel_ram, pre_sel_palram, sel_gp9001, sel_io, sel_ym2151};
+wire bus_busy = |{ (sel_ram || sel_palram) & ~ram_ok, sel_rom & ~CPU_PRG_OK, sel_gp9001 & ~GP9001ACK, sel_ym2151 & YM2151_DOUT[7]};
 
 //i/o bus ports
 reg gp9001_vdp_device_r_cs,
@@ -301,7 +301,7 @@ always @(posedge CLK96, posedge RESET96) begin
                    toaplan2_coinword_w_cs ? 16'h0000 : //ignore coin counter.
 
                    sel_oki && RW ? {2{OKI_DOUT}} :
-                   YM2151_CS && RW ? {2{YM2151_DOUT}} :
+                   YM2151_CS && RW && A[1] ? {2{YM2151_DOUT}} :
                    16'h0000; //etc.
     end
 end
@@ -378,7 +378,7 @@ jtframe_virq u_virq(
 );
 
 //68k cpu running at 16mhz
-jtframe_68kdtack #(.W(10)) u_dtack(
+jtframe_68kdtack #(.W(16)) u_dtack(
     .rst        (RESET96),
     .clk        (CLK96),
     .cpu_cen    (CEN16),
@@ -388,8 +388,8 @@ jtframe_68kdtack #(.W(10)) u_dtack(
     .bus_legit  (1'b0),
     .ASn        (ASn),
     .DSn        ({UDSn, LDSn}),
-    .num        (10'd32),
-    .den        (10'd189),
+    .num        (16'd1387),
+    .den        (16'd8192),
     .DTACKn     (DTACKn),
     // unused
     .fave       (),

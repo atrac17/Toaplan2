@@ -36,28 +36,6 @@ module snowbro2_clock (
     output CEN1350B
 );
 
-//Video
-// 13.50mhz for GP9001, then half clocked
-// reg [31:0] vid_counter;
-// always @(posedge CLK96)
-//         { CEN1350, vid_counter } <= vid_counter + 32'd603979776;
-
-// // 6.75mhz for GP9001, half clocked
-// reg [31:0] vid2_counter;
-// always @(posedge CLK96)
-//        { CEN675, vid2_counter } <= vid2_counter + 32'd301989888;
-
-//Audio
-// 3.375mhz for ym2151 (SNOWBRO2)
-// reg [31:0] aud_counter;
-// always @(posedge CLK96)
-//         { CEN3p375, aud_counter } <= aud_counter + 32'd150994944;
-
-// // ym2151 3.375mhz, half clock for audio pause (SNOWBRO2)
-// reg [31:0] aud2_counter;
-// always @(posedge CLK96)
-//         { CEN1p6875, aud2_counter } <= aud2_counter + 32'd75497472;
-
 jtframe_frac_cen #(.W(4)) u_frac_cen_1350(
     .clk(CLK96),
     .n(1),
@@ -66,11 +44,6 @@ jtframe_frac_cen #(.W(4)) u_frac_cen_1350(
     .cenb()
 );
 
-// 2.7mhz oki (SNOWBRO2)
-// 96*(9/320) == 2.7
-// reg [31:0] oki_counter;
-// always @(posedge CLK96)
-//         { CEN2p7, oki_counter } <= oki_counter + 32'd120795955;
 jtframe_frac_cen u_frac_cen_27(
     .clk(CLK96),
     .n(1),
