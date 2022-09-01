@@ -309,12 +309,15 @@ set_global_assignment -name VERILOG_MACRO "JTFRAME_BA3_LEN=64"
 set_global_assignment -name VERILOG_MACRO "JTFRAME_SDRAM96=1"
 set_global_assignment -name VERILOG_MACRO "JTFRAME_SDRAM_BANKS=1"
 #set_global_assignment -name VERILOG_MACRO "JTFRAME_SDRAM_REPACK=1"
-set_global_assignment -name VERILOG_MACRO "JTFRAME_NOHOLDBUS=1"
+#set_global_assignment -name VERILOG_MACRO "JTFRAME_NOHOLDBUS=1"
 #set_global_assignment -name VERILOG_MACRO "JTFRAME_SDRAM_LARGE=1"
 #set_global_assignment -name VERILOG_MACRO "JTFRAME_180SHIFT=1"
 
 set_global_assignment -name VERILOG_MACRO "JTFRAME_CLK48=1"
 set_global_assignment -name VERILOG_MACRO "JTFRAME_CLK96=1"
+set_global_assignment -name VERILOG_MACRO "JTFRAME_CLK24=1"
+set_global_assignment -name VERILOG_MACRO "JTFRAME_CLK6=1"
+set_global_assignment -name VERILOG_MACRO "JTFRAME_PLL=raizingpll"
 
 set_global_assignment -name VERILOG_MACRO "JTFRAME_ADPCM=1"
 set_global_assignment -name VERILOG_MACRO "JTFRAME_OSD_VOL=1"
@@ -335,7 +338,7 @@ set_global_assignment -name VERILOG_MACRO "SEPARATOR=-;"
 
 set_global_assignment -name VERILOG_MACRO "SYNTHESIS=1"
 
-set_global_assignment -name SEED 232
+set_global_assignment -name SEED 1
 
 set_global_assignment -name DEVICE 5CSEBA6U23I7
 

@@ -24,9 +24,13 @@ module truxton2_game(
     input rst,
     input rst48,
     input rst96,
+    input rst24, //27mhz
+    input rst6, //6.75mhz
     input clk,
     input clk48,
     input clk96,
+    input clk24,
+    input clk6,
     output pxl_cen,
     output pxl2_cen,
 
@@ -106,7 +110,12 @@ localparam DEFAULT = 0, TRUXTON2 = 1;
 wire RESET = rst48;
 wire CLK = clk48;
 wire CLK96 = clk;
+wire CLK24 = clk24;
+wire CLK6 = clk6;
 wire RESET96 = rst;
+wire RESET24 = rst24;
+wire RESET6 = rst6;
+
 wire CEN16, CEN16B;
 wire FLIP = GAME==DEFAULT  ? dipsw[1]:  // Placeholder
             GAME==TRUXTON2 ? dipsw[1]:  // Screen inversion for TRUXTON2
@@ -115,25 +124,19 @@ wire FLIP = GAME==DEFAULT  ? dipsw[1]:  // Placeholder
 // assign game_led = downloading ? 1'b0 : 1'b1;
 
 /*CLOCKS*/
-//wire CEN675, CEN675B, CEN4, CEN2, CEN2B, CEN4B, CEN1350, CEN1350B;
-//wire CEN3p375, CEN3p375B, CEN1, CENp7575, CEN1B, CEN1p6875, CEN1p6875B;
-
 wire CEN675, CEN675B, CEN4, CEN4B, CEN1350, CEN1350B;
 wire CEN3p375, CEN3p375B, CEN1p6875, CEN1p6875B;
 truxton2_clock u_clocken (
     .CLK(CLK),
     .CLK96(CLK96),
+    .CLK24(CLK24),
+    .CLK6(CLK6),
     .CEN675(CEN675),
     .CEN675B(CEN675B),
     .CEN4(CEN4),
     .CEN4B(CEN4B),
-    //.CEN2(CEN2),
-    //.CEN2B(CEN2B),
     .CEN3p375(CEN3p375),
     .CEN3p375B(CEN3p375B),
-    //.CEN1(CEN1),
-    //.CENp7575(CENp7575),
-    //.CEN1B(CEN1B),
     .CEN1p6875(CEN1p6875),
     .CEN1p6875B(CEN1p6875B),
     .CEN1350(CEN1350),
@@ -202,7 +205,6 @@ wire GP9001_OP_SELECT_REG, GP9001_OP_WRITE_REG, GP9001_OP_WRITE_RAM, GP9001_OP_R
 wire [2:0] GP9001_OBJECTBANK_SLOT;
 wire [15:0] CPU_DOUT;
 wire [15:0] GCU_DOUT;
-wire BATRIDER_TEXTDATA_DMA_W, BATRIDER_PAL_TEXT_DMA_W;
 wire [10:0] GP9001OUT;
 
 //bus sharing
@@ -402,14 +404,13 @@ raizing_video u_video(
     .FLIP(FLIP)
 );
 
-wire ym2151_cen, ym2151_cen2, oki_cen, z80_cen;
+wire ym2151_cen, ym2151_cen2, oki_cen;
 assign ym2151_cen = GAME == TRUXTON2 ? CEN3p375 :
                     CEN3p375;
 assign ym2151_cen2 = GAME == TRUXTON2 ? CEN1p6875 :
                      CEN1p6875;
 assign oki_cen = GAME == TRUXTON2 ? CEN4 :
                  CEN4;
-//assign z80_cen = CEN4;
 
 truxton2_sound u_sound(
     .CLK(CLK),

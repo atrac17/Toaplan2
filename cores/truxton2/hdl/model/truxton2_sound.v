@@ -31,7 +31,7 @@ module truxton2_sound (
     output               PCM_CS,
     input                PCM_OK,
     output        [19:0] PCM_ADDR,
-    input         [ 7:0]  PCM_DOUT,
+    input         [ 7:0] PCM_DOUT,
     output signed [15:0] left,
     output signed [15:0] right,
     output               sample,
@@ -75,7 +75,7 @@ fmgain = GAME == TRUXTON2 ? 8'h10 :
 pcmgain = GAME == TRUXTON2 ? 8'h10 :
           8'h10;
 
-always @(posedge CLK) begin
+always @(posedge CLK96) begin
     peak <= peak_l | peak_r;
 end
 
@@ -110,7 +110,7 @@ jtframe_mixer #(.W0(16), .W1(14), .W2(16), .WOUT(16)) u_mix_left(
 );
 
 assign PCM_ADDR = GAME == TRUXTON2 ? (oki0_pcm_addr & 'h3FFFF) :
-                  (oki0_pcm_addr & 'h3FFFF);
+                                     (oki0_pcm_addr & 'h3FFFF);
 
 assign PCM_CS = 1'b1;
 
@@ -137,7 +137,7 @@ jt51 u_jt51(
     .clk        ( CLK96                     ),   // main clock
     .cen        ( YM2151_CEN & DIP_PAUSE    ),   // 4mhz
     .cen_p1     ( YM2151_CEN2 & DIP_PAUSE   ),   // 2mhz, half clock
-    .cs_n       ( ~YM2151_CS | YM2151_WE    ),   // chip select
+    .cs_n       ( !YM2151_CS                ),   // chip select
     .wr_n       ( YM2151_WE                 ),   // write
     .a0         ( YM2151_WR_CMD             ),
     .din        ( YM2151_DIN                ),   // data in

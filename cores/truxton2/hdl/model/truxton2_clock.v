@@ -22,58 +22,41 @@
 module truxton2_clock (
     input CLK, //48mhz
     input CLK96,
+    input CLK24,
+    input CLK6,
     output CEN675,
     output CEN675B,
     output CEN4,
     output CEN4B,
-    //output CEN2,
-    //output CEN2B,
     output CEN3p375,
     output CEN3p375B,
-    //output CEN1,
-    //output CENp7575,
-    //output CEN1B,
     output CEN1p6875,
     output CEN1p6875B,
-    output reg CEN1350,
+    output CEN1350,
     output CEN1350B
 );
 
-// 6.75mhz for GP9001 (TRUXTON 2)
-// 96*(9/128) == 6.75
+// 13.50mhz / 6.75mhz for GP9001; 3.375 for YM2151 (TRUXTON 2)
+// 94.5/7=13.5 // 94.5/14=3.375 // 94.5/56=1.6875
 
-// 13.50
-reg	[31:0] counter;
-always @(posedge CLK96)
-        { CEN1350, counter } <= counter + 32'd603979776;
-
-jtframe_cendiv u_cen_675 (
-    .clk(CLK96),
-    .cen_in(CEN1350),
-    .cen_da(CEN675)
-);
-
-// oki 4mhz (TRUXTON 2)
-// 96*(1/24) == 4
-jtframe_frac_cen u_frac_cen_4(
+jtframe_frac_cen #(.W(4)) u_frac_cen_1350(
     .clk(CLK96),
     .n(1),
-    .m(24),
+    .m(7),
+    .cen({CEN1p6875, CEN3p375, CEN675, CEN1350}),
+    .cenb()
+);
+
+
+// 4mhz for OKI (TRUXTON 2)
+// 94.5*(8/189) == 4
+
+jtframe_frac_cen u_frac_cen_4(
+    .clk(CLK96),
+    .n(8),
+    .m(189),
     .cen(CEN4),
     .cenb(CEN4B)
-);
-
-// ym2151 3.375mhz (TRUXTON 2)
-jtframe_cendiv u_cen_3375 (
-    .clk(CLK96),
-    .cen_in(CEN675),
-    .cen_da(CEN3p375)
-);
-
-jtframe_cendiv u_cen_16875 (
-    .clk(CLK96),
-    .cen_in(CEN3p375),
-    .cen_da(CEN1p6875)
 );
 
 endmodule

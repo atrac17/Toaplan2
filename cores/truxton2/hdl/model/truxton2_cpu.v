@@ -25,7 +25,6 @@ module truxton2_cpu (
     input RESET,
     input RESET96,
     input GP9001ACK,
-    input Z80ACK,
     input VINT,
     input BR,
     input [8:0] V,
@@ -42,7 +41,6 @@ module truxton2_cpu (
     output GP9001CS,
     output LTABLECS,
     output VCOUNTCS,
-    output Z80RST,
     output CEN16,
     output CEN16B,
 
@@ -226,7 +224,7 @@ wire bus_busy = |{ (sel_ram || sel_palram || sel_txgfxram ||
 //i/o bus ports
 reg gp9001_vdp_device_r_cs, gp9001_vdp_device_w_cs, read_port_in1_r_cs, read_port_in2_r_cs, 
     read_port_sys_r_cs, read_port_dswa_r_cs, read_port_dswb_r_cs, read_port_jmpr_r_cs, 
-    truxton2_coinword_w_cs, soundlatch_w, video_count_r_cs;
+    toaplan2_coinword_w_cs, soundlatch_w, video_count_r_cs;
 
 //debugging 
  wire debug = 1'b1;
@@ -315,14 +313,11 @@ always @(*) begin
     read_port_sys_r_cs = sel_io && (addr_8[11:0] == 11'h00A) && RW;  // 0x70000A-0B (TRUXTON2)
 
     //coin
-    truxton2_coinword_w_cs = sel_io && (addr_8[11:0] == 11'h01F);    // 0x70001F (TRUXTON2)
+    toaplan2_coinword_w_cs = sel_io && (addr_8[11:0] == 11'h01F);    // 0x70001F (TRUXTON2)
 
     //sound
     sel_ym2151<= sel_io && (addr_8[7:0] == 'h14 || addr_8[7:0] == 'h16);
     sel_oki<= sel_io && (addr_8[7:0] == 'h10);
-
-    //soundlatch
-    //soundlatch_w = addr_8[23:20] == 4'b0110 && !RW; //0x600001
 end
 
 wire [15:0] video_status_hs = (16'hFF00 & (!HSYNC ? ~16'h8000 : 16'hFFFF));
@@ -359,7 +354,7 @@ always @(posedge CLK96, posedge RESET96) begin
                    read_port_dswb_r_cs ? {2{DIPSW_B}} :
                    read_port_jmpr_r_cs ? {2{DIPSW_C}} :
                    video_count_r_cs ? video_status : // blanking trigger
-                   truxton2_coinword_w_cs ? 16'h0000 : //ignore coin counter.
+                   toaplan2_coinword_w_cs ? 16'h0000 : //ignore coin counter.
 
                    sel_oki && RW ? {2{OKI_DOUT}} :
                    sel_ym2151 && RW ? {2{YM2151_DOUT}} :
@@ -417,7 +412,7 @@ jtframe_ff u_int_ff(
     .qn       ( vint_n      ),
     .set      ( 1'b0        ),    // active high
     .clr      ( ~inta_n     ),    // active high
-    .sigedge  ( VINT        ) // signal whose edge will trigger the FF
+    .sigedge  ( VINT        )     // signal whose edge will trigger the FF
 );
 
 jtframe_virq u_virq(
@@ -435,7 +430,7 @@ jtframe_virq u_virq(
 );
 
 //68k cpu running at 16mhz
-jtframe_68kdtack u_dtack(
+jtframe_68kdtack #(.W(10)) u_dtack(
     .rst        (RESET96),
     .clk        (CLK96),
     .cpu_cen    (CEN16),
@@ -445,8 +440,8 @@ jtframe_68kdtack u_dtack(
     .bus_legit  (1'b0),
     .ASn        (ASn),
     .DSn        ({UDSn, LDSn}),
-    .num        (4'd1),
-    .den        (5'd6),
+    .num        (10'd32),
+    .den        (10'd189),
     .DTACKn     (DTACKn),
     // unused
     .fave       (),
