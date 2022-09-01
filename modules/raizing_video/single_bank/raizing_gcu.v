@@ -136,7 +136,7 @@ module raizing_gcu (
     input   [8:0] VS_END
 );
 
-localparam DEFAULT = 'h0, TRUXTON2 = 'h1;
+localparam DEFAULT = 'h0, TRUXTON2 = 'h1, SNOWBRO2 = 'h2;
 
 //debugging 
 //  wire debug = 1'b1;
@@ -160,6 +160,7 @@ wire signed [12:0] foreground_scroll_yoffs_f = -12'h210;
 wire signed [12:0] text_scroll_yoffs = -12'h1EF;
 wire signed [12:0] text_scroll_yoffs_f = -12'h210;
 wire signed [12:0] sprite_scroll_yoffs = GAME == TRUXTON2 ? 12'h001 :
+                                         GAME == SNOWBRO2 ? 12'h011 :
                                          12'h001; //-12'h1EF;
 wire signed [12:0] sprite_scroll_yoffs_f = -12'h108;
 
@@ -221,8 +222,8 @@ assign TEXT_SCROLL_XOFFS = text_scroll_xoffs;
 assign TEXT_SCROLL_YOFFS = text_scroll_yoffs;
 
 //vint irq
-always @(cur_scr_reg_num, V, RESET) begin
-    if(V == 9'hE6 || cur_scr_reg_num == 8'h0F || cur_scr_reg_num == 8'h8F || cur_scr_reg_num == 8'h0e || RESET) begin
+always @(cur_scr_reg_num, V, RESET96) begin
+    if(V == 9'hE6 || cur_scr_reg_num == 8'h0F || cur_scr_reg_num == 8'h8F || cur_scr_reg_num == 8'h0e || RESET96) begin
         VINT <= 1'b0;
     end else VINT <= 1'b1;
 end
@@ -402,17 +403,17 @@ wire spriteram_we = GP9001RAM_WE && (GP9001RAM_ADDR>=14'h1800 && GP9001RAM_ADDR<
 
 //sprite lag fix
 reg [1:0] cur_buf = 0;
-wire [1:0] cur_buf_rd = GAME==DEFAULT || TRUXTON2 ? 
-                        (cur_buf == 0 ? 3 :
-                        cur_buf == 1 ? 0 :
-                        cur_buf == 2 ? 1 :
-                        cur_buf == 3 ? 2 :
-                        0) :  //2 frames lag behind
+wire [1:0] cur_buf_rd = (GAME==DEFAULT || TRUXTON2 || SNOWBRO2) ? 
                         (cur_buf == 0 ? 0 :
                         cur_buf == 1 ? 1 :
                         cur_buf == 2 ? 2 :
                         cur_buf == 3 ? 3 :
-                        0); //0 frames lag behind
+                        0) :  //0 frames lag behind
+                        (cur_buf == 0 ? 3 :
+                        cur_buf == 1 ? 0 :
+                        cur_buf == 2 ? 1 :
+                        cur_buf == 3 ? 2 :
+                        0); //2 frames lag behind
 wire [12:0] spriteram_buff_offs = cur_buf==0 ? 0 :
                                   cur_buf==1 ? 14'h400 :
                                   cur_buf==2 ? 14'h800 :

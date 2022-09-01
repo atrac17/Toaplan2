@@ -14,7 +14,7 @@
     <catver>Shooter / Flying Vertical</catver>
     <mraauthor>atrac17</mraauthor>
     <rom index="0" zip="truxton2.zip" md5="None" address="0x30000000">
-        <!-- mapper for game 00 - default, 01 - truxton2 -->
+        <!-- mapper for game 00 - two frames of sprite lag, 01 - no sprite lag -->
         <part>00</part>
         <!-- maincpu - starts at 0x0 -->
         <part name="tp024_1.bin" crc="f5cfe6ee"/>
