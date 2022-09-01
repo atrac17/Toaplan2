@@ -299,6 +299,7 @@ wire [63:0] status;
 wire [ 1:0] buttons, game_led;
 
 wire [ 1:0] dip_fxlevel;
+wire [ 1:0] dip_fmlevel;
 wire        enable_fm, enable_psg;
 wire        dip_pause, dip_flip, dip_test;
 wire [31:0] dipsw;
@@ -555,6 +556,7 @@ u_frame(
     .dip_pause      ( dip_pause      ),
     .dip_flip       ( dip_flip       ),
     .dip_fxlevel    ( dip_fxlevel    ),
+    .dip_fmlevel    ( dip_fmlevel    ),
     .dipsw          ( dipsw          ),
     // screen
     .rotate         (                ),
@@ -724,6 +726,7 @@ assign sim_pxl_cen = pxl_cen;
     .dip_flip     ( dip_flip         ),
     .dip_test     ( dip_test         ),
     .dip_fxlevel  ( dip_fxlevel      ),
+    .dip_fmlevel  ( dip_fmlevel      ),
     .dipsw        ( dipsw            ),
 
 `ifdef JTFRAME_UART

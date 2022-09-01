@@ -138,6 +138,7 @@ module jtframe_board #(parameter
     output            dip_pause,
     inout             dip_flip,     // A change in dip_flip implies a reset if JTFRAME_FLIP_RESET is defined
     output    [ 1:0]  dip_fxlevel,
+    output    [ 1:0]  dip_fmlevel,
     // Base video
     input       [ 1:0] osd_rotate,
     input [COLORW-1:0] game_r,
@@ -451,7 +452,8 @@ jtframe_dip u_dip(
     .dip_test   ( dip_test      ),
     .dip_pause  ( pre_pause     ),
     .dip_flip   ( dip_flip      ),
-    .dip_fxlevel( dip_fxlevel   )
+    .dip_fxlevel( dip_fxlevel   ),
+    .dip_fmlevel( dip_fmlevel   )
 );
 
 wire [ 3:0] bax_rd, bax_wr, bax_ack;

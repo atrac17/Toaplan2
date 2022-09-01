@@ -193,6 +193,7 @@ module jtframe_mister #(parameter
     output            dip_pause,
     inout             dip_flip,
     output    [ 1:0]  dip_fxlevel,
+    output    [ 1:0]  dip_fmlevel,
     // Control words
     output    [31:0]  dipsw,
     // Debug
@@ -626,6 +627,7 @@ jtframe_board #(
     .dip_pause      ( dip_pause       ),
     .dip_flip       ( dip_flip        ),
     .dip_fxlevel    ( dip_fxlevel     ),
+    .dip_fmlevel    ( dip_fmlevel     ),
     .timestamp      ( timestamp       ),
     // screen
     .gamma_bus      ( gamma_bus       ),

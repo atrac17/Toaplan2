@@ -49,6 +49,7 @@ module truxton2_sound (
 
     input          [7:0] GAME,
     input          [1:0] FX_LEVEL,
+    input          [1:0] FM_LEVEL,
     input                PSG_EN,
     input                FM_EN,
     input                DIP_PAUSE
@@ -103,12 +104,12 @@ jtframe_mixer #(.W0(16), .W1(14), .W2(16), .WOUT(16)) u_mix_left(
     .ch2    ( final_right ),
     .ch3    ( 16'd0     ),
     // gain for each channel in 4.4 fixed point format
-    .gain0  ( FM_EN ? fmgain : 16'd0      ),
-    .gain1  ( PSG_EN ? gain1 : 16'd0      ),
-    .gain2  ( FM_EN ? fmgain : 16'd0      ),
-    .gain3  ( 8'd0                        ),
-    .mixed  ( left                        ),
-    .peak   ( peak_l                      )
+    .gain0  ( FM_EN ? fmgain + (FM_LEVEL<<1) : 16'd0 ),
+    .gain1  ( PSG_EN ? gain1 + (FX_LEVEL<<1) : 16'd0 ),
+    .gain2  ( FM_EN ? fmgain + (FM_LEVEL<<1) : 16'd0 ),
+    .gain3  ( 8'd0                                   ),
+    .mixed  ( left                                   ),
+    .peak   ( peak_l                                 )
 );
 
 assign PCM_ADDR = GAME == TRUXTON2 ? (oki0_pcm_addr & 'h3FFFF) :

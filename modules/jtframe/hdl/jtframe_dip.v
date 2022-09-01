@@ -41,7 +41,8 @@ module jtframe_dip(
     // non standard:
     output reg         dip_pause,
     inout              dip_flip,    // this might be set by the core
-    output reg [ 1:0]  dip_fxlevel
+    output reg [ 1:0]  dip_fxlevel,
+    output reg [ 1:0]  dip_fmlevel
 );
 
 // "T0,RST;", // 15
@@ -155,6 +156,7 @@ end
 always @(posedge clk) begin
     rotate      <= { ~dip_flip, tate && !rot_control };
     dip_fxlevel <= 2'b10 ^ status[7:6];
+    dip_fmlevel <= 2'b10 ^ status[62:61];
     en_mixing   <= ~status[3];
     `ifndef JTFRAME_OSD_SND_EN
     enable_fm   <= 1;

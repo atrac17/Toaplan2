@@ -90,6 +90,7 @@ module truxton2_game(
     inout        dip_flip,
     input        dip_test,
     input  [1:0] dip_fxlevel,
+    input  [1:0] dip_fmlevel,
     input [31:0] dipsw,
 
     //sound
@@ -439,6 +440,7 @@ truxton2_sound u_sound(
     .OKI_DOUT(OKI_DOUT),
     .GAME(GAME),
     .FX_LEVEL(dip_fxlevel),
+    .FM_LEVEL(dip_fmlevel),
     .PSG_EN(enable_psg),
     .FM_EN(enable_fm),
     .DIP_PAUSE(DIP_PAUSE)
