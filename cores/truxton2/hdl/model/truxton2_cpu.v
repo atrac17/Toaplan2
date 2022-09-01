@@ -177,13 +177,12 @@ assign TEXTROM_CPU_WE = {sel_txgfxram && !RW && !A[1], sel_txgfxram && !RW && A[
 assign TEXTROM_CPU_ADDR = (addr_8&'hFFFF)>>2;
 
 //sound assigns
-reg sel_ym2151, sel_oki;
-assign YM2151_CS = sel_ym2151;
+reg sel_oki;
+wire sel_ym2151 = YM2151_CS & ~RW;
+assign YM2151_CS = sel_io && (addr_8[7:0] == 'h14 || addr_8[7:0] == 'h16);
 assign OKI_CS = sel_oki;
 assign YM2151_WE = RW;
-assign YM2151_WR_CMD = YM2151_CS && !RW && addr_8[7:0] == 'h14 ? 0 : //select reg
-                       YM2151_CS && !RW && addr_8[7:0] == 'h16 ? 1 : //write reg
-                       'hx;
+assign YM2151_WR_CMD = A[1];
 assign OKI_WE = ~(OKI_CS && !RW);
 assign OKI_DIN = cpu_dout[7:0];
 assign YM2151_DIN = cpu_dout[7:0];
@@ -216,10 +215,10 @@ wire FC0, FC1, FC2;
 wire VPAn = ~&{ FC0, FC1, FC2, ~ASn};
 wire BRn, BGACKn, BGn, DTACKn;
 wire bus_cs = |{ pre_sel_rom, pre_sel_ram, pre_sel_palram, pre_sel_txvram, pre_sel_txgfxram || pre_sel_txlineselect,
-                 pre_sel_txlinescroll, pre_sel_ram2, sel_gp9001, sel_io};
+                 pre_sel_txlinescroll, pre_sel_ram2, sel_gp9001, sel_io, sel_ym2151};
 wire bus_busy = |{ (sel_ram || sel_palram || sel_txgfxram ||
                     sel_txvram || sel_txlineselect || 
-                    sel_txlinescroll || sel_ram2) & ~ram_ok, sel_rom & ~CPU_PRG_OK, sel_gp9001 & ~GP9001ACK};
+                    sel_txlinescroll || sel_ram2) & ~ram_ok, sel_rom & ~CPU_PRG_OK, sel_gp9001 & ~GP9001ACK, sel_ym2151 & YM2151_DOUT[7]};
 
 //i/o bus ports
 reg gp9001_vdp_device_r_cs, gp9001_vdp_device_w_cs, read_port_in1_r_cs, read_port_in2_r_cs, 
@@ -357,7 +356,7 @@ always @(posedge CLK96, posedge RESET96) begin
                    toaplan2_coinword_w_cs ? 16'h0000 : //ignore coin counter.
 
                    sel_oki && RW ? {2{OKI_DOUT}} :
-                   sel_ym2151 && RW ? {2{YM2151_DOUT}} :
+                   YM2151_CS && RW && A[1] ? {2{YM2151_DOUT}} :
                    16'h0000; //etc.
     end
 end
@@ -388,7 +387,7 @@ always @(posedge CLK96) begin
                 4'b0000: GP9001_OP_SET_RAM_PTR <= 1'b1; //0
             endcase
         end
-        else begin       
+        else begin
             if(GP9001ACK) begin
                 GP9001_OP_SELECT_REG <= 1'b0;
                 GP9001_OP_WRITE_REG <= 1'b0;
@@ -430,7 +429,7 @@ jtframe_virq u_virq(
 );
 
 //68k cpu running at 16mhz
-jtframe_68kdtack #(.W(10)) u_dtack(
+jtframe_68kdtack #(.W(16)) u_dtack(
     .rst        (RESET96),
     .clk        (CLK96),
     .cpu_cen    (CEN16),
@@ -440,8 +439,8 @@ jtframe_68kdtack #(.W(10)) u_dtack(
     .bus_legit  (1'b0),
     .ASn        (ASn),
     .DSn        ({UDSn, LDSn}),
-    .num        (10'd32),
-    .den        (10'd189),
+    .num        (16'd1387),
+    .den        (16'd8192),
     .DTACKn     (DTACKn),
     // unused
     .fave       (),
