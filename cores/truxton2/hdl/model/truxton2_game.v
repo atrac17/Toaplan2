@@ -439,6 +439,8 @@ truxton2_sound u_sound(
     .OKI_DOUT(OKI_DOUT),
     .GAME(GAME),
     .FX_LEVEL(dip_fxlevel),
+    .PSG_EN(enable_psg),
+    .FM_EN(enable_fm),
     .DIP_PAUSE(DIP_PAUSE)
 );
 
