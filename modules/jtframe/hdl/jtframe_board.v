@@ -170,7 +170,7 @@ module jtframe_board #(parameter
     output            scan2x_clk,
     output            scan2x_cen,
     output            scan2x_de,
-    output     [1:0]  scan2x_sl,
+    output     [2:0]  scan2x_sl,
 
     // Cheat Engine
     input      [31:0] cheat,
@@ -834,7 +834,7 @@ endfunction
         .clk        ( clk_sys        ),
         .pxl_cen    ( pxl_cen        ),
         // settings
-        .sl_mode    ( scanlines[1:0] ),
+        .sl_mode    ( scanlines[2:0] ),
         .blend_en   ( blend_en       ),
         // video inputs
         .pxl2_cen   ( pxl2_cen       ),
@@ -851,7 +851,7 @@ endfunction
     assign scan2x_de    = ~(scan2x_vs | scan2x_hs);
     assign scan2x_cen   = pxl2_cen;
     assign scan2x_clk   = clk_sys;
-    assign scan2x_sl    = scanlines[1:0];
+    assign scan2x_sl    = scanlines[2:0];
     // unused in MiST
     assign gamma_bus    = 22'd0;
 `else

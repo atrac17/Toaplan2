@@ -188,7 +188,7 @@ module jtframe_mister #(parameter
     output          scan2x_clk,
     output          scan2x_cen,
     output          scan2x_de,
-    output    [1:0] scan2x_sl,
+    output    [2:0] scan2x_sl,
     // non standard:
     output            dip_pause,
     inout             dip_flip,
