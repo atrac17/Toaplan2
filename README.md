@@ -39,23 +39,23 @@ The intent is for this core to be a 1:1 playable implementation of Toaplan V2 ha
 
 # Known Issues / Tasks
 
-- Reference TP-023 schematics and compare variations with TP-024 PCB [Task]  
-- Verify clock domains for TP-024  [Task]  
-- Verify PCM and OPM levels on TP-024 [Task]  
-- ~~94.5 MHz Integer PLL for clocks~~ [Task]  
-- ~~Update clocking for 94.5Mhz PLL~~ [Task]  
-- ~~Add volume toggles for ADPCM and OPM audio~~ [Task]  
-- ~~Add volume toggles to disable ADPCM and OPM audio~~ [Task]  
-- ~~Additional scanline options for scandoubler~~ [Task]  
-- ~~Add 31kHz toggle for hi-res CRT~~ [Task]  
-- Trace TP-024 to find is_vb for spriteram; not written at the start of vblank TP-024 [Issue]  
-- Verify sprite lag priority for TP-024; currently 2 frames [Issue]  
-- ~~Sprite warping of player due to instable timings TP-024~~ [Issue]  
-- ~~Audio drift; occurs on TP-024 and TP-033 (Reference clk implementation / CPU writes)~~ [Issue]  
-- ~~Analog screen flip shifts one row of pixels TP-024~~ [Issue]  
-- ~~Analog screen flip cuts one row of pixels TP-024 / TP-033~~ [Issue]  
-- ~~Sprite flicker on enemies TP-024~~ [Issue]  
-- ~~Sprite flicker on left side TP-024~~ [Issue]  
+- Reference TP-023 schematics and compare variations with TP-024 PCB [**Task**]  
+- Verify clock domains for TP-024  [**Task**]  
+- Verify PCM and OPM levels on TP-024 [**Task**]  
+- ~~94.5 MHz Integer PLL for clocks~~ [**Task**]  
+- ~~Update clocking for 94.5Mhz PLL~~ [**Task**]  
+- ~~Add volume toggles for ADPCM and OPM audio~~ [**Task**]  
+- ~~Add volume toggles to disable ADPCM and OPM audio~~ [**Task**]  
+- ~~Additional scanline options for scandoubler~~ [**Task**]  
+- ~~Add 31kHz toggle for hi-res CRT~~ [**Task**]  <br><br>
+- Trace TP-024 to find is_vb for spriteram; not written at the start of vblank TP-024 [**Issue**]  
+- Verify sprite lag priority for TP-024; currently 2 frames [**Issue**]  
+- ~~Sprite warping of player due to instable timings TP-024~~ [**Issue**]  
+- ~~Audio drift; occurs on TP-024 and TP-033 (Reference clk implementation / CPU writes)~~ [**Issue**]  
+- ~~Analog screen flip shifts one row of pixels TP-024~~ [**Issue**]  
+- ~~Analog screen flip cuts one row of pixels TP-024 / TP-033~~ [**Issue**]  
+- ~~Sprite flicker on enemies TP-024~~ [**Issue**]  
+- ~~Sprite flicker on left side TP-024~~ [**Issue**]  
 
 # PCB Check List
 

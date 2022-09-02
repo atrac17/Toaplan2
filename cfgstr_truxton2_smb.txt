@@ -20,7 +20,7 @@ P1-;
 d5P1o9,Vertical Crop,Disabled,216p(5x);d5P1oAD,Crop Offset,0,2,4,8,10,12,-12,-10,-8,-6,-4,-2;
 P1oEF,Scale,Normal,V-Integer,Narrower HV-Integer,Wider HV-Integer;
 P2,Audio Settings;
-P2O67,ADPCM Volume,Default,200%,75%,25%;
+P2O67,ADPCM Volume,Default,200%,75%,50%;
 P2oTU,OPM Volume,Default,75%,50%,25%;
 P2-;
 P2O8,ADPCM Audio,On,Off;
