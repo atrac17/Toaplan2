@@ -84,7 +84,7 @@ module truxton2_game(
     input         prog_rdy,
 
     //dip switches
-    input [31:0] status,
+    input [63:0] status,
     input        service,
     input        dip_pause,
     inout        dip_flip,
