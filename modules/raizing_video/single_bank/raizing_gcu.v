@@ -403,7 +403,7 @@ wire spriteram_we = GP9001RAM_WE && (GP9001RAM_ADDR>=14'h1800 && GP9001RAM_ADDR<
 
 //sprite lag fix
 reg [1:0] cur_buf = 0;
-wire [1:0] cur_buf_rd = (GAME==DEFAULT || TRUXTON2 || SNOWBRO2) ? 
+wire [1:0] cur_buf_rd = (GAME==DEFAULT || GAME == TRUXTON2 || GAME == SNOWBRO2) ? 
                         (cur_buf == 0 ? 0 :
                         cur_buf == 1 ? 1 :
                         cur_buf == 2 ? 2 :
