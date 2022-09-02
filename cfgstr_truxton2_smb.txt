@@ -3,15 +3,15 @@
 // 0         1         2         3          4         5         6   
 // 01234567890123456789012345678901 23456789012345678901234567890123
 // 0123456789ABCDEFGHIJKLMNOPQRSTUV 0123456789ABCDEFGHIJKLMNOPQRSTUV
-// XXXXXX    X     XXXX                  XX  XXXXXXXXXXXXXXXXXXXXXX 
+// XXXXXX    X     XXXX                  XX  XXXXXXXXXXXXXXXXXXXXXXX
 
 JTOAPLAN2;;
-DIP;
 P1,Video Settings;
 H0P1OGH,Aspect Ratio,Original,Full Screen,[ARC1],[ARC2];
 H4P1o78,Rotate Screen,Yes,No (Original),No (Flip);
 P1-;
 d3P1O35,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%,CRT 75%,CRT 100%;
+P1oV,Force Scandoubler,Off,31kHz;
 P1-;
 P1oLO,CRT H Offset,0,+1,+2,+3,+4,+5,+6,+7,-8,-7,-6,-5,-4,-3,-2,-1;
 P1oPS,CRT V Offset,0,+1,+2,+3,+4,+5,+6,+7,-8,-7,-6,-5,-4,-3,-2,-1;
@@ -19,14 +19,17 @@ P1oG,CRT Scale Enable,Off,On;H2P1oHK,CRT scale factor,0,+1,+2,+3,+4,+5,+6,+7,-8,
 P1-;
 d5P1o9,Vertical Crop,Disabled,216p(5x);d5P1oAD,Crop Offset,0,2,4,8,10,12,-12,-10,-8,-6,-4,-2;
 P1oEF,Scale,Normal,V-Integer,Narrower HV-Integer,Wider HV-Integer;
+P2,Audio Settings;
+P2O67,ADPCM Volume,Default,200%,75%,25%;
+P2oTU,OPM Volume,Default,75%,50%,25%;
+P2-;
+P2O8,ADPCM Audio,On,Off;
+P2O9,OPM Audio,On,Off;
 -;
-O67,ADPCM Volume,Default, Maximum, Minimum, Minimal;
-oTU,OPM Volume,Default, Maximum, Minimum, Minimal;
-O8,ADPCM Audio,On,Off;
-O9,OPM Audio,On,Off;
+DIP;
 -;
 R0,Reset;
-V,v20220901
+V,v20220902
 
 // Status Bit Map: JTFRAME
 //              Upper Case                     Lower Case           

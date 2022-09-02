@@ -72,11 +72,29 @@ wire [17:0] oki0_pcm_addr;
  initial fd = $fopen("logsound.txt", "w");
 `endif
 
-wire [7:0]
-fmgain = GAME == TRUXTON2 ? 8'h10 :
-         8'h10,
-pcmgain = GAME == TRUXTON2 ? 8'h10 :
-          8'h10;
+reg [7:0] fmgain;
+reg [7:0] pcmgain;
+
+always @(posedge CLK96, posedge RESET96) begin
+if(RESET96) begin
+pcmgain<=0;
+fmgain<=0;
+end else begin
+case( FX_LEVEL )
+0: pcmgain <= 8'h0c ;   // 75%
+1: pcmgain <= 8'h08 ;   // 50%
+2: pcmgain <= 8'h10 ;   // 100% aka Default
+3: pcmgain <= 8'h20 ;   // 200%
+endcase
+
+case( FM_LEVEL )
+0: fmgain <= 8'h08 ;   // 50%
+1: fmgain <= 8'h04 ;   // 25%
+2: fmgain <= 8'h10 ;   // 100% aka Default
+3: fmgain <= 8'h0c ;   // 75%
+endcase
+end
+end
 
 always @(posedge CLK96) begin
     peak <= peak_l | peak_r;
@@ -89,7 +107,6 @@ always @(posedge CLK96) begin
     final_left<=fm_left;
     final_right<=fm_right;
     final_oki0<=oki0_pre;
-    gain1<=pcmgain + (FX_LEVEL<<1);
 end
 
 assign right = left;
@@ -104,12 +121,12 @@ jtframe_mixer #(.W0(16), .W1(14), .W2(16), .WOUT(16)) u_mix_left(
     .ch2    ( final_right ),
     .ch3    ( 16'd0     ),
     // gain for each channel in 4.4 fixed point format
-    .gain0  ( FM_EN ? fmgain + (FM_LEVEL<<1) : 16'd0 ),
-    .gain1  ( PSG_EN ? gain1 + (FX_LEVEL<<1) : 16'd0 ),
-    .gain2  ( FM_EN ? fmgain + (FM_LEVEL<<1) : 16'd0 ),
-    .gain3  ( 8'd0                                   ),
-    .mixed  ( left                                   ),
-    .peak   ( peak_l                                 )
+    .gain0  ( FM_EN ? fmgain : 16'd0   ),
+    .gain1  ( PSG_EN ? pcmgain : 16'd0 ),
+    .gain2  ( FM_EN ? fmgain : 16'd0   ),
+    .gain3  ( 8'd0                     ),
+    .mixed  ( left                     ),
+    .peak   ( peak_l                   )
 );
 
 assign PCM_ADDR = GAME == TRUXTON2 ? (oki0_pcm_addr & 'h3FFFF) :
