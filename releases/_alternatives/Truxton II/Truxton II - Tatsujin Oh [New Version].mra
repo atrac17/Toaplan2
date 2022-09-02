@@ -1,8 +1,21 @@
+<!--   The following changes have been made to the base game:
+       More bomb drops
+       Higher bomb capacity
+       1up items will spawn and will award actual 1ups no matter how many lives you have
+       The order of item drops is reset after each death, continue or new game.
+       Weapon power levels are at least at Truxton 2 Normal first loop levels across all regions, difficulty settings and loops. In addition:
+       The main and red shot are buffed at low levels
+       The green weapon is buffed all around
+       The blue weapon is buffed all around
+       High score screen copyright text now includes “NEW VERSION”
+       For more information visit https://www.romhacking.net/hacks/5707/
+-->
+
 <misterromdescription>
     <name>Truxton II / Tatsujin Oh</name>
-    <setname>truxton2</setname>
+    <setname>truxton2n</setname>
     <rbf>truxton2</rbf>
-    <mameversion>0245</mameversion>
+    <mameversion>arcade_offset</mameversion>
     <year>1992</year>
     <manufacturer>Toaplan</manufacturer>
     <players>2</players>
@@ -13,11 +26,11 @@
     <category>Shoot'em up</category>
     <catver>Shooter / Flying Vertical</catver>
     <mraauthor>atrac17</mraauthor>
-    <rom index="0" zip="truxton2.zip" md5="None" address="0x30000000">
+    <rom index="0" zip="truxton2n.zip" md5="None" address="0x30000000">
         <!-- mapper for game 00 - default / truxton2 -->
         <part>00</part>
         <!-- maincpu - starts at 0x0 -->
-        <part name="tp024_1.bin" crc="f5cfe6ee"/>
+        <part name="tp024_1.bin" crc="599ed4e3"/>
         <!-- gp9001_0 - starts at 0x80000 -->
         <interleave output="16">
             <part name="tp024_4.bin" crc="805c449e" map="01"/>

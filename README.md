@@ -47,7 +47,8 @@ The intent is for this core to be a 1:1 playable implementation of Toaplan V2 ha
 - ~~Add volume toggles for ADPCM and OPM audio~~ [**Task**]  
 - ~~Add volume toggles to disable ADPCM and OPM audio~~ [**Task**]  
 - ~~Additional scanline options for scandoubler~~ [**Task**]  
-- ~~Add 31kHz toggle for hi-res CRT~~ [**Task**]  <br><br>
+- ~~Add 31kHz toggle for hi-res CRT~~ [**Task**]  
+- ~~Add [Truxton II - Tatsujin Oh](https://www.romhacking.net/hacks/5707/) [New Version] as an alternate~~ [**Request**]<br><br>
 - Trace TP-024 to find is_vb for spriteram; not written at the start of vblank TP-024 [**Issue**]  
 - Verify sprite lag priority for TP-024; currently 2 frames [**Issue**]  
 - ~~Sprite warping of player due to instable timings TP-024~~ [**Issue**]  
