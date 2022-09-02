@@ -315,7 +315,6 @@ always @(*) begin
     toaplan2_coinword_w_cs = sel_io && (addr_8[11:0] == 11'h01F);    // 0x70001F (TRUXTON2)
 
     //sound
-    sel_ym2151<= sel_io && (addr_8[7:0] == 'h14 || addr_8[7:0] == 'h16);
     sel_oki<= sel_io && (addr_8[7:0] == 'h10);
 end
 
