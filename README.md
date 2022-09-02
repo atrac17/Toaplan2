@@ -41,8 +41,8 @@ The intent is for this core to be a 1:1 playable implementation of Toaplan V2 ha
 
 - Reference TP-023 schematics and compare variations with TP-024 PCB  
 - Verify clock domains for TP-024  
-- Update to precision clocking for 96Mhz  
-- Audio drift; occurs on TP-024 and TP-033 (verify int on YM2151)  
+- Audio drift; occurs on TP-024 and TP-033 (Reference clk implementation)   
+- ~~Update to precision clocking for 96Mhz ~~  
 - ~~Analog screen flip cuts one row of pixels~~  
 - ~~Sprite flicker on left side TP-024~~  <br><br>
 - **Please do not report issues at this time, this FPGA implementation is in an alpha state.**  
