@@ -168,6 +168,7 @@ wire          [7:0] OKI_DIN;
 wire          [7:0] YM2151_DIN;
 wire          [7:0] YM2151_DOUT;
 wire          [7:0] OKI_DOUT;
+wire                OKI_BANK;
 
 //PCM
 wire PCM_CS;
@@ -306,7 +307,8 @@ snowbro2_cpu u_cpu (
     .OKI_DIN(OKI_DIN),
     .YM2151_DIN(YM2151_DIN),
     .YM2151_DOUT(YM2151_DOUT),
-    .OKI_DOUT(OKI_DOUT)
+    .OKI_DOUT(OKI_DOUT),
+    .OKI_BANK(OKI_BANK)
 );
 
 raizing_video u_video(
@@ -411,7 +413,8 @@ snowbro2_sound u_sound(
     .FM_LEVEL(dip_fmlevel),
     .PSG_EN(enable_psg),
     .FM_EN(enable_fm),
-    .DIP_PAUSE(DIP_PAUSE)
+    .DIP_PAUSE(DIP_PAUSE),
+    .OKI_BANK(OKI_BANK)
 );
 
 //sdram

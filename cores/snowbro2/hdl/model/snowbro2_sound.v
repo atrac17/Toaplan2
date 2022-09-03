@@ -47,6 +47,7 @@ module snowbro2_sound (
     output         [7:0] YM2151_DOUT,
     output         [7:0] OKI_DOUT,
 
+    input                OKI_BANK,
     input          [7:0] GAME,
     input          [1:0] FX_LEVEL,
     input          [1:0] FM_LEVEL,
@@ -129,8 +130,7 @@ jtframe_mixer #(.W0(16), .W1(14), .W2(16), .WOUT(16)) u_mix_left(
     .peak   ( peak_l                   )
 );
 
-assign PCM_ADDR = GAME == SNOWBRO2 ? (oki0_pcm_addr & 'h3FFFF) :
-                                     (oki0_pcm_addr & 'h3FFFF);
+assign PCM_ADDR = GAME == SNOWBRO2 ? { OKI_BANK , oki0_pcm_addr[17:0] } :  oki0_pcm_addr[17:0];
 
 assign PCM_CS = 1'b1;
 
@@ -138,7 +138,7 @@ jt6295 #(.INTERPOL(1)) u_adpcm_0(
     .rst        ( RESET96             ),
     .clk        ( CLK96               ),
     .cen        ( OKI_CEN & DIP_PAUSE ),
-    .ss         ( 1'b0                ),
+    .ss         ( 1'b1                ),
     // CPU interface
     .wrn        ( OKI_WE              ),         // active low
     .din        ( OKI_DIN             ),

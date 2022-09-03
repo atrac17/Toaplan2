@@ -94,7 +94,8 @@ module snowbro2_cpu (
     output          [7:0] OKI_DIN,
     output          [7:0] YM2151_DIN,
     input           [7:0] YM2151_DOUT,
-    input           [7:0] OKI_DOUT
+    input           [7:0] OKI_DOUT,
+    output reg            OKI_BANK
 );
 
 localparam DEFAULT  = 'h0;  // DEFAULT (GAREGGA)
@@ -140,14 +141,15 @@ assign CPU_PRG_CS = pre_sel_rom;
 
 //sound assigns
 reg sel_oki;
-wire sel_ym2151 = YM2151_CS & ~RW;
-assign YM2151_CS = sel_io && (addr_8[7:0] == 'h14 || addr_8[7:0] == 'h16);
+assign YM2151_CS = (addr_8[23:20] == 'b0101);
 assign OKI_CS = sel_oki;
 assign YM2151_WE = RW;
 assign YM2151_WR_CMD = A[1];
 assign OKI_WE = ~(OKI_CS && !RW);
 assign OKI_DIN = cpu_dout[7:0];
 assign YM2151_DIN = cpu_dout[7:0];
+reg oki_bankswitch;
+wire sel_ym2151 = YM2151_CS & ~RW;
 
 always @(posedge CLK96, posedge RESET96) begin
     if( RESET96 ) begin
@@ -181,7 +183,6 @@ reg gp9001_vdp_device_r_cs,
     read_port_dswb_r_cs,
     read_port_jmpr_r_cs,
     toaplan2_coinword_w_cs,
-    soundlatch_w,
     video_count_r_cs;
 
 //debugging 
@@ -210,21 +211,21 @@ always @(posedge CLK96 or posedge RESET96) begin
                 $fwrite(fd, "time: %t, addr: %h, uds: %h, lds: %h, rw: %h, cpu_dout: %h, cpu_din: %h, sel_status: %b\n", $time/1000, addr_8, UDSn, LDSn, RW, cpu_dout, cpu_din, {sel_rom, sel_ram, sel_gp9001, sel_io});
 
             //68k ROM
-            pre_sel_rom <= GAME == SNOWBRO2 ? addr_8 <= 'h7FFFF :                              // (SNOWBRO2)
+            pre_sel_rom <= GAME == SNOWBRO2 ? addr_8 <= 'h7FFFF :          // (SNOWBRO2)
                                               addr_8 <= 'h7FFFF;
             CPU_PRG_ADDR <= A[19:1];
 
             //RAM
-            pre_sel_ram <= addr_8[23:16] == 8'b0001_0000;                                      // 0x100000 - 0x10FFFF (SNOWBRO2)
+            pre_sel_ram <= addr_8[23:16] == 8'b0001_0000;                  // 0x100000 - 0x10FFFF (SNOWBRO2)
 
             //GP9001
-            sel_gp9001 <= addr_8[23:20] == 4'b0011;                                            // 0x300000 - 0x30000D (SNOWBRO2)
+            sel_gp9001 <= addr_8[23:20] == 4'b0011;                        // 0x300000 - 0x30000D (SNOWBRO2)
 
             //direct access to vtx ram, no dma controller
-            pre_sel_palram <= addr_8[23:20] == 4'b0100;                                        // 0x400000 - 0x400FFF (SNOWBRO2)
+            pre_sel_palram <= addr_8[23:20] == 4'b0100;                    // 0x400000 - 0x400FFF (SNOWBRO2)
 
             //IO
-            sel_io <= addr_8[23:12] == 12'b0111_0000_0000;                                     // 0x700034 - 0x700035 (SNOWBRO2)
+            sel_io <= addr_8[23:12] == 12'b0111_0000_0000;                 // 0x700034 - 0x700035 (SNOWBRO2)
 
         end else begin
             pre_sel_rom<=0;
@@ -239,24 +240,25 @@ end
 // I/O
 always @(*) begin
     //gp9001
-    gp9001_vdp_device_r_cs = sel_gp9001 && RW;                       // 0x300000-D Read (SNOWBRO2)
-    gp9001_vdp_device_w_cs = sel_gp9001 && !RW;                      // 0x300000-D Write (SNOWBRO2)
+    gp9001_vdp_device_r_cs = sel_gp9001 && RW;                            // 0x300000-D Read (SNOWBRO2)
+    gp9001_vdp_device_w_cs = sel_gp9001 && !RW;                           // 0x300000-D Write (SNOWBRO2)
 
     //dips, controls, oki banking
-    read_port_dswa_r_cs = sel_io && (addr_8[11:0] == 11'h004) && RW;       // 0x700004-05 (SNOWBRO2)
-    read_port_dswb_r_cs = sel_io && (addr_8[11:0] == 11'h008) && RW;       // 0x700008-09 (SNOWBRO2)
-    read_port_jmpr_r_cs = sel_io && (addr_8[11:0] == 11'h000) && RW;       // 0x700000-01 (SNOWBRO2)
-    read_port_in1_r_cs = sel_io && (addr_8[11:0] == 11'h00C) && RW;        // 0x70000C-0D (SNOWBRO2)
-    read_port_in2_r_cs = sel_io && (addr_8[11:0] == 11'h010) && RW;        // 0x700010-11 (SNOWBRO2)
-    read_port_in3_r_cs = sel_io && (addr_8[11:0] == 11'h014) && RW;        // 0x700014-15 (SNOWBRO2)
-    read_port_in4_r_cs = sel_io && (addr_8[11:0] == 11'h018) && RW;        // 0x700018-19 (SNOWBRO2)
-    read_port_sys_r_cs = sel_io && (addr_8[11:0] == 11'h01C) && RW;        // 0x70001C-1D (SNOWBRO2)
+    read_port_dswa_r_cs = sel_io && (addr_8[11:0] == 11'h004) && RW;      // 0x700004-05 (SNOWBRO2)
+    read_port_dswb_r_cs = sel_io && (addr_8[11:0] == 11'h008) && RW;      // 0x700008-09 (SNOWBRO2)
+    read_port_jmpr_r_cs = sel_io && (addr_8[11:0] == 11'h000) && RW;      // 0x700000-01 (SNOWBRO2)
+    read_port_in1_r_cs = sel_io && (addr_8[11:0] == 11'h00C) && RW;       // 0x70000C-0D (SNOWBRO2)
+    read_port_in2_r_cs = sel_io && (addr_8[11:0] == 11'h010) && RW;       // 0x700010-11 (SNOWBRO2)
+    read_port_in3_r_cs = sel_io && (addr_8[11:0] == 11'h014) && RW;       // 0x700014-15 (SNOWBRO2)
+    read_port_in4_r_cs = sel_io && (addr_8[11:0] == 11'h018) && RW;       // 0x700018-19 (SNOWBRO2)
+    read_port_sys_r_cs = sel_io && (addr_8[11:0] == 11'h01C) && RW;       // 0x70001C-1D (SNOWBRO2)
 
     //coin
-    toaplan2_coinword_w_cs = sel_io && (addr_8[11:0] == 11'h034);    // 0x700034 (SNOWBRO2)
+    toaplan2_coinword_w_cs = sel_io && (addr_8[11:0] == 11'h034);         // 0x700034 (SNOWBRO2)
 
     //sound
-    sel_oki<= sel_io && (addr_8[7:0] == 'h10);
+    sel_oki = (addr_8[23:20] == 'b0110);                                  // 0x600001-01 (SNOWBRO2)
+    oki_bankswitch = sel_io && (addr_8[11:0] == 11'h030) && !LDSn && !RW; // 0x700031 (SNOWBRO2)
 end
 
 wire [15:0] video_status_hs = (16'hFF00 & (!HSYNC ? ~16'h8000 : 16'hFFFF));
@@ -311,8 +313,12 @@ always @(posedge CLK96) begin
         GP9001_OP_READ_RAM_H <= 1'b0;
         GP9001_OP_READ_RAM_L <= 1'b0;
         GP9001_OP_SET_RAM_PTR <= 1'b0;
+        OKI_BANK<=0;
     end else begin
-        if(gp9001_vdp_device_r_cs) begin
+        if(oki_bankswitch && !RW) begin
+            OKI_BANK <= cpu_dout[0];
+        end
+        else if(gp9001_vdp_device_r_cs) begin
             case(addr_8[3:0])
                 4'b0100: GP9001_OP_READ_RAM_H <= 1'b1; //4
                 4'b0110: GP9001_OP_READ_RAM_L <= 1'b1; //6
@@ -391,7 +397,7 @@ assign BUSACK = ~BGACKn;
 
 jtframe_68kdma #(.BW(1)) u_arbitration(
     .clk        (CLK96),
-    .cen        (CEN16B),
+    .cen        (CEN16),
     .rst        (RESET96),
     .cpu_BRn    (BRn),
     .cpu_BGACKn (BGACKn),
