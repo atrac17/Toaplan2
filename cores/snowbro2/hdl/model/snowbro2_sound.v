@@ -19,7 +19,7 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-module truxton2_sound (
+module snowbro2_sound (
     input                CLK,
     input                CLK96,
     input                RESET,
@@ -55,7 +55,7 @@ module truxton2_sound (
     input                DIP_PAUSE
 );
 
-localparam DEFAULT = 'h0, TRUXTON2 = 'h1;
+localparam DEFAULT = 'h0, SNOWBRO2 = 'h2;
 wire signed [15:0] fm_left, fm_right;
 wire peak_l, peak_r;
 
@@ -129,7 +129,7 @@ jtframe_mixer #(.W0(16), .W1(14), .W2(16), .WOUT(16)) u_mix_left(
     .peak   ( peak_l                   )
 );
 
-assign PCM_ADDR = GAME == TRUXTON2 ? (oki0_pcm_addr & 'h3FFFF) :
+assign PCM_ADDR = GAME == SNOWBRO2 ? (oki0_pcm_addr & 'h3FFFF) :
                                      (oki0_pcm_addr & 'h3FFFF);
 
 assign PCM_CS = 1'b1;
@@ -155,8 +155,8 @@ jt6295 #(.INTERPOL(1)) u_adpcm_0(
 jt51 u_jt51(
     .rst        ( RESET96                   ),   // reset
     .clk        ( CLK96                     ),   // main clock
-    .cen        ( YM2151_CEN & DIP_PAUSE    ),   // 4mhz
-    .cen_p1     ( YM2151_CEN2 & DIP_PAUSE   ),   // 2mhz, half clock
+    .cen        ( YM2151_CEN & DIP_PAUSE    ),   // 3.375mhz
+    .cen_p1     ( YM2151_CEN2 & DIP_PAUSE   ),   // 1.6875mhz, half clock
     .cs_n       ( !YM2151_CS                ),   // chip select
     .wr_n       ( YM2151_WE                 ),   // write
     .a0         ( YM2151_WR_CMD             ),

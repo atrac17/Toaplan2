@@ -19,11 +19,11 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-module truxton2_sdram #(
+module snowbro2_sdram #(
     //8 bit addressing
-    parameter TRUXTON2_ROM01_PRG_LEN = 25'h80000,
-              TRUXTON2_GP9001_TILE_LEN = 25'h200000,
-              TRUXTON2_PCM_DATA_LEN = 25'h80000,
+    parameter SNOWBRO2_ROM01_PRG_LEN = 25'h80000,
+              SNOWBRO2_GP9001_TILE_LEN = 25'h200000,
+              SNOWBRO2_PCM_DATA_LEN = 25'h80000,
 
               DEFAULT_ROM01_PRG_LEN = 25'h80000,
               DEFAULT_GP9001_TILE_LEN = 25'h200000,
@@ -102,28 +102,18 @@ module truxton2_sdram #(
     input  [19:0] PCM_ADDR,
     output [7:0]  PCM_DOUT,
 
-    //Text ROM
-    input  [13:0] TEXTROM_ADDR,
-    output [15:0] TEXTROM_DOUT,
-
-    //textrom cpu accesses
-    input  [15:0] TEXTROM_CPU_DIN,
-    output [15:0] TEXTROM_CPU_DOUT,
-    input  [1:0]  TEXTROM_CPU_WE,
-    input  [13:0] TEXTROM_CPU_ADDR,
-
     output reg [7:0] GAME
 );
 
 //loader
 assign DWNLD_BUSY = DOWNLOADING;
-localparam DEFAULT = 0, TRUXTON2 = 1;
+localparam DEFAULT = 0, SNOWBRO2 = 2;
 
-wire [24:0] ROM01_PRG_LEN = GAME == TRUXTON2 ? TRUXTON2_ROM01_PRG_LEN :
+wire [24:0] ROM01_PRG_LEN = GAME == SNOWBRO2 ? SNOWBRO2_ROM01_PRG_LEN :
                             DEFAULT_ROM01_PRG_LEN,
-           GP9001_TILE_LEN = GAME == TRUXTON2 ? TRUXTON2_GP9001_TILE_LEN :
+           GP9001_TILE_LEN = GAME == SNOWBRO2 ? SNOWBRO2_GP9001_TILE_LEN :
                              DEFAULT_GP9001_TILE_LEN,
-           PCM_DATA_LEN = GAME == TRUXTON2 ? TRUXTON2_PCM_DATA_LEN :
+           PCM_DATA_LEN = GAME == SNOWBRO2 ? SNOWBRO2_PCM_DATA_LEN :
                           DEFAULT_PCM_DATA_LEN;
 
 wire [25:0] ROM_BASE = 26'h1,
@@ -281,22 +271,6 @@ jtframe_rom_4slots #(
     .data_dst    (BA_DST[1]),
     .data_rdy    (BA_RDY[1]),
     .data_read   (DATA_READ)
-);
-
-//TEXT ROM
-jtframe_dual_ram16 #(.aw(14)) u_textrom(
-    .clk0(CLK),
-    .clk1(CLK),
-    // CPU access
-    .data0(TEXTROM_CPU_DIN),
-    .addr0(TEXTROM_CPU_ADDR),
-    .we0(TEXTROM_CPU_WE),
-    .q0(TEXTROM_CPU_DOUT),
-    // Port 1
-    .data1(16'd0),
-    .addr1(TEXTROM_ADDR),
-    .we1(2'b00),
-    .q1(TEXTROM_DOUT)
 );
 
 endmodule

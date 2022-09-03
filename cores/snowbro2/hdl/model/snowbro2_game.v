@@ -19,7 +19,7 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-module truxton2_game(
+module snowbro2_game(
     //clock and reset
     input rst,
     input rst48,
@@ -107,7 +107,7 @@ module truxton2_game(
 );
 
 /*MAIN GLOBALS*/
-localparam DEFAULT = 0, TRUXTON2 = 1;
+localparam DEFAULT = 0, SNOWBRO2 = 2;
 wire RESET = rst48;
 wire CLK = clk48;
 wire CLK96 = clk;
@@ -119,23 +119,23 @@ wire RESET6 = rst6;
 
 wire CEN16, CEN16B;
 wire FLIP = GAME==DEFAULT  ? dipsw[1]:  // Placeholder
-            GAME==TRUXTON2 ? dipsw[1]:  // Screen inversion for TRUXTON2
+            GAME==SNOWBRO2 ? dipsw[1]:  // Screen inversion for SNOWBRO2
             0;
 
 // assign game_led = downloading ? 1'b0 : 1'b1;
 
 /*CLOCKS*/
-wire CEN675, CEN675B, CEN4, CEN4B, CEN1350, CEN1350B;
+wire CEN675, CEN675B, CEN2p7, CEN2p7B, CEN1350, CEN1350B;
 wire CEN3p375, CEN3p375B, CEN1p6875, CEN1p6875B;
-truxton2_clock u_clocken (
+snowbro2_clock u_clocken (
     .CLK(CLK),
     .CLK96(CLK96),
     .CLK24(CLK24),
     .CLK6(CLK6),
     .CEN675(CEN675),
     .CEN675B(CEN675B),
-    .CEN4(CEN4),
-    .CEN4B(CEN4B),
+    .CEN2p7(CEN2p7),
+    .CEN2p7B(CEN2p7B),
     .CEN3p375(CEN3p375),
     .CEN3p375B(CEN3p375B),
     .CEN1p6875(CEN1p6875),
@@ -214,7 +214,7 @@ wire BR = 1'b0;
 
 //dip switch
 wire [23:0] DIPSW = GAME == DEFAULT ? {dipsw[23:2], 1'b0, dipsw[0]} :    // Placeholder
-                    GAME == TRUXTON2 ? {dipsw[23:2], 1'b0, dipsw[0]} :   // Screen inversion for TRUXTON2
+                    GAME == SNOWBRO2 ? {dipsw[23:2], 1'b0, dipsw[0]} :   // Screen inversion for SNOWBRO2
                     dipsw[23:0];
 wire DIP_TEST = dip_test;
 wire DIP_PAUSE = dip_pause;
@@ -227,16 +227,6 @@ wire LHBLL, LVBLL;
 wire [8:0] V;
 
 //vrams
-wire [14:0] TEXTROM_ADDR;
-wire [15:0] TEXTROM_DATA;
-wire [11:0] TEXTVRAM_ADDR;
-wire [15:0] TEXTVRAM_DATA;
-wire [7:0] TEXTSELECT_ADDR;
-wire [15:0] TEXTSELECT_DATA;
-wire [7:0] TEXTSCROLL_ADDR;
-wire [15:0] TEXTSCROLL_DATA;
-wire [13:0] TEXTGFXRAM_ADDR;
-wire [15:0] TEXTGFXRAM_DATA;
 wire [10:0] PALRAM_ADDR;
 wire [15:0] PALRAM_DATA;
 wire [13:0] SRAM_ADDR;
@@ -244,15 +234,9 @@ wire [7:0] SRAM_DATA;
 wire [7:0] SRAM_DIN;
 wire SRAM_WE;
 
-//textrom
-wire  [15:0] TEXTROM_CPU_DIN;
-wire  [15:0] TEXTROM_CPU_DOUT;
-wire   [1:0]  TEXTROM_CPU_WE;
-wire  [14:0] TEXTROM_CPU_ADDR;
-
 
     //cpu
-truxton2_cpu u_cpu (
+snowbro2_cpu u_cpu (
     .CLK(CLK),
     .CLK96(CLK96),
     .CEN16(CEN16),
@@ -304,19 +288,8 @@ truxton2_cpu u_cpu (
     .FBLANK(FBLANK),
 
     //VRAMs
-    .TEXTVRAM_ADDR(TEXTVRAM_ADDR),
-    .TEXTVRAM_DATA(TEXTVRAM_DATA),
     .PALRAM_ADDR(PALRAM_ADDR),
     .PALRAM_DATA(PALRAM_DATA),
-    .TEXTSELECT_ADDR(TEXTSELECT_ADDR),
-    .TEXTSELECT_DATA(TEXTSELECT_DATA),
-    .TEXTSCROLL_ADDR(TEXTSCROLL_ADDR),
-    .TEXTSCROLL_DATA(TEXTSCROLL_DATA),
-
-    .TEXTROM_CPU_DIN(TEXTROM_CPU_DIN),
-    .TEXTROM_CPU_DOUT(TEXTROM_CPU_DOUT),
-    .TEXTROM_CPU_WE(TEXTROM_CPU_WE),
-    .TEXTROM_CPU_ADDR(TEXTROM_CPU_ADDR),
 
     .GAME(GAME),
 
@@ -360,9 +333,6 @@ raizing_video u_video(
     .GFX0SCR2_ADDR(GFX0SCR2_ADDR),
     .GFX0SCR2_DOUT(GFX0SCR2_DOUT),
 
-    .TEXTROM_ADDR(TEXTROM_ADDR),
-    .TEXTROM_DATA(TEXTROM_DATA),
-
     //gp9001
     .GP9001CS(GP9001CS),
     .GP9001ACK(GP9001ACK),
@@ -392,28 +362,22 @@ raizing_video u_video(
     .GREEN(green),
     .BLUE(blue),
 
-    .TEXTVRAM_ADDR(TEXTVRAM_ADDR),
-    .TEXTVRAM_DATA(TEXTVRAM_DATA),
     .PALRAM_ADDR(PALRAM_ADDR),
     .PALRAM_DATA(PALRAM_DATA),
-    .TEXTSELECT_ADDR(TEXTSELECT_ADDR),
-    .TEXTSELECT_DATA(TEXTSELECT_DATA),
-    .TEXTSCROLL_ADDR(TEXTSCROLL_ADDR),
-    .TEXTSCROLL_DATA(TEXTSCROLL_DATA),
 
     .GAME(GAME),
     .FLIP(FLIP)
 );
 
 wire ym2151_cen, ym2151_cen2, oki_cen;
-assign ym2151_cen = GAME == TRUXTON2 ? CEN3p375 :
+assign ym2151_cen = GAME == SNOWBRO2 ? CEN3p375 :
                     CEN3p375;
-assign ym2151_cen2 = GAME == TRUXTON2 ? CEN1p6875 :
+assign ym2151_cen2 = GAME == SNOWBRO2 ? CEN1p6875 :
                      CEN1p6875;
-assign oki_cen = GAME == TRUXTON2 ? CEN4 :
-                 CEN4;
+assign oki_cen = GAME == SNOWBRO2 ? CEN2p7 :
+                 CEN2p7;
 
-truxton2_sound u_sound(
+snowbro2_sound u_sound(
     .CLK(CLK),
     .CLK96(CLK96),
     .RESET(RESET),
@@ -447,7 +411,7 @@ truxton2_sound u_sound(
 );
 
 //sdram
-truxton2_sdram u_sdram (
+snowbro2_sdram u_sdram (
     .RESET(RESET96),
     .CLK(CLK96),
     .RESET48(RESET),
@@ -517,14 +481,6 @@ truxton2_sdram u_sdram (
     .PCM_OK(PCM_OK),
     .PCM_ADDR(PCM_ADDR),
     .PCM_DOUT(PCM_DOUT),
-
-    //text ROM
-    .TEXTROM_ADDR(TEXTROM_ADDR),
-    .TEXTROM_DOUT(TEXTROM_DATA),
-    .TEXTROM_CPU_DIN(TEXTROM_CPU_DIN),
-    .TEXTROM_CPU_DOUT(TEXTROM_CPU_DOUT),
-    .TEXTROM_CPU_WE(TEXTROM_CPU_WE),
-    .TEXTROM_CPU_ADDR(TEXTROM_CPU_ADDR),
 
     .GAME(GAME)
 );

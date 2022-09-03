@@ -19,7 +19,7 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-module truxton2_cpu (
+module snowbro2_cpu (
     input CLK,
     input CLK96,
     input RESET,
@@ -79,22 +79,9 @@ module truxton2_cpu (
     input            FBLANK,
     input      [7:0] GAME,
 
-    //text VRAM interface
-    //text vram
-    input  [11:0] TEXTVRAM_ADDR,
-    output [15:0] TEXTVRAM_DATA,
-
     //palette ram
     input  [10:0] PALRAM_ADDR,
     output [15:0] PALRAM_DATA,
-
-    //text select ram
-    input  [7:0]  TEXTSELECT_ADDR,
-    output [15:0] TEXTSELECT_DATA,
-
-    //text scroll ram
-    input  [7:0]  TEXTSCROLL_ADDR,
-    output [15:0] TEXTSCROLL_DATA,
 
     //sound interface
     output                YM2151_CS,
@@ -105,44 +92,27 @@ module truxton2_cpu (
     output          [7:0] OKI_DIN,
     output          [7:0] YM2151_DIN,
     input           [7:0] YM2151_DOUT,
-    input           [7:0] OKI_DOUT,
-
-    output  [15:0] TEXTROM_CPU_DIN,
-    input   [15:0] TEXTROM_CPU_DOUT,
-    output   [1:0] TEXTROM_CPU_WE,
-    output  [13:0] TEXTROM_CPU_ADDR
+    input           [7:0] OKI_DOUT
 );
 
 localparam DEFAULT  = 'h0;  // DEFAULT (GAREGGA)
-localparam TRUXTON2 = 'h1;  // TRUXTON2 MODULE
+localparam SNOWBRO2 = 'h2;  // SNOWBRO2 MODULE
 
 //address bus
 wire [23:1] A;
 wire [23:0] addr_8 = {A[23:1], 1'b0}; //this makes it easier to follow the memory map.
 wire [15:0] cpu_dout;
-wire sel_ram, sel_txgfxram, sel_rom, sel_ram2;
+wire sel_ram, sel_rom;
 reg ram_ok = 1'b1;
 reg sel_gp9001, sel_io;
 reg dsn_dly;
-reg pre_sel_ram, pre_sel_rom, pre_sel_zrom, pre_sel_txgfxram,
-    reg_sel_ram, reg_sel_rom, reg_sel_zrom, reg_sel_txgfxram;
-reg pre_sel_palram,
-    pre_sel_txvram,
-    pre_sel_txlineselect,
-    pre_sel_txlinescroll,
-    pre_sel_ram2;
-reg reg_sel_palram,
-    reg_sel_txvram,
-    reg_sel_txlineselect,
-    reg_sel_txlinescroll,
-    reg_sel_ram2;
-wire sel_palram, sel_txvram, sel_txlineselect, sel_txlinescroll, sel_txram;
-wire [15:0] wram_cpu_data = !RW && (sel_ram || sel_txgfxram || sel_palram || sel_txvram || sel_txlineselect || sel_txlinescroll || sel_ram2) ? cpu_dout : 16'h0000;
+reg pre_sel_ram, pre_sel_rom, reg_sel_ram, reg_sel_rom;
+reg pre_sel_palram;
+reg reg_sel_palram;
+wire sel_palram;
+wire [15:0] wram_cpu_data = !RW && (sel_ram || sel_palram) ? cpu_dout : 16'h0000;
 wire [15:0] main_ram_q0;
 wire [15:0] main_palram_q0;
-wire [15:0] main_txvram_q0;
-wire [15:0] main_txlineselect_q0;
-wire [15:0] main_txlinescroll_q0;
 wire [15:0] main_ram2_q0;
 
 wire [15:0] main_vram_q1;
@@ -162,19 +132,9 @@ assign LDSWn = RW | LDSn;
 // that causes a false read request to the SDRAM. In order
 // to avoid that a little bit of logic is needed:
 assign sel_ram   = pre_sel_ram; //~BUSn & (dsn_dly ? reg_sel_ram  : pre_sel_ram);
-assign sel_txgfxram = pre_sel_txgfxram;
 assign sel_rom   = ~BUSn & (dsn_dly ? reg_sel_rom : pre_sel_rom);
 assign sel_palram = pre_sel_palram;
-assign sel_txvram = pre_sel_txvram;
-assign sel_txlineselect = pre_sel_txlineselect;
-assign sel_txlinescroll = pre_sel_txlinescroll;
-assign sel_ram2 = pre_sel_ram2;
 assign CPU_PRG_CS = sel_rom;
-
-//txgfxram assigns
-assign TEXTROM_CPU_DIN = {2{wram_cpu_data[7:0]}};
-assign TEXTROM_CPU_WE = {sel_txgfxram && !RW && !A[1], sel_txgfxram && !RW && A[1]};
-assign TEXTROM_CPU_ADDR = (addr_8&'hFFFF)>>2;
 
 //sound assigns
 reg sel_oki;
@@ -191,22 +151,12 @@ always @(posedge CLK96, posedge RESET96) begin
     if( RESET96 ) begin
         reg_sel_rom <= 0;
         reg_sel_ram  <= 0;
-        reg_sel_txgfxram <= 0;
         reg_sel_palram <= 0;
-        reg_sel_txvram <= 0;
-        reg_sel_txlineselect <= 0;
-        reg_sel_txlinescroll <= 0;
-        reg_sel_ram2 <= 0;
         dsn_dly  <= 1;
     end else if(CEN16) begin
         reg_sel_rom <= pre_sel_rom;
         reg_sel_ram  <= pre_sel_ram;
-        reg_sel_txgfxram <= pre_sel_txgfxram;
         reg_sel_palram <= pre_sel_palram;
-        reg_sel_txvram <= pre_sel_txvram;
-        reg_sel_txlineselect <= pre_sel_txlineselect;
-        reg_sel_txlinescroll <= pre_sel_txlineselect;
-        reg_sel_ram2 <= pre_sel_ram2;
         dsn_dly     <= &{UDSWn,LDSWn}; // low if any DSWn was low
     end
 end
@@ -214,11 +164,8 @@ end
 wire FC0, FC1, FC2;
 wire VPAn = ~&{ FC0, FC1, FC2, ~ASn};
 wire BRn, BGACKn, BGn, DTACKn;
-wire bus_cs = |{ pre_sel_rom, pre_sel_ram, pre_sel_palram, pre_sel_txvram, pre_sel_txgfxram || pre_sel_txlineselect,
-                 pre_sel_txlinescroll, pre_sel_ram2, sel_gp9001, sel_io, sel_ym2151};
-wire bus_busy = |{ (sel_ram || sel_palram || sel_txgfxram ||
-                    sel_txvram || sel_txlineselect || 
-                    sel_txlinescroll || sel_ram2) & ~ram_ok, sel_rom & ~CPU_PRG_OK, sel_gp9001 & ~GP9001ACK, sel_ym2151 & YM2151_DOUT[7]};
+wire bus_cs = |{ pre_sel_rom, pre_sel_ram, pre_sel_palram, sel_gp9001, sel_io, sel_ym2151};
+wire bus_busy = |{ (sel_ram || sel_palram) & ~ram_ok, sel_rom & ~CPU_PRG_OK, sel_gp9001 & ~GP9001ACK, sel_ym2151 & YM2151_DOUT[7]};
 
 //i/o bus ports
 reg gp9001_vdp_device_r_cs, gp9001_vdp_device_w_cs, read_port_in1_r_cs, read_port_in2_r_cs, 
@@ -237,12 +184,7 @@ always @(posedge CLK96 or posedge RESET96) begin
     if(RESET96) begin
         pre_sel_rom<=0;
         pre_sel_ram<=0;
-        pre_sel_txgfxram<=0;
         pre_sel_palram<=0;
-        pre_sel_txvram<=0;
-        pre_sel_txlineselect<=0;
-        pre_sel_txlinescroll<=0;
-        pre_sel_ram2<=0;
         sel_gp9001<=0;
         sel_io<=0;
         CPU_PRG_ADDR<=19'd0;
@@ -253,7 +195,7 @@ always @(posedge CLK96 or posedge RESET96) begin
             //debugging 
             // $display("time: %t, addr: %h, uds: %h, lds: %h, rw: %h, cpu_dout: %h, cpu_din: %h, sel_status: %b\n", $time/1000, addr_8, UDSn, LDSn, RW, cpu_dout, cpu_din, {sel_rom, sel_ram, sel_sram, sel_z80, sel_gp9001, sel_io});
              if(debug)
-                $fwrite(fd, "time: %t, addr: %h, uds: %h, lds: %h, rw: %h, cpu_dout: %h, cpu_din: %h, sel_status: %b\n", $time/1000, addr_8, UDSn, LDSn, RW, cpu_dout, cpu_din, {sel_rom, sel_ram, sel_txgfxram, sel_gp9001, sel_io});
+                $fwrite(fd, "time: %t, addr: %h, uds: %h, lds: %h, rw: %h, cpu_dout: %h, cpu_din: %h, sel_status: %b\n", $time/1000, addr_8, UDSn, LDSn, RW, cpu_dout, cpu_din, {sel_rom, sel_ram, sel_gp9001, sel_io});
 
             //68k ROM
             pre_sel_rom <= GAME == TRUXTON2 ? addr_8 <= 'h7FFFF :                              // (TRUXTON2)
@@ -263,18 +205,11 @@ always @(posedge CLK96 or posedge RESET96) begin
             //RAM
             pre_sel_ram <= addr_8[23:16] == 8'b0001_0000;                                      // 0x100000 - 0x10FFFF (TRUXTON2)
 
-            pre_sel_txgfxram <= addr_8[23:20] == 4'b0101;                                      // 0x500000 - 0x50FFFF (TRUXTON2)
-
             //GP9001
             sel_gp9001 <= addr_8[23:20] == 4'b0010;                                            // 0x200000 - 0X20000D (TRUXTON2)
 
             //direct access to vtx ram, no dma controller
             pre_sel_palram <= addr_8[23:20] == 4'b0011;                                        // 0x300000 - 0x300FFF (TRUXTON2)
-            pre_sel_txvram <= GAME == TRUXTON2 ? addr_8 >= 'h400000 && addr_8 <= 'h401FFF :
-                                                 addr_8 >= 'h400000 && addr_8 <= 'h401FFF;     // 0x400000 - 0x401FFF (TRUXTON2)
-            pre_sel_txlineselect <= addr_8 >= 'h402000 && addr_8 <= 'h402FFF;                  // 0x402000 - 0x402FFF (TRUXTON2) // first 0x200 is lineselect
-            pre_sel_txlinescroll <= addr_8 >= 'h403000 && addr_8 <= 'h4031FF;                  // 0x403000 - 0x4031FF (TRUXTON2) // first 0x200 is linescroll
-            pre_sel_ram2 <= addr_8[23:12] == 12'b0100_0000_0011;                               // 0x403200 - 0x403FFF (TRUXTON2)
 
             //IO
             sel_io <= addr_8[23:12] == 12'b0111_0000_0000;                                     // 0x700000 - 0x70001F (TRUXTON2)
@@ -282,12 +217,7 @@ always @(posedge CLK96 or posedge RESET96) begin
         end else begin
             pre_sel_rom<=0;
             pre_sel_ram<=0;
-            pre_sel_txgfxram<=0;
             pre_sel_palram<=0;
-            pre_sel_txvram<=0;
-            pre_sel_txlineselect<=0;
-            pre_sel_txlinescroll<=0;
-            pre_sel_ram2<=0;
             sel_gp9001<=0;
             sel_io<=0;
         end
@@ -337,12 +267,7 @@ always @(posedge CLK96, posedge RESET96) begin
 
                    //todo: ram hookups
                    sel_ram && RW ? main_ram_q0 ://ram reads
-                   sel_txgfxram && RW ? {8'h00, A[1] ? TEXTROM_CPU_DOUT[7:0] : TEXTROM_CPU_DOUT[15:8]} :
                    sel_palram && RW ? main_palram_q0 :
-                   sel_txvram && RW ? main_txvram_q0 :
-                   sel_txlineselect && RW ? main_txlineselect_q0 :
-                   sel_txlinescroll && RW ? main_txlinescroll_q0 :
-                   sel_ram2 && RW ? main_ram2_q0 :
                    gp9001_vdp_device_r_cs && addr_8[3:0] == 'b1100 ? {15'b0, ~int1} : //VBLANK reg
 
                    read_port_in1_r_cs ? {2{p1_ctrl}} : //controller inputs
@@ -531,70 +456,6 @@ jtframe_dual_ram16 #(.aw(11)) u_palram_ram(
     .addr1(PALRAM_ADDR),
     .we1(2'b00),
     .q1(PALRAM_DATA)
-);
-
-//Text VRAM 0x500000 - 0x501FFF
-jtframe_dual_ram16 #(.aw(12)) u_txvram_ram(
-    .clk0(CLK96),
-    .clk1(CLK96),
-    // Port 0 writes
-    .data0(wram_cpu_data),
-    .addr0(A[12:1]),
-    .we0({sel_txvram && !RW && !UDSn, sel_txvram && !RW && !LDSn}),
-    .q0(main_txvram_q0),
-    // Port 1
-    .data1(),
-    .addr1(TEXTVRAM_ADDR),
-    .we1(2'b00),
-    .q1(TEXTVRAM_DATA)
-);
-
-//Text Lineselect 0x502000 - 0x502FFF (first 0x200)
-jtframe_dual_ram16 #(.aw(11)) u_txlineselect_ram(
-    .clk0(CLK96),
-    .clk1(CLK96),
-    // Port 0 writes
-    .data0(wram_cpu_data),
-    .addr0(A[11:1]),
-    .we0({sel_txlineselect && !RW && !UDSn, sel_txlineselect && !RW && !LDSn}),
-    .q0(main_txlineselect_q0),
-    // Port 1
-    .data1(),
-    .addr1(TEXTSELECT_ADDR),
-    .we1(2'b00),
-    .q1(TEXTSELECT_DATA)
-);
-
-//Text Linescroll 0x403000 - 0x403FFF (first 0x200)
-jtframe_dual_ram16 #(.aw(11)) u_txlinescroll_ram(
-    .clk0(CLK96),
-    .clk1(CLK96),
-    // Port 0 writes
-    .data0(wram_cpu_data),
-    .addr0(A[11:1]),
-    .we0({sel_txlinescroll && !RW && !UDSn, sel_txlinescroll && !RW && !LDSn}),
-    .q0(main_txlinescroll_q0),
-    // Port 1
-    .data1(),
-    .addr1(TEXTSCROLL_ADDR),
-    .we1(2'b00),
-    .q1(TEXTSCROLL_DATA)
-);
-
-//RAM2, but not used 0x401000 - 0x4017FF
-jtframe_dual_ram16 #(.aw(10)) u_cpu_wram2(
-    .clk0(CLK96),
-    .clk1(CLK96),
-    // Port 0 writes
-    .data0(wram_cpu_data),
-    .addr0(A[10:1]),
-    .we0({sel_ram2 && !RW && !UDSn, sel_ram2 && !RW && !LDSn}),
-    .q0(main_ram2_q0),
-    // Port 1
-    .data1(),
-    .addr1(),
-    .we1(2'b00),
-    .q1()
 );
 
 endmodule
