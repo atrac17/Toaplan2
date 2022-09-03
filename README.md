@@ -23,7 +23,7 @@ The intent is for this core to be a 1:1 playable implementation of Toaplan V2 ha
 | [**FixEight**](https://en.wikipedia.org/wiki/FixEight)                                             | TP-026 | No  | NEC V25  | Audio & I/O | Pending         | No              |
 | [**V-V**](https://en.wikipedia.org/wiki/Grind_Stormer)                                             | TP-027 | Yes | NEC V25  | Audio       | Pending         | No              |
 | [**Batsugun**](https://en.wikipedia.org/wiki/Batsugun)                                             | TP-030 | No  | NEC V25  | Audio       | Pending         | No              |
-| [**Otenki Paradise: Snow Bros. 2**](https://en.wikipedia.org/wiki/Snow_Bros._2:_With_New_Elves)    | TP-033 | No  | None     | N/A         | Implemented     | No              |
+| [**Otenki Paradise: Snow Bros. 2**](https://en.wikipedia.org/wiki/Snow_Bros._2:_With_New_Elves)    | TP-033 | No  | None     | N/A         | Implemented     | Beta 20220903   |
 
 ## External Modules
 
