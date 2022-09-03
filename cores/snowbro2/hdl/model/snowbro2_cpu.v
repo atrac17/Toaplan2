@@ -48,6 +48,8 @@ module snowbro2_cpu (
     input [1:0]  JOYMODE,
     input [9:0]  JOYSTICK1,
     input [9:0]  JOYSTICK2,
+    input [9:0]  JOYSTICK3,
+    input [9:0]  JOYSTICK4,
     input [3:0]  START_BUTTON,
     input [3:0]  COIN_INPUT,
     input        SERVICE,
@@ -134,7 +136,7 @@ assign LDSWn = RW | LDSn;
 assign sel_ram   = pre_sel_ram; //~BUSn & (dsn_dly ? reg_sel_ram  : pre_sel_ram);
 assign sel_rom   = ~BUSn & (dsn_dly ? reg_sel_rom : pre_sel_rom);
 assign sel_palram = pre_sel_palram;
-assign CPU_PRG_CS = sel_rom;
+assign CPU_PRG_CS = pre_sel_rom;
 
 //sound assigns
 reg sel_oki;
@@ -168,9 +170,19 @@ wire bus_cs = |{ pre_sel_rom, pre_sel_ram, pre_sel_palram, sel_gp9001, sel_io, s
 wire bus_busy = |{ (sel_ram || sel_palram) & ~ram_ok, sel_rom & ~CPU_PRG_OK, sel_gp9001 & ~GP9001ACK, sel_ym2151 & YM2151_DOUT[7]};
 
 //i/o bus ports
-reg gp9001_vdp_device_r_cs, gp9001_vdp_device_w_cs, read_port_in1_r_cs, read_port_in2_r_cs, 
-    read_port_sys_r_cs, read_port_dswa_r_cs, read_port_dswb_r_cs, read_port_jmpr_r_cs, 
-    toaplan2_coinword_w_cs, soundlatch_w, video_count_r_cs;
+reg gp9001_vdp_device_r_cs,
+    gp9001_vdp_device_w_cs,
+    read_port_in1_r_cs,
+    read_port_in2_r_cs,
+    read_port_in3_r_cs,
+    read_port_in4_r_cs,
+    read_port_sys_r_cs,
+    read_port_dswa_r_cs,
+    read_port_dswb_r_cs,
+    read_port_jmpr_r_cs,
+    toaplan2_coinword_w_cs,
+    soundlatch_w,
+    video_count_r_cs;
 
 //debugging 
  wire debug = 1'b1;
@@ -198,21 +210,21 @@ always @(posedge CLK96 or posedge RESET96) begin
                 $fwrite(fd, "time: %t, addr: %h, uds: %h, lds: %h, rw: %h, cpu_dout: %h, cpu_din: %h, sel_status: %b\n", $time/1000, addr_8, UDSn, LDSn, RW, cpu_dout, cpu_din, {sel_rom, sel_ram, sel_gp9001, sel_io});
 
             //68k ROM
-            pre_sel_rom <= GAME == TRUXTON2 ? addr_8 <= 'h7FFFF :                              // (TRUXTON2)
+            pre_sel_rom <= GAME == SNOWBRO2 ? addr_8 <= 'h7FFFF :                              // (SNOWBRO2)
                                               addr_8 <= 'h7FFFF;
             CPU_PRG_ADDR <= A[19:1];
 
             //RAM
-            pre_sel_ram <= addr_8[23:16] == 8'b0001_0000;                                      // 0x100000 - 0x10FFFF (TRUXTON2)
+            pre_sel_ram <= addr_8[23:16] == 8'b0001_0000;                                      // 0x100000 - 0x10FFFF (SNOWBRO2)
 
             //GP9001
-            sel_gp9001 <= addr_8[23:20] == 4'b0010;                                            // 0x200000 - 0X20000D (TRUXTON2)
+            sel_gp9001 <= addr_8[23:20] == 4'b0011;                                            // 0x300000 - 0x30000D (SNOWBRO2)
 
             //direct access to vtx ram, no dma controller
-            pre_sel_palram <= addr_8[23:20] == 4'b0011;                                        // 0x300000 - 0x300FFF (TRUXTON2)
+            pre_sel_palram <= addr_8[23:20] == 4'b0100;                                        // 0x400000 - 0x400FFF (SNOWBRO2)
 
             //IO
-            sel_io <= addr_8[23:12] == 12'b0111_0000_0000;                                     // 0x700000 - 0x70001F (TRUXTON2)
+            sel_io <= addr_8[23:12] == 12'b0111_0000_0000;                                     // 0x700034 - 0x700035 (SNOWBRO2)
 
         end else begin
             pre_sel_rom<=0;
@@ -227,22 +239,21 @@ end
 // I/O
 always @(*) begin
     //gp9001
-    gp9001_vdp_device_r_cs = sel_gp9001 && RW;                       // 0x200000-D Read (TRUXTON2)
-    gp9001_vdp_device_w_cs = sel_gp9001 && !RW;                      // 0x200000-D Write (TRUXTON2)
+    gp9001_vdp_device_r_cs = sel_gp9001 && RW;                       // 0x300000-D Read (SNOWBRO2)
+    gp9001_vdp_device_w_cs = sel_gp9001 && !RW;                      // 0x300000-D Write (SNOWBRO2)
 
-    //vcount
-    video_count_r_cs = (addr_8[23:20] == 4'b0110) && RW;             // 0x600000-01 (TRUXTON2)
-
-    //dips, controls
-    read_port_dswa_r_cs = sel_io && (addr_8[11:0] == 11'h000) && RW; // 0x700000-01 (TRUXTON2)
-    read_port_dswb_r_cs = sel_io && (addr_8[11:0] == 11'h002) && RW; // 0x700002-03 (TRUXTON2)
-    read_port_jmpr_r_cs = sel_io && (addr_8[11:0] == 11'h004) && RW; // 0x700004-05 (TRUXTON2)
-    read_port_in1_r_cs = sel_io && (addr_8[11:0] == 11'h006) && RW;  // 0x700006-07 (TRUXTON2)
-    read_port_in2_r_cs = sel_io && (addr_8[11:0] == 11'h008) && RW;  // 0x700008-09 (TRUXTON2)
-    read_port_sys_r_cs = sel_io && (addr_8[11:0] == 11'h00A) && RW;  // 0x70000A-0B (TRUXTON2)
+    //dips, controls, oki banking
+    read_port_dswa_r_cs = sel_io && (addr_8[11:0] == 11'h004) && RW;       // 0x700004-05 (SNOWBRO2)
+    read_port_dswb_r_cs = sel_io && (addr_8[11:0] == 11'h008) && RW;       // 0x700008-09 (SNOWBRO2)
+    read_port_jmpr_r_cs = sel_io && (addr_8[11:0] == 11'h000) && RW;       // 0x700000-01 (SNOWBRO2)
+    read_port_in1_r_cs = sel_io && (addr_8[11:0] == 11'h00C) && RW;        // 0x70000C-0D (SNOWBRO2)
+    read_port_in2_r_cs = sel_io && (addr_8[11:0] == 11'h010) && RW;        // 0x700010-11 (SNOWBRO2)
+    read_port_in3_r_cs = sel_io && (addr_8[11:0] == 11'h014) && RW;        // 0x700014-15 (SNOWBRO2)
+    read_port_in4_r_cs = sel_io && (addr_8[11:0] == 11'h018) && RW;        // 0x700018-19 (SNOWBRO2)
+    read_port_sys_r_cs = sel_io && (addr_8[11:0] == 11'h01C) && RW;        // 0x70001C-1D (SNOWBRO2)
 
     //coin
-    toaplan2_coinword_w_cs = sel_io && (addr_8[11:0] == 11'h01F);    // 0x70001F (TRUXTON2)
+    toaplan2_coinword_w_cs = sel_io && (addr_8[11:0] == 11'h034);    // 0x700034 (SNOWBRO2)
 
     //sound
     sel_oki<= sel_io && (addr_8[7:0] == 'h10);
@@ -256,8 +267,10 @@ wire [15:0] video_status = V < 256 ? (video_status_hs & video_status_vs & video_
 wire vint_n, int1;
 
 //JTFRAME is low active, but batrider is high active.
-wire [7:0] p1_ctrl = {1'b0, ~JOYSTICK1[6],~JOYSTICK1[5],~JOYSTICK1[4],~JOYSTICK1[0],~JOYSTICK1[1],~JOYSTICK1[2],~JOYSTICK1[3]};
-wire [7:0] p2_ctrl = {1'b0, ~JOYSTICK2[6],~JOYSTICK2[5],~JOYSTICK2[4],~JOYSTICK2[0],~JOYSTICK2[1],~JOYSTICK2[2],~JOYSTICK2[3]};
+wire [7:0] p1_ctrl = {1'b0, ~JOYSTICK1[5],~JOYSTICK1[4],~JOYSTICK1[0],~JOYSTICK1[1],~JOYSTICK1[2],~JOYSTICK1[3]};
+wire [7:0] p2_ctrl = {1'b0, ~JOYSTICK2[5],~JOYSTICK2[4],~JOYSTICK2[0],~JOYSTICK2[1],~JOYSTICK2[2],~JOYSTICK2[3]};
+wire [7:0] p3_ctrl = {~JOYSTICK3[6],~JOYSTICK3[5],~JOYSTICK3[4],~JOYSTICK3[0],~JOYSTICK3[1],~JOYSTICK3[2],~JOYSTICK3[3]};
+wire [7:0] p4_ctrl = {~JOYSTICK4[6],~JOYSTICK4[5],~JOYSTICK4[4],~JOYSTICK4[0],~JOYSTICK4[1],~JOYSTICK4[2],~JOYSTICK4[3]};
 
 always @(posedge CLK96, posedge RESET96) begin
     if(RESET96) cpu_din <= 16'h0000;
@@ -272,6 +285,8 @@ always @(posedge CLK96, posedge RESET96) begin
 
                    read_port_in1_r_cs ? {2{p1_ctrl}} : //controller inputs
                    read_port_in2_r_cs ? {2{p2_ctrl}} :
+                   read_port_in3_r_cs ? {2{p3_ctrl}} :
+                   read_port_in4_r_cs ? {2{p4_ctrl}} :
                    read_port_sys_r_cs ? {2{DIPSW_C, 1'b0, ~START_BUTTON[1], ~START_BUTTON[0], ~COIN_INPUT[1], ~COIN_INPUT[0], ~DIP_TEST, 1'b0, ~SERVICE}} :
                    read_port_dswa_r_cs ? {2{DIPSW_A}} :
                    read_port_dswb_r_cs ? {2{DIPSW_B}} :
@@ -416,8 +431,8 @@ fx68k u_011 (
 
     .DTACKn     (DTACKn),
     .IPL0n      (1'b1),
-    .IPL1n      (int1),
-    .IPL2n      (1'b1),
+    .IPL1n      (1'b1),
+    .IPL2n      (int1),
 
     // Unused
     .oRESETn    (),

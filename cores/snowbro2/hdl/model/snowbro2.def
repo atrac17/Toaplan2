@@ -44,6 +44,7 @@ STEREO_GAME             #Define stereo audio (JTFRAME NOT UPDATED WITH JTFRAME_S
 
 ### PCB Configuration
 
+JTFRAME_4PLAYERS         #Set for 4 player configuration
 JTFRAME_BUTTONS=3        #Sets the number of action buttons used (2 by default)
 JTFRAME_MR_DDRLOAD       #ROM download process uses the DDR as proxy
 

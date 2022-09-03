@@ -22,11 +22,11 @@
 module snowbro2_sdram #(
     //8 bit addressing
     parameter SNOWBRO2_ROM01_PRG_LEN = 25'h80000,
-              SNOWBRO2_GP9001_TILE_LEN = 25'h200000,
+              SNOWBRO2_GP9001_TILE_LEN = 25'h300000,
               SNOWBRO2_PCM_DATA_LEN = 25'h80000,
 
               DEFAULT_ROM01_PRG_LEN = 25'h80000,
-              DEFAULT_GP9001_TILE_LEN = 25'h200000,
+              DEFAULT_GP9001_TILE_LEN = 25'h300000,
               DEFAULT_PCM_DATA_LEN = 25'h80000
 )(
     input RESET48,

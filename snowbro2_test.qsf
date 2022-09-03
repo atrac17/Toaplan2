@@ -323,6 +323,7 @@ set_global_assignment -name VERILOG_MACRO "JTFRAME_ADPCM=1"
 set_global_assignment -name VERILOG_MACRO "JTFRAME_OSD_VOL=1"
 set_global_assignment -name VERILOG_MACRO "JTFRAME_OSD_SND_EN=1"
 set_global_assignment -name VERILOG_MACRO "STEREO_GAME=1"
+set_global_assignment -name VERILOG_MACRO "JTFRAME_4PLAYERS"
 set_global_assignment -name VERILOG_MACRO "JTFRAME_BUTTONS=3"
 set_global_assignment -name VERILOG_MACRO "JTFRAME_MRA_DIP=1"
 
