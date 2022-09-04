@@ -23,7 +23,7 @@ The intent is for this core to be a 1:1 playable implementation of Toaplan V2 ha
 | [**FixEight**](https://en.wikipedia.org/wiki/FixEight)                                             | TP-026 | No  | NEC V25  | Audio & I/O | Pending         | No              |
 | [**V-V**](https://en.wikipedia.org/wiki/Grind_Stormer)                                             | TP-027 | Yes | NEC V25  | Audio       | Pending         | No              |
 | [**Batsugun**](https://en.wikipedia.org/wiki/Batsugun)                                             | TP-030 | No  | NEC V25  | Audio       | Pending         | No              |
-| [**Otenki Paradise: Snow Bros. 2**](https://en.wikipedia.org/wiki/Snow_Bros._2:_With_New_Elves)    | TP-033 | No  | None     | N/A         | Implemented     | Beta 20220903   |
+| [**Otenki Paradise: Snow Bros. 2**](https://en.wikipedia.org/wiki/Snow_Bros._2:_With_New_Elves)    | TP-033 | No  | None     | N/A         | Implemented     | Beta 20220904   |
 
 ## External Modules
 
@@ -51,6 +51,7 @@ The intent is for this core to be a 1:1 playable implementation of Toaplan V2 ha
 - ~~Add [Truxton II - Tatsujin Oh](https://www.romhacking.net/hacks/5707/) [New Version] as an alternate~~ [**Request**]<br><br>
 - Trace TP-024 to find is_vb for spriteram; not written at the start of vblank TP-024 [**Issue**]  
 - Verify sprite lag priority for TP-024; currently 2 frames [**Issue**]  
+- Screen tearing with vertical scrolling on 240p with 31kHz toggle; if enabled screen tearing is fixed TP-033 [**Issue**]  
 - ~~Sprite warping of player due to instable timings TP-024~~ [**Issue**]  
 - ~~Audio drift; occurs on TP-024 and TP-033 (Reference clk implementation / CPU writes)~~ [**Issue**]  
 - ~~Analog screen flip shifts one row of pixels TP-024~~ [**Issue**]  
@@ -99,8 +100,8 @@ U 30 | [**OKI MSM6295**](https://dtsheet.com/doc/957023/oki-m6295)              
 
 Location | Chip | Use | PCB Number |
 ---------|------|-----|-----|
-U 67     | **GP9001** | Graphics VDP | TP-024 |
-U 18     | **GP9001** | Graphics VDP | TP-033 |
+U 67     | [**GP9001**](https://gamerepair.info/parts/77_toaplan_gp9001) | Graphics VDP | TP-024 |
+U 18     | [**GP9001**](https://gamerepair.info/parts/77_toaplan_gp9001) | Graphics VDP | TP-033 |
 
 ### Additional Components (Board Dependent)
 
@@ -109,6 +110,7 @@ Location | Chip | Use | PCB Number |
 N/A | [**Zilog Z80 CPU**](https://en.wikipedia.org/wiki/Zilog_Z80)           | Sound CPU                |
 N/A | [**NEC V25**](https://en.wikipedia.org/wiki/NEC_V25)                   | Sound CPU & I/O Handling |
 N/A | [**HD647180X**](https://en.wikipedia.org/wiki/Zilog_Z180)              | Sound CPU & I/O Handling |
+N/A | [**GP9001**](https://gamerepair.info/parts/77_toaplan_gp9001)          | Second Graphics VDP      |
 
 # Core Features
 
