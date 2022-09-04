@@ -225,8 +225,7 @@ wire        ioctl_cheat, ioctl_lock;
 
 wire [15:0] joystick1, joystick2, joystick3, joystick4;
 wire        ps2_kbd_clk, ps2_kbd_data;
-wire        force_scan2x = status[63];
-wire        direct_video;
+wire        force_scan2x, direct_video;
 wire        video_rotated;
 
 wire [ 6:0] core_mod;
@@ -498,7 +497,7 @@ hps_io #( .STRLEN(0), .PS2DIV(32), .WIDE(JTFRAME_MR_FASTIO) ) u_hps_io
     .status_menumask ( status_menumask),
     .gamma_bus       ( gamma_bus      ),
     .direct_video    ( direct_video   ),
-    .forced_scandoubler( scan2x_enb   ),
+    .forced_scandoubler(force_scan2x  ),
     .video_rotated   ( video_rotated  ),
 
     .ioctl_download  ( hps_download   ),

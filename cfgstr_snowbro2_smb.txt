@@ -3,14 +3,13 @@
 // 0         1         2         3          4         5         6   
 // 01234567890123456789012345678901 23456789012345678901234567890123
 // 0123456789ABCDEFGHIJKLMNOPQRSTUV 0123456789ABCDEFGHIJKLMNOPQRSTUV
-// XXXXXX    X     XXXX                  XX  XXXXXXXXXXXXXXXXXXXXXXX
+// XXXXXX    X     XXXX                  XX  XXXXXXXXXXXXXXXXXXXXXX 
 
 JTOAPLAN2;;
 P1,Video Settings;
 H0P1OGH,Aspect Ratio,Original,Full Screen,[ARC1],[ARC2];
 P1-;
 d3P1O35,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%,CRT 75%,CRT 100%;
-P1oV,Force Scandoubler,Off,31kHz;
 P1-;
 P1oLO,CRT H Offset,0,+1,+2,+3,+4,+5,+6,+7,-8,-7,-6,-5,-4,-3,-2,-1;
 P1oPS,CRT V Offset,0,+1,+2,+3,+4,+5,+6,+7,-8,-7,-6,-5,-4,-3,-2,-1;
@@ -28,7 +27,7 @@ P2O9,OPM Audio,On,Off;
 DIP;
 -;
 R0,Reset;
-V,v20220903
+V,v20220904
 
 // Status Bit Map: JTFRAME
 //              Upper Case                     Lower Case           
