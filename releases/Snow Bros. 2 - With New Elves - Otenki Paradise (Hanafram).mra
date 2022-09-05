@@ -33,7 +33,6 @@
         <part name="rom4" crc="638f341e"/>
         <!-- Total 0x400000 bytes - 4096 kBytes -->
     </rom>
-    </rom>
     <rom index="1">
         <part>00</part>
     </rom>
