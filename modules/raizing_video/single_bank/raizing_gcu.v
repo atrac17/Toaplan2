@@ -136,7 +136,7 @@ module raizing_gcu (
     input   [8:0] VS_END
 );
 
-localparam DEFAULT = 'h0, TRUXTON2 = 'h1, SNOWBRO2 = 'h2;
+localparam DEFAULT = 'h0, TRUXTON2 = 'h1, SNOWBRO2 = 'h2, PIPIBIPS = 'h3;
 
 //debugging 
 //  wire debug = 1'b1;
@@ -170,7 +170,7 @@ assign VSYNC = V >= VS_START && V <= VS_END ? 0 : 1;
 assign FBLANK = !HSYNC || !VSYNC ? 0 : 1;
 
 //ram pointer
-reg [12:0] GP9001RAM_ADDR;
+reg [13:0] GP9001RAM_ADDR;
 wire [15:0] GP9001RAM_DOUT;
 reg [15:0] GP9001RAM_DIN;
 reg GP9001RAM_WE;
@@ -223,9 +223,12 @@ assign TEXT_SCROLL_YOFFS = text_scroll_yoffs;
 
 //vint irq
 always @(cur_scr_reg_num, V, RESET96) begin
-    if(V == 9'hE6 || cur_scr_reg_num == 8'h0F || cur_scr_reg_num == 8'h8F || cur_scr_reg_num == 8'h0e || RESET96) begin
-        VINT <= 1'b0;
-    end else VINT <= 1'b1;
+    if(RESET96) begin
+        VINT<=1'b1;
+    end else begin
+        if(cur_scr_reg_num == 8'h0F || cur_scr_reg_num == 8'h8F || cur_scr_reg_num == 8'h0e) VINT<=1'b1;
+        else if(V == 8'hE6) VINT<=1'b0;
+    end
 end
 
 reg INC_LAST_CYCLE = 1'b0;
@@ -338,7 +341,7 @@ always @(posedge CLK96, posedge RESET96) begin
             LAST_OP <= {GP9001_OP_SELECT_REG, GP9001_OP_WRITE_REG, GP9001_OP_SET_RAM_PTR, GP9001_OP_WRITE_RAM, GP9001_OP_READ_RAM_H, GP9001_OP_READ_RAM_L};
         end else if (GP9001_OP_WRITE_RAM) begin
             if(!INC_LAST_CYCLE) begin
-                GP9001RAM_ADDR <= (cur_ram_ptr & 16'h1FFF);
+                GP9001RAM_ADDR <= (cur_ram_ptr & 16'h3FFF);
                 GP9001RAM_DIN <= DIN;
                 GP9001RAM_WE <= 1'b1;
                 INC_LAST_CYCLE <= 1'b1;
@@ -355,7 +358,7 @@ always @(posedge CLK96, posedge RESET96) begin
         end else if(GP9001_OP_READ_RAM_H || GP9001_OP_READ_RAM_L) begin
             case(st)
                 0: begin
-                    GP9001RAM_ADDR <= (cur_ram_ptr & 16'h1FFF) + (GP9001_OP_READ_RAM_L ? 1'b1 : 1'b0);
+                    GP9001RAM_ADDR <= (cur_ram_ptr & 16'h3FFF) + (GP9001_OP_READ_RAM_L ? 1'b1 : 1'b0);
                     GP9001RAM_WE <=1'b0;
                     ACK<=1'b0;
                     st<=1;
@@ -380,7 +383,7 @@ end
 
 //GP9001 RAM
 
-jtframe_dual_ram #(.dw(16), .aw(13)) u_gp9001ram_044_045(
+jtframe_dual_ram #(.dw(16), .aw(14)) u_gp9001ram_044_045(
     .clk0(CLK96),
     .clk1(CLK96),
     // Port 0
@@ -402,18 +405,12 @@ wire scroll2ram_we = GP9001RAM_WE && (GP9001RAM_ADDR>=14'h1000 && GP9001RAM_ADDR
 wire spriteram_we = GP9001RAM_WE && (GP9001RAM_ADDR>=14'h1800 && GP9001RAM_ADDR<14'h1C00);
 
 //sprite lag fix
+wire spritelag_en = (GAME == DEFAULT);
+
+wire [1:0] spritelag_amt = GAME == DEFAULT ? 0 : 0; // Indicates frames behind live 0 = 1 | 1 = 2
+
 reg [1:0] cur_buf = 0;
-wire [1:0] cur_buf_rd = (GAME==DEFAULT || GAME == TRUXTON2 || GAME == SNOWBRO2) ? 
-                        (cur_buf == 0 ? 0 :
-                        cur_buf == 1 ? 1 :
-                        cur_buf == 2 ? 2 :
-                        cur_buf == 3 ? 3 :
-                        0) :  //0 frames lag behind
-                        (cur_buf == 0 ? 3 :
-                        cur_buf == 1 ? 0 :
-                        cur_buf == 2 ? 1 :
-                        cur_buf == 3 ? 2 :
-                        0); //2 frames lag behind
+wire [1:0] cur_buf_rd = cur_buf + (spritelag_en ? (~spritelag_amt[1:0] + 1) : 0);
 wire [12:0] spriteram_buff_offs = cur_buf==0 ? 0 :
                                   cur_buf==1 ? 14'h400 :
                                   cur_buf==2 ? 14'h800 :
@@ -441,7 +438,7 @@ always @(posedge CLK96, posedge RESET96) begin
         clear_buff<=0;
     end else begin
         last_vb<=is_vb;
-        if(is_vb && !last_vb && GAME == DEFAULT) begin //start of vblank, cut spriteram disable for sorcer and kingdom for now
+        if(is_vb && !last_vb && spritelag_en) begin //start of vblank, cut spriteram disable for sorcer and kingdom for now
             cur_buf<=((cur_buf+1)%4);
             clear_buff<=1;
         end
@@ -498,9 +495,9 @@ jtframe_dual_ram #(.dw(16), .aw(13)) u_spriteram(
         .clk0(CLK96),
         .clk1(CLK96),
         // Port 0
-        .data0(GAME == DEFAULT ? clear_buff_data : GP9001RAM_DIN),
-        .addr0(GAME == DEFAULT ? clear_buff_addr + spriteram_buff_offs : GP9001RAM_ADDR[9:0] + spriteram_buff_offs),
-        .we0(GAME == DEFAULT ? clear_buff && !clear_buff_done : spriteram_we),
+        .data0(spritelag_en ? clear_buff_data : GP9001RAM_DIN),
+        .addr0(spritelag_en ? clear_buff_addr + spriteram_buff_offs : GP9001RAM_ADDR[9:0] + spriteram_buff_offs),
+        .we0(spritelag_en ? clear_buff && !clear_buff_done : spriteram_we),
         .q0(),
         // Port 1
         .data1(16'h0),
@@ -513,9 +510,9 @@ jtframe_dual_ram #(.dw(16), .aw(13)) u_spriteram2(
         .clk0(CLK96),
         .clk1(CLK96),
         // Port 0
-        .data0(GAME == DEFAULT ? clear_buff_data : GP9001RAM_DIN),
-        .addr0(GAME == DEFAULT ? clear_buff_addr + spriteram_buff_offs : GP9001RAM_ADDR[9:0] + spriteram_buff_offs),
-        .we0(GAME == DEFAULT ? clear_buff && !clear_buff_done : spriteram_we),
+        .data0(spritelag_en ? clear_buff_data : GP9001RAM_DIN),
+        .addr0(spritelag_en ? clear_buff_addr + spriteram_buff_offs : GP9001RAM_ADDR[9:0] + spriteram_buff_offs),
+        .we0(spritelag_en ? clear_buff && !clear_buff_done : spriteram_we),
         .q0(),
         // Port 1
         .data1(16'h0),

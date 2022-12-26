@@ -79,4 +79,38 @@ function mra {
 
 mra  snowbro2 "Snow Bros. 2 - With New Elves"  "B1,B2" "00,00,00"
 
+function mra {
+    local GAME=$1
+    local ALT=${2//[:]/}
+    local BUTSTR="$3"
+    local DIP="$4"
+
+    if [ ! -e xml/$GAME.xml ]; then
+        if [ ! -f $GAME.xml ]; then
+            ./mamefilter $GAME
+        fi
+        mv $GAME.xml xml/
+    fi
+
+    ALTD=_alt/_"$ALT"
+    mkdir -p $OUTDIR/"$ALTD"
+
+    echo -----------------------------------------------
+    echo "Dumping $GAME"
+    ./mame2dip xml/$GAME.xml -rbf pipibibs -outdir $OUTDIR -altfolder "$ALTD" \
+        -order maincpu audiocpu gp9001_0 \
+        -dipbase 8                   \
+        -start maincpu    0x0        \
+        -start audiocpu   0x40000    \
+        -start gp9001_0   0x48000    \
+        -setword maincpu  16 reverse \
+        -setword gp9001_0 16 reverse \
+        -frac 1 gp9001_0 2           \
+        -dipdef $DIP                 \
+        -corebuttons 2               \
+        -buttons $BUTSTR
+}
+
+mra  pipibibs "Pipi & Bibis"  "B1,B2" "00,00,00"
+
 exit 0
