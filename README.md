@@ -14,16 +14,16 @@ The intent is for this core to be a 1:1 playable implementation of Toaplan V2 ha
 
 | Title | PCB<br>Number | Encrypted<br>Program | MCU | MCU<br>Usage | Status  | Released |
 |-------|------------|----------------------|-----|-----------|---------|----------|
-| [**Teki Paki**](https://en.wikipedia.org/wiki/Teki_Paki)                                           | TP-020 | No  | HD647180 | Audio       | Pending         | No              |
-| [**Ghox**](https://en.wikipedia.org/wiki/Ghox)                                                     | TP-021 | No  | HD647180 | Audio & I/O | Pending         | No              |
-| [**Dogyūn!!**](https://en.wikipedia.org/wiki/Dogyuun)                                              | TP-022 | Yes | NEC V25  | Audio       | Pending         | No              |
-| [**Knuckle Bash**](https://en.wikipedia.org/wiki/Knuckle_Bash)                                     | TP-023 | Yes | NEC V25  | Audio       | Pending         | No              |
-| [**Tatsujin Ō**](https://en.wikipedia.org/wiki/Truxton_II)                                         | TP-024 | No  | None     | N/A         | Implemented     | Beta 20220902   |
-| [**Whoopee!!**](https://en.wikipedia.org/wiki/Pipi_%26_Bibi's)                                     | TP-025 | No  | None     | N/A         | W.I.P           | No              |
-| [**FixEight**](https://en.wikipedia.org/wiki/FixEight)                                             | TP-026 | No  | NEC V25  | Audio & I/O | Pending         | No              |
-| [**V-V**](https://en.wikipedia.org/wiki/Grind_Stormer)                                             | TP-027 | Yes | NEC V25  | Audio       | Pending         | No              |
-| [**Batsugun**](https://en.wikipedia.org/wiki/Batsugun)                                             | TP-030 | No  | NEC V25  | Audio       | Pending         | No              |
-| [**Otenki Paradise: Snow Bros. 2**](https://en.wikipedia.org/wiki/Snow_Bros._2:_With_New_Elves)    | TP-033 | No  | None     | N/A         | Implemented     | Beta 20220904   |
+| [**Teki Paki**](https://en.wikipedia.org/wiki/Teki_Paki)                                           | TP-020 | No  | HD647180 | Audio       | -               | No              |
+| [**Ghox**](https://en.wikipedia.org/wiki/Ghox)                                                     | TP-021 | No  | HD647180 | Audio & I/O | -               | No              |
+| [**Dogyūn!!**](https://en.wikipedia.org/wiki/Dogyuun)                                              | TP-022 | Yes | NEC V25  | Audio       | W.I.P           | No              |
+| [**Knuckle Bash**](https://en.wikipedia.org/wiki/Knuckle_Bash)                                     | TP-023 | Yes | NEC V25  | Audio       | -               | No              |
+| [**Tatsujin Ō**](https://en.wikipedia.org/wiki/Truxton_II)                                         | TP-024 | No  | None     | N/A         | Implemented     | Beta 20221225   |
+| [**Whoopee!!**](https://en.wikipedia.org/wiki/Pipi_%26_Bibi's)                                     | TP-025 | No  | None     | N/A         | Implemented     | Beta 20221225   |
+| [**FixEight**](https://en.wikipedia.org/wiki/FixEight)                                             | TP-026 | No  | NEC V25  | Audio & I/O | -               | No              |
+| [**V-V**](https://en.wikipedia.org/wiki/Grind_Stormer)                                             | TP-027 | Yes | NEC V25  | Audio       | -               | No              |
+| [**Batsugun**](https://en.wikipedia.org/wiki/Batsugun)                                             | TP-030 | No  | NEC V25  | Audio       | -               | No              |
+| [**Otenki Paradise: Snow Bros. 2**](https://en.wikipedia.org/wiki/Snow_Bros._2:_With_New_Elves)    | TP-033 | No  | None     | N/A         | Implemented     | Beta 20221225   |
 
 ## External Modules
 
@@ -40,8 +40,8 @@ The intent is for this core to be a 1:1 playable implementation of Toaplan V2 ha
 # Known Issues / Tasks
 
 - Reference TP-023 schematics and compare variations with TP-024 PCB [**Task**]  
-- Verify clock domains for TP-024  [**Task**]  
-- Verify PCM and OPM levels on TP-024 [**Task**]  
+- ~~Verify clock domains for TP-024~~ [**Task**]  
+- ~~Verify PCM and OPM levels on TP-024~~ [**Task**]  
 - ~~94.5 MHz Integer PLL for clocks~~ [**Task**]  
 - ~~Update clocking for 94.5Mhz PLL~~ [**Task**]  
 - ~~Add volume toggles for ADPCM and OPM audio~~ [**Task**]  
@@ -49,9 +49,10 @@ The intent is for this core to be a 1:1 playable implementation of Toaplan V2 ha
 - ~~Additional scanline options for scandoubler~~ [**Task**]  
 - ~~Add 31kHz toggle for hi-res CRT~~ [**Task**]  
 - ~~Add [Truxton II - Tatsujin Oh](https://www.romhacking.net/hacks/5707/) [New Version] as an alternate~~ [**Request**]<br><br>
-- Trace TP-024 to find is_vb for spriteram; not written at the start of vblank TP-024 [**Issue**]  
-- Verify sprite lag priority for TP-024; currently 2 frames [**Issue**]  
-- Screen tearing with vertical scrolling on 240p with 31kHz toggle; if enabled screen tearing is fixed TP-033 [**Issue**]  
+- Sprite mux priority on explosions TP-025 [**Issue**]  
+- ~~Trace TP-024 to find is_vb for spriteram; not written at the start of vblank TP-024~~ [**Issue**]  
+- ~~Verify sprite lag priority for TP-024; currently 2 frames~~ [**Issue**]  
+- ~~Screen tearing with vertical scrolling on 240p with 31kHz toggle; if enabled screen tearing is fixed TP-033~~ [**Issue**]  
 - ~~Sprite warping of player due to instable timings TP-024~~ [**Issue**]  
 - ~~Audio drift; occurs on TP-024 and TP-033 (Reference clk implementation / CPU writes)~~ [**Issue**]  
 - ~~Analog screen flip shifts one row of pixels TP-024~~ [**Issue**]  
@@ -71,12 +72,14 @@ H-Sync | V-Sync | Source | Title |
 
 Location | Freq (MHz) | Use   | PCB Number     |
 ---------|------------|-------|----------------|
- X1      | 16.000 MHz | M68000 / OKI MSM6295   | **TP-024** |
- X1      | 27.000 MHz | GP9001 / YM2151        | **TP-033** |
- X2      | 27.000 MHz | GP9001 / YM2151        | **TP-024** |
- X2      | 16.000 MHz | M68000 / OKI MSM6295   | **TP-033** |
- X3      | 32.000 MHz | Not Utilized on TP-033 | **TP-033** |
-
+ X1      | 16.000 MHz | M68000 / OKI MSM6295     | **TP-024** |
+ X2      | 27.000 MHz | GP9001 / YM2151          | **TP-024** |
+ OSC1    | 10.000 MHz | M68000                   | **TP-025** |
+ OSC2    | 27.000 MHz | GP9001 / YM3812 / Z80    | **TP-025** |
+ X1      | 27.000 MHz | GP9001 / YM2151          | **TP-033** |
+ X2      | 16.000 MHz | M68000 / OKI MSM6295     | **TP-033** |
+ X3      | 32.000 MHz | Not Utilized on TP-033   | **TP-033** |
+ 
 **Pixel clock:** 6.75 MHz
 
 **Estimated geometry:**
@@ -90,10 +93,13 @@ Location | Freq (MHz) | Use   | PCB Number     |
 Location | Chip | Use | PCB Number |
 ---------|------|-----|-----|
 U 90 | [**Motorola 68000 CPU**](https://en.wikipedia.org/wiki/Motorola_68000)     | Main CPU    | **TP-024** |
-U 57 | [**Motorola 68000 CPU**](https://en.wikipedia.org/wiki/Motorola_68000)     | Main CPU    | **TP-033** |
 U 53 | [**Yamaha YM2151**](https://en.wikipedia.org/wiki/Yamaha_YM2151)           | OPM Sound   | **TP-024** |
-U 29 | [**Yamaha YM2151**](https://en.wikipedia.org/wiki/Yamaha_YM2151)           | OPM Sound   | **TP-033** |
 U 20 | [**OKI MSM6295**](https://dtsheet.com/doc/957023/oki-m6295)                | ADPCM Sound | **TP-024** |
+B 2  | [**Motorola 68000 CPU**](https://en.wikipedia.org/wiki/Motorola_68000)     | Main CPU    | **TP-025** |
+E 3  | [**Zilog Z80 CPU**](https://en.wikipedia.org/wiki/Zilog_Z80)               | Sound CPU   | **TP-025** |
+E 5  | [**Yamaha YM3812**](https://en.wikipedia.org/wiki/Yamaha_YM3812)           | OPL Sound   | **TP-025** |
+U 57 | [**Motorola 68000 CPU**](https://en.wikipedia.org/wiki/Motorola_68000)     | Main CPU    | **TP-033** |
+U 29 | [**Yamaha YM2151**](https://en.wikipedia.org/wiki/Yamaha_YM2151)           | OPM Sound   | **TP-033** |
 U 30 | [**OKI MSM6295**](https://dtsheet.com/doc/957023/oki-m6295)                | ADPCM Sound | **TP-033** |
 
 ### Custom Components (Board Dependent)
@@ -101,6 +107,7 @@ U 30 | [**OKI MSM6295**](https://dtsheet.com/doc/957023/oki-m6295)              
 Location | Chip | Use | PCB Number |
 ---------|------|-----|-----|
 U 67     | [**GP9001**](https://gamerepair.info/parts/77_toaplan_gp9001) | Graphics VDP | TP-024 |
+C 14     | [**GP9001**](https://gamerepair.info/parts/77_toaplan_gp9001) | Graphics VDP | TP-025 |
 U 18     | [**GP9001**](https://gamerepair.info/parts/77_toaplan_gp9001) | Graphics VDP | TP-033 |
 
 ### Additional Components (Board Dependent)

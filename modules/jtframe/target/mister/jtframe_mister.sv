@@ -472,7 +472,8 @@ jtframe_ram #(.synfile("cfgstr_snowbro2.hex")) u_cfgstr(
     .q      ( cfg_dout  )
 );
 `else
-jtframe_ram #(.synfile("cfgstr.hex")) u_cfgstr(
+`ifdef pipibibs
+jtframe_ram #(.synfile("cfgstr_pipibibs.hex")) u_cfgstr(
     .clk    ( clk_rom   ),
     .cen    ( 1'b1      ),
     .data   (           ),
@@ -480,6 +481,7 @@ jtframe_ram #(.synfile("cfgstr.hex")) u_cfgstr(
     .we     ( 1'b0      ),
     .q      ( cfg_dout  )
 );
+`endif
 `endif
 `endif
 
