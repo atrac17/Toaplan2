@@ -7,7 +7,7 @@
     <manufacturer>Toaplan</manufacturer>
     <players>2</players>
     <joystick>8-way</joystick>
-    <rotation>vertical</rotation>
+    <rotation>vertical (cw)</rotation>
     <region>Japan</region>
     <platform>Toaplan 2</platform>
     <category>Shoot'em up</category>
@@ -48,5 +48,5 @@
         <!-- JMPR -->
         <dip name="Region" bits="16,19" ids="JPN,USA,EU,HK,KOR,TWN,SEA,USA (ROMSTAR),HK (Honest Trading),KOR (JC Trading),USA (Fabtek),No Use,No Use,No Use,No Use,JPN (Taito Corp.)"/>
     </switches>
-    <buttons names="Shot,Bomb,Kill Player,Start,Coin,Pause" default="Y,X,B,R,L,Start" count="3"/>
+    <buttons names="Shot,Bomb,Kill Player,Fast Scroll,Start,Coin,Pause" default="Y,X,B,A,R,L,Start" count="4"/>
 </misterromdescription>

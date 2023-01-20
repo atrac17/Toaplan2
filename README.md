@@ -18,11 +18,11 @@ The intent is for this core to be a 1:1 playable implementation of Toaplan V2 ha
 | [**Ghox**](https://en.wikipedia.org/wiki/Ghox)                                                     | TP-021 | No  | HD647180 | Audio & I/O | -               | No              |
 | [**Dogyūn!!**](https://en.wikipedia.org/wiki/Dogyuun)                                              | TP-022 | Yes | NEC V25  | Audio       | W.I.P           | No              |
 | [**Knuckle Bash**](https://en.wikipedia.org/wiki/Knuckle_Bash)                                     | TP-023 | Yes | NEC V25  | Audio       | W.I.P           | No              |
-| [**Tatsujin Ō**](https://en.wikipedia.org/wiki/Truxton_II)                                         | TP-024 | No  | None     | N/A         | Implemented     | Beta 20221225   |
+| [**Tatsujin Ō**](https://en.wikipedia.org/wiki/Truxton_II)                                         | TP-024 | No  | None     | N/A         | Implemented     | Beta 20230119   |
 | [**Whoopee!!**](https://en.wikipedia.org/wiki/Pipi_%26_Bibi's)                                     | TP-025 | No  | None     | N/A         | Implemented     | Beta 20221225   |
-| [**FixEight**](https://en.wikipedia.org/wiki/FixEight)                                             | TP-026 | No  | NEC V25  | Audio & I/O | -               | No              |
-| [**V-V**](https://en.wikipedia.org/wiki/Grind_Stormer)                                             | TP-027 | Yes | NEC V25  | Audio       | -               | No              |
-| [**Batsugun**](https://en.wikipedia.org/wiki/Batsugun)                                             | TP-030 | No  | NEC V25  | Audio       | W.I.P           | No              |
+| [**FixEight**](https://en.wikipedia.org/wiki/FixEight)                                             | TP-026 | No  | NEC V25  | Audio & I/O | W.I.P           | No              |
+| [**V-V**](https://en.wikipedia.org/wiki/Grind_Stormer)                                             | TP-027 | Yes | NEC V25  | Audio       | W.I.P           | No              |
+| [**Batsugun**](https://en.wikipedia.org/wiki/Batsugun)                                             | TP-030 | No  | NEC V25  | Audio       | -               | No              |
 | [**Otenki Paradise: Snow Bros. 2**](https://en.wikipedia.org/wiki/Snow_Bros._2:_With_New_Elves)    | TP-033 | No  | None     | N/A         | Implemented     | Beta 20221225   |
 
 ## External Modules
@@ -48,7 +48,9 @@ The intent is for this core to be a 1:1 playable implementation of Toaplan V2 ha
 - ~~Add volume toggles to disable ADPCM and OPM audio~~ [**Task**]  
 - ~~Additional scanline options for scandoubler~~ [**Task**]  
 - ~~Add 31kHz toggle for hi-res CRT~~ [**Task**]  
-- ~~Add [Truxton II - Tatsujin Oh](https://www.romhacking.net/hacks/5707/) [New Version] as an alternate~~ [**Request**]<br><br>
+- ~~Adjust volume toggles for ADPCM and OPM audio on TP-024~~ [**Task**]  
+- ~~Add [Truxton II - Tatsujin Oh](https://www.romhacking.net/hacks/5707/) [New Version] as an alternate~~ [**Request**]  
+- ~~Add stereo toggle for TP-024~~ [**Request**]<br><br>
 - Sprite mux priority on explosions TP-025 [**Issue**]  
 - ~~Trace TP-024 to find is_vb for spriteram; not written at the start of vblank TP-024~~ [**Issue**]  
 - ~~Verify sprite lag priority for TP-024; currently 2 frames~~ [**Issue**]  
@@ -59,23 +61,33 @@ The intent is for this core to be a 1:1 playable implementation of Toaplan V2 ha
 - ~~Analog screen flip cuts one row of pixels TP-024 / TP-033~~ [**Issue**]  
 - ~~Sprite flicker on enemies TP-024~~ [**Issue**]  
 - ~~Sprite flicker on left side TP-024~~ [**Issue**]  
+- ~~Add SOCD commands for sprite warp on TP-024~~ [**Issue**]  
 
 # PCB Check List
 
-### Clock Information
+## Clock Information
 
-H-Sync | V-Sync | Source | Title |
--------|--------|--------|-------|
-15.625kHZ | 59.637404 | DSLogic + | Tatsujin Ō |
+H-Sync | V-Sync | Source | PCB Number |
+-------|--------|--------|------------|
+15.625kHz | 59.637404 | DSLogic + | **TP-024** |
 
-### Crystal Oscillators
+## Crystal Oscillators
 
+### TP-024 (Truxton II - Tatsujin Oh)
 Location | Freq (MHz) | Use   | PCB Number     |
 ---------|------------|-------|----------------|
  X1      | 16.000 MHz | M68000 / OKI MSM6295     | **TP-024** |
  X2      | 27.000 MHz | GP9001 / YM2151          | **TP-024** |
+
+### TP-025 (Whoopee!! - Pipi & Bibi's)
+Location | Freq (MHz) | Use   | PCB Number     |
+---------|------------|-------|----------------|
  OSC1    | 10.000 MHz | M68000                   | **TP-025** |
  OSC2    | 27.000 MHz | GP9001 / YM3812 / Z80    | **TP-025** |
+
+### TP-033 (Otenki Paradise: Snow Bros. 2)
+Location | Freq (MHz) | Use   | PCB Number     |
+---------|------------|-------|----------------|
  X1      | 27.000 MHz | GP9001 / YM2151          | **TP-033** |
  X2      | 16.000 MHz | M68000 / OKI MSM6295     | **TP-033** |
  X3      | 32.000 MHz | Not Utilized on TP-033   | **TP-033** |
@@ -88,26 +100,44 @@ Location | Freq (MHz) | Use   | PCB Number     |
   
     262 lines/frame  
 
-### Main Components (Board Dependent)
+## Main Components
 
+### TP-024 (Truxton II - Tatsujin Oh)
 Location | Chip | Use | PCB Number |
 ---------|------|-----|-----|
 U 90 | [**Motorola 68000 CPU**](https://en.wikipedia.org/wiki/Motorola_68000)     | Main CPU    | **TP-024** |
 U 53 | [**Yamaha YM2151**](https://en.wikipedia.org/wiki/Yamaha_YM2151)           | OPM Sound   | **TP-024** |
 U 20 | [**OKI MSM6295**](https://dtsheet.com/doc/957023/oki-m6295)                | ADPCM Sound | **TP-024** |
+
+### TP-025 (Whoopee!! - Pipi & Bibi's)
+Location | Chip | Use | PCB Number |
+---------|------|-----|-----|
 B 2  | [**Motorola 68000 CPU**](https://en.wikipedia.org/wiki/Motorola_68000)     | Main CPU    | **TP-025** |
 E 3  | [**Zilog Z80 CPU**](https://en.wikipedia.org/wiki/Zilog_Z80)               | Sound CPU   | **TP-025** |
 E 5  | [**Yamaha YM3812**](https://en.wikipedia.org/wiki/Yamaha_YM3812)           | OPL Sound   | **TP-025** |
+
+### TP-033 (Otenki Paradise: Snow Bros. 2)
+Location | Chip | Use | PCB Number |
+---------|------|-----|-----|
 U 57 | [**Motorola 68000 CPU**](https://en.wikipedia.org/wiki/Motorola_68000)     | Main CPU    | **TP-033** |
 U 29 | [**Yamaha YM2151**](https://en.wikipedia.org/wiki/Yamaha_YM2151)           | OPM Sound   | **TP-033** |
 U 30 | [**OKI MSM6295**](https://dtsheet.com/doc/957023/oki-m6295)                | ADPCM Sound | **TP-033** |
 
-### Custom Components (Board Dependent)
+## Custom Components
 
+### TP-024 (Truxton II - Tatsujin Oh)
 Location | Chip | Use | PCB Number |
 ---------|------|-----|-----|
 U 67     | [**GP9001**](https://gamerepair.info/parts/77_toaplan_gp9001) | Graphics VDP | TP-024 |
+
+### TP-025 (Whoopee!! - Pipi & Bibi's)
+Location | Chip | Use | PCB Number |
+---------|------|-----|-----|
 C 14     | [**GP9001**](https://gamerepair.info/parts/77_toaplan_gp9001) | Graphics VDP | TP-025 |
+
+### TP-033 (Otenki Paradise: Snow Bros. 2)
+Location | Chip | Use | PCB Number |
+---------|------|-----|-----|
 U 18     | [**GP9001**](https://gamerepair.info/parts/77_toaplan_gp9001) | Graphics VDP | TP-033 |
 
 ### Additional Components (Board Dependent)

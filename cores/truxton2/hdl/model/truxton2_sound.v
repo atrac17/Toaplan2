@@ -46,6 +46,7 @@ module truxton2_sound (
     input          [7:0] YM2151_DIN,
     output         [7:0] YM2151_DOUT,
     output         [7:0] OKI_DOUT,
+    input                AUDIO_MIX,
 
     input          [7:0] GAME,
     input          [1:0] FX_LEVEL,
@@ -57,7 +58,6 @@ module truxton2_sound (
 
 localparam DEFAULT = 'h0, TRUXTON2 = 'h1;
 wire signed [15:0] fm_left, fm_right;
-wire peak_l, peak_r;
 
 wire signed [13:0] oki0_pre;
 wire oki0_sample;
@@ -76,28 +76,24 @@ reg [7:0] fmgain;
 reg [7:0] pcmgain;
 
 always @(posedge CLK96, posedge RESET96) begin
-if(RESET96) begin
-pcmgain<=0;
-fmgain<=0;
-end else begin
-case( FX_LEVEL )
-0: pcmgain <= 8'h0c ;   // 75%
-1: pcmgain <= 8'h08 ;   // 50%
-2: pcmgain <= 8'h10 ;   // 100% aka Default
-3: pcmgain <= 8'h20 ;   // 200%
-endcase
+    if (RESET96) begin
+        pcmgain<=0;
+        fmgain<=0;
+    end else begin
+    case( FX_LEVEL )
+        0: pcmgain <= 8'h20 ;   // 200%
+        1: pcmgain <= 8'h0c ;   // 75%
+        2: pcmgain <= 8'h10 ;   // 100% - Default
+        3: pcmgain <= 8'h18 ;   // 150%
+    endcase
 
-case( FM_LEVEL )
-0: fmgain <= 8'h08 ;   // 50%
-1: fmgain <= 8'h04 ;   // 25%
-2: fmgain <= 8'h10 ;   // 100% aka Default
-3: fmgain <= 8'h0c ;   // 75%
-endcase
-end
-end
-
-always @(posedge CLK96) begin
-    peak <= peak_l | peak_r;
+    case( FM_LEVEL )
+        0: fmgain <= 8'h20 ;   // 200%
+        1: fmgain <= 8'h0c ;   // 75%
+        2: fmgain <= 8'h10 ;   // 100% - Default
+        3: fmgain <= 8'h18 ;   // 150%
+    endcase
+    end
 end
 
 reg [7:0] gain1;
@@ -109,8 +105,21 @@ always @(posedge CLK96) begin
     final_oki0<=oki0_pre;
 end
 
-assign right = left;
-assign peak_r = peak_l;
+wire signed [15:0] right_stereo;
+wire peak_right_stereo;
+
+wire signed [15:0] left_stereo;
+wire peak_left_stereo;
+
+wire signed [15:0] mono;
+wire peak_mono;
+
+assign left  = ( AUDIO_MIX == 0 ) ? mono : left_stereo;
+assign right = ( AUDIO_MIX == 0 ) ? mono : right_stereo;
+always @ ( posedge CLK96 ) begin
+    peak  <= ( AUDIO_MIX == 0) ? peak_mono : ( peak_right_stereo | peak_left_stereo );
+end
+
 jtframe_mixer #(.W0(16), .W1(14), .W2(16), .WOUT(16)) u_mix_left(
     .rst    ( RESET96     ),
     .clk    ( CLK96       ),
@@ -118,15 +127,51 @@ jtframe_mixer #(.W0(16), .W1(14), .W2(16), .WOUT(16)) u_mix_left(
     // input signals
     .ch0    ( final_left  ),
     .ch1    ( final_oki0  ),
+    .ch2    ( 16'd0       ),
+    .ch3    ( 16'd0       ),
+    // gain for each channel in 4.4 fixed point format
+    .gain0  ( FM_EN  ? fmgain : 16'd0  ),
+    .gain1  ( PSG_EN ? pcmgain : 16'd0 ),
+    .gain2  ( 8'd0                     ),
+    .gain3  ( 8'd0                     ),
+    .mixed  ( left_stereo              ),
+    .peak   ( peak_left_stereo         )
+);
+
+jtframe_mixer #(.W0(16), .W1(14), .W2(16), .WOUT(16)) u_mix_right(
+    .rst    ( RESET96     ),
+    .clk    ( CLK96       ),
+    .cen    ( 1'b1        ),
+    // input signals
+    .ch0    ( final_right ),
+    .ch1    ( final_oki0  ),
+    .ch2    ( 16'd0       ),
+    .ch3    ( 16'd0       ),
+    // gain for each channel in 4.4 fixed point format
+    .gain0  ( FM_EN ? fmgain : 16'd0   ),
+    .gain1  ( PSG_EN ? pcmgain : 16'd0 ),
+    .gain2  ( 8'd0                     ),
+    .gain3  ( 8'd0                     ),
+    .mixed  ( right_stereo             ),
+    .peak   ( peak_right_stereo        )
+);
+
+jtframe_mixer #(.W0(16), .W1(14), .W2(16), .WOUT(16)) u_mix_mono(
+    .rst    ( RESET96     ),
+    .clk    ( CLK96       ),
+    .cen    ( 1'b1        ),
+    // input signals
+    .ch0    ( final_left  ),
+    .ch1    ( final_oki0  ),
     .ch2    ( final_right ),
-    .ch3    ( 16'd0     ),
+    .ch3    ( 16'd0       ),
     // gain for each channel in 4.4 fixed point format
     .gain0  ( FM_EN ? fmgain : 16'd0   ),
     .gain1  ( PSG_EN ? pcmgain : 16'd0 ),
     .gain2  ( FM_EN ? fmgain : 16'd0   ),
     .gain3  ( 8'd0                     ),
-    .mixed  ( left                     ),
-    .peak   ( peak_l                   )
+    .mixed  ( mono                     ),
+    .peak   ( peak_mono                )
 );
 
 assign PCM_ADDR = GAME == TRUXTON2 ? (oki0_pcm_addr & 'h3FFFF) :
