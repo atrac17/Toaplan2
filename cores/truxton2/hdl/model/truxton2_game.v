@@ -150,6 +150,10 @@ assign pxl2_cen = CEN1350;
 /*MEMORY CONNECTS*/
 //GAME selector
 wire [7:0] GAME;
+// inputs
+wire FASTSCROLL = ~status[29];
+wire P1_SOCD = status[30];
+wire P2_SOCD = status[31];
 //68K ROM
 wire ROM68K_CS;
 wire ROM68K_OK;
@@ -166,6 +170,7 @@ wire          [7:0] OKI_DIN;
 wire          [7:0] YM2151_DIN;
 wire          [7:0] YM2151_DOUT;
 wire          [7:0] OKI_DOUT;
+wire                AUDIO_MIX = status[63];
 
 //PCM
 wire PCM_CS;
@@ -274,6 +279,9 @@ truxton2_cpu u_cpu (
     .COIN_INPUT(coin_input),
     .SERVICE(service),
     .TILT(1'b0),
+    .FASTSCROLL(FASTSCROLL),
+    .P1_SOCD(P1_SOCD),
+    .P2_SOCD(P2_SOCD),
 
     //dip switches
     .DIPSW_A(DIPSW_A),
@@ -438,6 +446,7 @@ truxton2_sound u_sound(
     .YM2151_DIN(YM2151_DIN),
     .YM2151_DOUT(YM2151_DOUT),
     .OKI_DOUT(OKI_DOUT),
+    .AUDIO_MIX(AUDIO_MIX),
     .GAME(GAME),
     .FX_LEVEL(dip_fxlevel),
     .FM_LEVEL(dip_fmlevel),

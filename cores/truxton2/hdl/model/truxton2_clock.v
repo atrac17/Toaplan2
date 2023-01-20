@@ -47,7 +47,6 @@ jtframe_frac_cen #(.W(4)) u_frac_cen_1350(
     .cenb()
 );
 
-
 // 4mhz for OKI (TRUXTON 2)
 // 94.5*(8/189) == 4
 

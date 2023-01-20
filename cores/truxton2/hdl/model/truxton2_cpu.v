@@ -52,6 +52,9 @@ module truxton2_cpu (
     input [3:0]  COIN_INPUT,
     input        SERVICE,
     input        TILT,
+    input        FASTSCROLL,
+    input        P1_SOCD,
+    input        P2_SOCD,
 
     // DIP switches
     input        DIP_TEST,
@@ -326,8 +329,26 @@ wire [15:0] video_status = V < 256 ? (video_status_hs & video_status_vs & video_
 wire vint_n, int1;
 
 //JTFRAME is low active, but batrider is high active.
-wire [7:0] p1_ctrl = {1'b0, ~JOYSTICK1[6],~JOYSTICK1[5],~JOYSTICK1[4],~JOYSTICK1[0],~JOYSTICK1[1],~JOYSTICK1[2],~JOYSTICK1[3]};
-wire [7:0] p2_ctrl = {1'b0, ~JOYSTICK2[6],~JOYSTICK2[5],~JOYSTICK2[4],~JOYSTICK2[0],~JOYSTICK2[1],~JOYSTICK2[2],~JOYSTICK2[3]};
+reg [7:0] p1_ctrl;
+reg [7:0] p2_ctrl;
+always @(posedge CLK96) begin
+   if (P1_SOCD == 0) begin
+        p1_ctrl = {(~FASTSCROLL & ~JOYSTICK1[7]), ~JOYSTICK1[6],~JOYSTICK1[5],~JOYSTICK1[4],~p1_r_l_socd,~JOYSTICK1[1],~p1_d_u_socd,~JOYSTICK1[3]};
+   end else begin
+        p1_ctrl = {(~FASTSCROLL & ~JOYSTICK1[7]), ~JOYSTICK1[6],~JOYSTICK1[5],~JOYSTICK1[4],~JOYSTICK1[0],~JOYSTICK1[1],~JOYSTICK1[2],~JOYSTICK1[3]};
+   end
+
+    if (P2_SOCD == 0) begin
+        p2_ctrl = {1'b0, ~JOYSTICK2[6],~JOYSTICK2[5],~JOYSTICK2[4],~p2_r_l_socd,~JOYSTICK2[1],~p2_d_u_socd,~JOYSTICK2[3]};
+    end else begin
+        p2_ctrl = {1'b0, ~JOYSTICK2[6],~JOYSTICK2[5],~JOYSTICK2[4],~JOYSTICK2[0],~JOYSTICK2[1],~JOYSTICK2[2],~JOYSTICK2[3]};
+    end
+end
+
+wire p1_r_l_socd = JOYSTICK1[0] | ~JOYSTICK1[1];
+wire p1_d_u_socd = JOYSTICK1[2] | ~JOYSTICK1[3];
+wire p2_r_l_socd = JOYSTICK2[0] | ~JOYSTICK2[1];
+wire p2_d_u_socd = JOYSTICK2[2] | ~JOYSTICK2[3];
 
 always @(posedge CLK96, posedge RESET96) begin
     if(RESET96) cpu_din <= 16'h0000;
@@ -438,8 +459,8 @@ jtframe_68kdtack #(.W(16)) u_dtack(
     .bus_legit  (1'b0),
     .ASn        (ASn),
     .DSn        ({UDSn, LDSn}),
-    .num        (16'd1387),
-    .den        (16'd8192),
+    .num        (8'd32),
+    .den        (8'd189),
     .DTACKn     (DTACKn),
     // unused
     .fave       (),
