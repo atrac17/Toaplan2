@@ -41,12 +41,11 @@ module truxton2_clock (
 
 jtframe_frac_cen #(.W(4)) u_frac_cen_1350(
     .clk(CLK96),
-    .n(1),
-    .m(7),
+    .n(9),
+    .m(64),
     .cen({CEN1p6875, CEN3p375, CEN675, CEN1350}),
     .cenb()
 );
-
 
 // 4mhz for OKI (TRUXTON 2)
 // 94.5*(8/189) == 4

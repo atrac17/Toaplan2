@@ -449,7 +449,7 @@ jtframe_virq u_virq(
 );
 
 //68k cpu running at 16mhz
-jtframe_68kdtack #(.W(16)) u_dtack(
+jtframe_68kdtack u_dtack(
     .rst        (RESET96),
     .clk        (CLK96),
     .cpu_cen    (CEN16),
@@ -459,8 +459,8 @@ jtframe_68kdtack #(.W(16)) u_dtack(
     .bus_legit  (1'b0),
     .ASn        (ASn),
     .DSn        ({UDSn, LDSn}),
-    .num        (8'd32),
-    .den        (8'd189),
+    .num        (1),
+    .den        (6),
     .DTACKn     (DTACKn),
     // unused
     .fave       (),
