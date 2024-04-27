@@ -1,6 +1,6 @@
 # Toaplan Version 2 FPGA Implementation
 
-FPGA compatible core of Toaplan Version 2 arcade hardware for [**MiSTerFPGA**](https://github.com/MiSTer-devel/Main_MiSTer/wiki) written by based on work by [**atrac17**](https://github.com/atrac17).
+FPGA compatible core of Toaplan Version 2 arcade hardware for [**MiSTerFPGA**](https://github.com/MiSTer-devel/Main_MiSTer/wiki) written by [**atrac17**](https://github.com/atrac17).
 
 FPGA implementation references published Knuckle Bash (TP-023) schematics and verified against Dogyūn!! (TP-022), Knuckle Bash (TP-023), Tatsujin Ō (TP-024), FixEight (TP-026) and Batsugun (TP-030).
 
