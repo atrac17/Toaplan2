@@ -1,20 +1,20 @@
 <misterromdescription>
+    <about author="atrac17" webpage="https://coinopcollection.org" source="https://github.com/Coin-OpCollection" twitter="@_atrac17"/>
     <name>Snow Bros. 2 - With New Elves / Otenki Paradise (Hanafram)</name>
     <setname>snowbro2</setname>
     <rbf>snowbro2</rbf>
-    <mameversion>0245</mameversion>
+    <mameversion>0265</mameversion>
     <year>1994</year>
     <manufacturer>Hanafram</manufacturer>
     <players>4</players>
     <joystick>8-way</joystick>
-    <rotation>horizontal</rotation>
-    <region>World</region>
+    <rotation>Horizontal</rotation>
+    <region>Japan</region>
     <platform>Toaplan 2</platform>
     <category>Platform</category>
     <catver>Platform / Run Jump</catver>
     <mraauthor>atrac17</mraauthor>
     <rom index="0" zip="snowbro2.zip" md5="None" address="0x30000000">
-        <!-- mapper for game 00 - default, 02 - snowbro2 -->
         <part>02</part>
         <!-- maincpu - starts at 0x0 -->
         <interleave output="16">
@@ -33,10 +33,7 @@
         <part name="rom4" crc="638f341e"/>
         <!-- Total 0x400000 bytes - 4096 kBytes -->
     </rom>
-    <rom index="1">
-        <part>00</part>
-    </rom>
-    <switches page_id="1" page_name="Switches" base="8" default="00,00,00">
+    <switches default="00,00,00">
         <!-- DSWA -->
         <dip name="Continue Price" bits="0" ids="Normal,Discount"/>
         <dip name="Invert Screen" bits="1" ids="Off,On"/>
