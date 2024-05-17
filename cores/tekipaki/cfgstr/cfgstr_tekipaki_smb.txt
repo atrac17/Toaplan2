@@ -1,0 +1,102 @@
+// Status Bit Map: TEKIPAKI
+//              Upper Case                     Lower Case           
+// 0         1         2         3          4         5         6   
+// 01234567890123456789012345678901 23456789012345678901234567890123
+// 0123456789ABCDEFGHIJKLMNOPQRSTUV 0123456789ABCDEFGHIJKLMNOPQRSTUV
+// XXXXXX    X     XXXX                  XX  XXXXXXXXXXXXXXXXXXXXXX 
+
+JTOAPLAN2;;
+P1,Video Settings;
+H0P1OGH,Aspect Ratio,Original,Full Screen,[ARC1],[ARC2];
+P1-;
+d3P1O35,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%,CRT 75%,CRT 100%;
+P1-;
+P1oLO,CRT H Offset,0,+1,+2,+3,+4,+5,+6,+7,-8,-7,-6,-5,-4,-3,-2,-1;
+P1oPS,CRT V Offset,0,+1,+2,+3,+4,+5,+6,+7,-8,-7,-6,-5,-4,-3,-2,-1;
+P1oG,CRT Scale Enable,Off,On;H2P1oHK,CRT scale factor,0,+1,+2,+3,+4,+5,+6,+7,-8,-7,-6,-5,-4,-3,-2,-1;
+P1-;
+d5P1o9,Vertical Crop,Disabled,216p(5x);d5P1oAD,Crop Offset,0,2,4,8,10,12,-12,-10,-8,-6,-4,-2;
+P1oEF,Scale,Normal,V-Integer,Narrower HV-Integer,Wider HV-Integer;
+P2,Audio Settings;
+P2oTU,OPM Volume,Default,75%,50%,25%;
+P2-;
+P2O9,OPM Audio,On,Off;
+-;
+DIP;
+-;
+R0,Reset;
+V,v20230120
+
+// Status Bit Map: JTFRAME
+//              Upper Case                     Lower Case           
+// 0         1         2         3          4         5         6   
+// 01234567890123456789012345678901 23456789012345678901234567890123
+// 0123456789ABCDEFGHIJKLMNOPQRSTUV 0123456789ABCDEFGHIJKLMNOPQRSTUV
+
+0          Reset in MiSTer
+1          Flip screen               JTFRAME_VERTICAL && JTFRAME_OSD_FLIP
+2          Rotate controls           JTFRAME_VERTICAL (MiST)
+2          Rotate screen             JTFRAME_VERTICAL, visibiliy masked (MiSTer)
+3-4        Scan lines                Scan-line mode (MiST only)
+3-5        Scandoubler Fx            Scan line mode and HQ2X enable (MiSTer only)
+6-7        FX Volume (00=lowest)     JTFRAME_OSD_VOL
+8          FX enable/disable         JTFRAME_OSD_SND_EN
+9          FM enable/disable         JTFRAME_OSD_SND_EN
+10         Test mode                 JTFRAME_OSD_TEST
+11         Horizontal filter         MiSTer only
+12         Credits/Pause             JTFRAME_OSD_NOCREDITS (disables it)
+13-15      Reserved for core use     CORE_OSD (option char: D,E,F)
+16-17      Aspect Ratio              MiSTer only, visibility masked
+18         Autofire button 0         JTFRAME_AUTOFIRE0
+19         60 Hz option              JTFRAME_OSD60HZ %%
+37-38      User output options       MiSTer, selects DB15, UART, etc.
+39-40      Rotate options (MiSTer)   JTFRAME_VERTICAL && JTFRAME_ROTATE (see below)
+41         Vertical crop (MiSTer)    MiSTer only
+42-45      Crop offset (MiSTer)      MiSTer only
+46-47      Scaling style (MiSTer)    MiSTer only
+48         CRT H scaling enable      MiSTer only
+49-52      CRT H scaling factor      MiSTer only, visibility masked
+53-56      CRT H offset              MiSTer only
+57-60      CRT V offset              MiSTer only
+61-63      Reserved for forks        JTFRAME forks can use these bits%
+
+J{{.CORENAME}};;
+{{ if .JTFRAME_OSD_LOAD }}          F,rom;                    {{ end }}
+{{ if not (.JTFRAME_NOMRA_DIP) }}   DIP;                      {{ end }}
+{{ if .JTFRAME_CHEAT }}             CHEAT;                    {{ end }}
+    P1,Video;
+{{ if .JTFRAME_OSD60HZ }}           P1OJ,Force 60Hz, Off, On; {{ end }}
+    P1oLO,CRT H offset,0,+1,+2,+3,+4,+5,+6,+7,-8,-7,-6,-5,-4,-3,-2,-1;
+    P1oPS,CRT V offset,0,+1,+2,+3,+4,+5,+6,+7,-8,-7,-6,-5,-4,-3,-2,-1;
+    P1oG,CRT scale enable,Off,On;
+    H2P1oHK,CRT scale factor,0,+1,+2,+3,+4,+5,+6,+7,-8,-7,-6,-5,-4,-3,-2,-1;
+P1{{ .SEPARATOR }}
+{{ if .JTFRAME_NOHQ2X }}            d3P1O35,Scandoubler Fx,None,N/A,CRT 25%,CRT 50%,CRT 75%;
+        {{ else }}                  d3P1O35,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%,CRT 75%; {{ end }}
+H0P1OGH,Aspect ratio,Original,Full screen,[ARC1],[ARC2];
+{{ if .JTFRAME_VERTICAL }}
+    {{ if .JTFRAME_ROTATE }}        H4P1o78,Rotate screen,Yes,No (original),No (flip);
+    {{ else }}
+        {{ if .JTFRAME_OSD_FLIP }}  P1O1,Flip screen,Off,On; {{ end }}
+                                    H1P1O2,Rotate screen,Yes,No;
+    {{ end }}
+{{ end }}
+d5P1o9,Vertical Crop,Disabled,216p(5x);
+d5P1oAD,Crop Offset,0,2,4,8,10,12,-12,-10,-8,-6,-4,-2;
+P1oEF,Scale,Normal,V-Integer,Narrower HV-Integer,Wider HV-Integer;
+{{ .SEPARATOR }}
+{{ if .CORE_OSD }}
+    {{ .CORE_OSD }}
+{{ end }}
+{{ if .JTFRAME_OSD_VOL }}           O67,FX volume, high, very high, very low, low; {{ end }}
+{{ if .JTFRAME_OSD_SND_EN }}        O8,FX,On,Off; O9,FM,On,Off; {{ end }}
+{{ if .JTFRAME_OSD_TEST }}          OA,Service mode,Off,On; {{ end }}
+{{ if .JTFRAME_AUTOFIRE0}}          OI,Autofire button 0,Off,On; {{ end }}
+{{ if (.JTFRAME_CHEAT) or (.JTFRAME_UART) }}
+    {{ if .JTFRAME_NO_DB15 }}       o6,User port,Off,UART; {{ else }}
+                                    o56,User port,Off,DB15 Joystick,UART; {{ end }}
+    {{ else }}                      o5,User port,Off,DB15 Joystick; {{ end }}
+{{ if (.JTFRAME_CREDITS) and not (.BETA) }} OC,Show credits in pause,On,Off; {{ end }}
+R0,Reset;
+{{ with .CORE_KEYMAP }} {{ . }} {{ end }}
+V,v{{ .COMMIT }};
