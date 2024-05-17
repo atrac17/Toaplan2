@@ -1,25 +1,31 @@
-##   This file is part of JTFRAME.
-##
-##   JTFRAME program is free software: you can redistribute it and/or modify
-##   it under the terms of the GNU General Public License as published by
-##   the Free Software Foundation, either version 3 of the License, or
-##   (at your option) any later version.
-##
-##   JTFRAME program is distributed in the hope that it will be useful,
-##   but WITHOUT ANY WARRANTY; without even the implied warranty of
-##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-##   GNU General Public License for more details.
-##
-##   You should have received a copy of the GNU General Public License
-##   along with JTFRAME.  If not, see <http://www.gnu.org/licenses/>.
-##   Author: Jose Tejada Gomez. Twitter: @topapate
-##   Version: 1.0
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 2023  Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions 
+# and other software and tools, and any partner logic 
+# functions, and any output files from any of the foregoing 
+# (including device programming or simulation files), and any 
+# associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License 
+# Subscription Agreement, the Intel Quartus Prime License Agreement,
+# the Intel FPGA IP License Agreement, or other applicable license
+# agreement, including, without limitation, that your use is for
+# the sole purpose of programming logic devices manufactured by
+# Intel and sold by Intel or its authorized distributors.  Please
+# refer to the applicable agreement for further details, at
+# https://fpgasoftware.intel.com/eula.
+#
+# -------------------------------------------------------------------------- #
+#
+# Quartus Prime
+# Version 22.1std.1 Build 917 02/14/2023 SC Lite Edition
+# Date created = 09:19:58  September 13, 2023
+#
+# -------------------------------------------------------------------------- #
 
-
-QUARTUS_VERSION = "17.0"
-DATE = "11:25:05 February  16, 2022"
+QUARTUS_VERSION = "22.1"
+DATE = "02:25:05 May 17, 2024"
 
 # Revisions
 
 PROJECT_REVISION = "snowbro2"
-PROJECT_REVISION = "snowbro2_test"

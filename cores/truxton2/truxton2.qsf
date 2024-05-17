@@ -269,7 +269,7 @@ set_global_assignment -name SDC_FILE sys_top.sdc
 
 # MiSTer Framework
 set_global_assignment -name QIP_FILE modules/jtframe/target/mister/mister.qip
-set_global_assignment -name QIP_FILE cores/truxton2/hdl/model/truxton2.qip
+set_global_assignment -name QIP_FILE hdl/truxton2.qip
 set_global_assignment -name QIP_FILE game.qip
 
 set_global_assignment -name VERILOG_MACRO "MISTER=1"
