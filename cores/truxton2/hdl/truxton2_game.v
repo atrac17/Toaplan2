@@ -6,6 +6,13 @@
 *
 * Copyright (c) 2022 Pramod Somashekar
 *
+* <-- atrac17 -->
+* https://coinopcollection.org
+* https://twitter.com/_atrac17
+* https://github.com/atrac17
+*
+* Copyright (c) 2022 atrac17
+*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
@@ -24,8 +31,8 @@ module truxton2_game(
     input rst,
     input rst48,
     input rst96,
-    input rst24, //27mhz
-    input rst6, //6.75mhz
+    input rst24,
+    input rst6,
     input clk,
     input clk48,
     input clk96,
@@ -38,10 +45,10 @@ module truxton2_game(
     output [7:0] red,
     output [7:0] green,
     output [7:0] blue,
-    output LHBL,
-    output LVBL,
-    output HS,
-    output VS,
+    output       LHBL,
+    output       LVBL,
+    output       HS,
+    output       VS,
 
     // Control I/O
     input [3:0] start_button,
@@ -106,8 +113,11 @@ module truxton2_game(
     input        gfx_en
 );
 
+
 /*MAIN GLOBALS*/
-localparam DEFAULT = 0, TRUXTON2 = 1;
+
+localparam TRUXTON2 = 'h1;
+
 wire RESET = rst48;
 wire CLK = clk48;
 wire CLK96 = clk;
@@ -117,16 +127,27 @@ wire RESET96 = rst;
 wire RESET24 = rst24;
 wire RESET6 = rst6;
 
-wire CEN16, CEN16B;
-wire FLIP = GAME==DEFAULT  ? dipsw[1]:  // Placeholder
-            GAME==TRUXTON2 ? dipsw[1]:  // Screen inversion for TRUXTON2
-            0;
+//GAME selector
+wire [7:0] GAME;
+
+wire CEN16;
+wire CEN16B;
 
 // assign game_led = downloading ? 1'b0 : 1'b1;
 
 /*CLOCKS*/
-wire CEN675, CEN675B, CEN4, CEN4B, CEN1350, CEN1350B;
-wire CEN3p375, CEN3p375B, CEN1p6875, CEN1p6875B;
+
+wire CEN4;
+wire CEN4B;
+wire CEN675;
+wire CEN675B;
+wire CEN1350;
+wire CEN1350B;
+wire CEN3p375;
+wire CEN3p375B;
+wire CEN1p6875;
+wire CEN1p6875B;
+
 truxton2_clock u_clocken (
     .CLK(CLK),
     .CLK96(CLK96),
@@ -148,66 +169,80 @@ assign pxl_cen = CEN675;
 assign pxl2_cen = CEN1350;
 
 /*MEMORY CONNECTS*/
-//GAME selector
-wire [7:0] GAME;
-// inputs
+
+//I/O
+`ifdef POCKET
+wire FASTSCROLL = (status[29] || DIPSW_D[1]) && ~joystick1[7];
+`else
 wire FASTSCROLL = ~status[29];
+`endif
 wire P1_SOCD = status[30];
 wire P2_SOCD = status[31];
+
 //68K ROM
-wire ROM68K_CS;
-wire ROM68K_OK;
+wire        ROM68K_CS;
+wire        ROM68K_OK;
 wire [18:0] ROM68K_ADDR;
 wire [15:0] ROM68K_DOUT;
 
 //sound
-wire                YM2151_CS;
-wire                OKI_CS;
-wire                YM2151_WE;
-wire                YM2151_WR_CMD;
-wire                OKI_WE;
-wire          [7:0] OKI_DIN;
-wire          [7:0] YM2151_DIN;
-wire          [7:0] YM2151_DOUT;
-wire          [7:0] OKI_DOUT;
-wire                AUDIO_MIX = status[63];
+wire       YM2151_CS;
+wire       OKI_CS;
+wire       YM2151_WE;
+wire       YM2151_WR_CMD;
+wire       OKI_WE;
+wire [7:0] OKI_DIN;
+wire [7:0] YM2151_DIN;
+wire [7:0] YM2151_DOUT;
+wire [7:0] OKI_DOUT;
+wire       AUDIO_MIX = status[63] || DIPSW_D[0];
 
 //PCM
-wire PCM_CS;
-wire PCM_OK;
-wire  [19:0] PCM_ADDR;
-wire  [7:0]  PCM_DOUT;
+wire        PCM_CS;
+wire        PCM_OK;
+wire [19:0] PCM_ADDR;
+wire  [7:0] PCM_DOUT;
 
 //TILE GFX ROM
-wire  GFX_CS;
-wire  GFX_OK;
+wire        GFX_CS;
+wire        GFX_OK;
 wire [21:0] GFX0_ADDR;
 wire [31:0] GFX0_DOUT;
 
-wire  GFXSCR0_CS;
-wire  GFXSCR0_OK;
+wire        GFXSCR0_CS;
+wire        GFXSCR0_OK;
 wire [21:0] GFX0SCR0_ADDR;
 wire [31:0] GFX0SCR0_DOUT;
 
-wire  GFXSCR1_CS;
-wire  GFXSCR1_OK;
+wire        GFXSCR1_CS;
+wire        GFXSCR1_OK;
 wire [21:0] GFX0SCR1_ADDR;
 wire [31:0] GFX0SCR1_DOUT;
 
-wire  GFXSCR2_CS;
-wire  GFXSCR2_OK;
+wire        GFXSCR2_CS;
+wire        GFXSCR2_OK;
 wire [21:0] GFX0SCR2_ADDR;
 wire [31:0] GFX0SCR2_DOUT;
 
 //EEPROM
-wire EEPROM_SCLK, EEPROM_SCS, EEPROM_SDI, EEPROM_SDO;
+wire EEPROM_SCLK;
+wire EEPROM_SCS;
+wire EEPROM_SDI;
+wire EEPROM_SDO;
 
 /*EXTERNAL DEVICES*/
 
 //gp9001
 wire GP9001ACK;
-wire GP9001CS, VINT;
-wire GP9001_OP_SELECT_REG, GP9001_OP_WRITE_REG, GP9001_OP_WRITE_RAM, GP9001_OP_READ_RAM_H, GP9001_OP_READ_RAM_L, GP9001_OP_SET_RAM_PTR, GP9001_OP_OBJECTBANK_WR;
+wire GP9001CS;
+wire VINT;
+wire GP9001_OP_SELECT_REG; 
+wire GP9001_OP_WRITE_REG; 
+wire GP9001_OP_WRITE_RAM;
+wire GP9001_OP_READ_RAM_H; 
+wire GP9001_OP_READ_RAM_L;
+wire GP9001_OP_SET_RAM_PTR;
+wire GP9001_OP_OBJECTBANK_WR;
 wire [2:0] GP9001_OBJECTBANK_SLOT;
 wire [15:0] CPU_DOUT;
 wire [15:0] GCU_DOUT;
@@ -218,17 +253,27 @@ wire BUSACK;
 wire BR = 1'b0;
 
 //dip switch
-wire [23:0] DIPSW = GAME == DEFAULT ? {dipsw[23:2], 1'b0, dipsw[0]} :    // Placeholder
-                    GAME == TRUXTON2 ? {dipsw[23:2], 1'b0, dipsw[0]} :   // Screen inversion for TRUXTON2
-                    dipsw[23:0];
-wire DIP_TEST = dip_test;
-wire DIP_PAUSE = dip_pause;
-wire [7:0] DIPSW_C, DIPSW_B, DIPSW_A;
+wire [31:0] DIPSW = GAME == TRUXTON2 ? {dipsw[31:2], 1'b0, dipsw[0]} :
+                    dipsw[31:0];
+
+wire FLIP = GAME==TRUXTON2 ? dipsw[1] : // Screen inversion
+            0;
+
+wire       DIP_TEST = dip_test;
+wire       DIP_PAUSE = dip_pause;
+wire [7:0] DIPSW_A;
+wire [7:0] DIPSW_B;
+wire [7:0] DIPSW_C;
+wire [7:0] DIPSW_D;
 assign { DIPSW_C, DIPSW_B, DIPSW_A } = DIPSW[23:0];
+assign DIPSW_D = DIPSW[31:24];
 
 //video timings
-wire HSYNC, VSYNC, FBLANK;
-wire LHBLL, LVBLL;
+wire       HSYNC;
+wire       VSYNC;
+wire       FBLANK;
+wire       LHBLL;
+wire       LVBLL;
 wire [8:0] V;
 
 //vrams
@@ -236,24 +281,24 @@ wire [14:0] TEXTROM_ADDR;
 wire [15:0] TEXTROM_DATA;
 wire [11:0] TEXTVRAM_ADDR;
 wire [15:0] TEXTVRAM_DATA;
-wire [7:0] TEXTSELECT_ADDR;
+wire  [7:0] TEXTSELECT_ADDR;
 wire [15:0] TEXTSELECT_DATA;
-wire [7:0] TEXTSCROLL_ADDR;
+wire  [7:0] TEXTSCROLL_ADDR;
 wire [15:0] TEXTSCROLL_DATA;
 wire [13:0] TEXTGFXRAM_ADDR;
 wire [15:0] TEXTGFXRAM_DATA;
 wire [10:0] PALRAM_ADDR;
 wire [15:0] PALRAM_DATA;
 wire [13:0] SRAM_ADDR;
-wire [7:0] SRAM_DATA;
-wire [7:0] SRAM_DIN;
-wire SRAM_WE;
+wire  [7:0] SRAM_DATA;
+wire  [7:0] SRAM_DIN;
+wire        SRAM_WE;
 
 //textrom
-wire  [15:0] TEXTROM_CPU_DIN;
-wire  [15:0] TEXTROM_CPU_DOUT;
-wire   [1:0]  TEXTROM_CPU_WE;
-wire  [14:0] TEXTROM_CPU_ADDR;
+wire [15:0] TEXTROM_CPU_DIN;
+wire [15:0] TEXTROM_CPU_DOUT;
+wire  [1:0] TEXTROM_CPU_WE;
+wire [14:0] TEXTROM_CPU_ADDR;
 
 
     //cpu
@@ -287,6 +332,7 @@ truxton2_cpu u_cpu (
     .DIPSW_A(DIPSW_A),
     .DIPSW_B(DIPSW_B),
     .DIPSW_C(DIPSW_C),
+    .DIPSW_D(DIPSW_D),
     .DIP_TEST(DIP_TEST),
     .DIP_PAUSE(DIP_PAUSE),
 
@@ -326,8 +372,6 @@ truxton2_cpu u_cpu (
     .TEXTROM_CPU_WE(TEXTROM_CPU_WE),
     .TEXTROM_CPU_ADDR(TEXTROM_CPU_ADDR),
 
-    .GAME(GAME),
-
     //sound communications
     .YM2151_CS(YM2151_CS),
     .OKI_CS(OKI_CS),
@@ -337,7 +381,9 @@ truxton2_cpu u_cpu (
     .OKI_DIN(OKI_DIN),
     .YM2151_DIN(YM2151_DIN),
     .YM2151_DOUT(YM2151_DOUT),
-    .OKI_DOUT(OKI_DOUT)
+    .OKI_DOUT(OKI_DOUT),
+
+    .GAME(GAME)
 );
 
 raizing_video u_video(
@@ -413,13 +459,12 @@ raizing_video u_video(
     .FLIP(FLIP)
 );
 
-wire ym2151_cen, ym2151_cen2, oki_cen;
-assign ym2151_cen = GAME == TRUXTON2 ? CEN3p375 :
-                    CEN3p375;
-assign ym2151_cen2 = GAME == TRUXTON2 ? CEN1p6875 :
-                     CEN1p6875;
-assign oki_cen = GAME == TRUXTON2 ? CEN4 :
-                 CEN4;
+wire ym2151_cen;
+wire ym2151_cen2;
+wire oki_cen;
+assign ym2151_cen = CEN3p375;
+assign ym2151_cen2 = CEN1p6875;
+assign oki_cen = CEN4;
 
 truxton2_sound u_sound(
     .CLK(CLK),
@@ -452,6 +497,7 @@ truxton2_sound u_sound(
     .FM_LEVEL(dip_fmlevel),
     .PSG_EN(enable_psg),
     .FM_EN(enable_fm),
+    .DIPSW_D(DIPSW_D),
     .DIP_PAUSE(DIP_PAUSE)
 );
 
@@ -479,7 +525,7 @@ truxton2_sdram u_sdram (
     .DOWNLOADING(downloading),
     .DWNLD_BUSY(dwnld_busy),
 
-    // Banks
+    //Banks
     .BA0_ADDR(ba0_addr),
     .BA1_ADDR(ba1_addr),
     .BA2_ADDR(ba2_addr),

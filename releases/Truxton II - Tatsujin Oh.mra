@@ -27,7 +27,6 @@
         <part name="tp024_2.bin" crc="f2f6cae4"/>
         <!-- Total 0x300000 bytes - 3072 kBytes -->
     </rom>
-    <!-- Vertical game -->
     <rom index="1">
         <part>01</part>
     </rom>

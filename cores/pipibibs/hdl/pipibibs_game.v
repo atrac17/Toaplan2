@@ -6,6 +6,13 @@
 *
 * Copyright (c) 2022 Pramod Somashekar
 *
+* <-- atrac17 -->
+* https://coinopcollection.org
+* https://twitter.com/_atrac17
+* https://github.com/atrac17
+*
+* Copyright (c) 2022 atrac17
+*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
@@ -22,10 +29,10 @@
 module pipibibs_game(
     //clock and reset
     input rst,
-    input rst48, //47.25mhz
-    input rst96, //94.5mhz
-    input rst24, //27mhz
-    input rst6,  //6.75mhz
+    input rst48,
+    input rst96,
+    input rst24,
+    input rst6,
     input clk,
     input clk48,
     input clk96,
@@ -38,10 +45,10 @@ module pipibibs_game(
     output [7:0] red,
     output [7:0] green,
     output [7:0] blue,
-    output LHBL,
-    output LVBL,
-    output HS,
-    output VS,
+    output       LHBL,
+    output       LVBL,
+    output       HS,
+    output       VS,
 
     // Control I/O
     input [3:0] start_button,
@@ -106,8 +113,11 @@ module pipibibs_game(
     input        gfx_en
 );
 
+
 /*MAIN GLOBALS*/
-localparam DEFAULT = 0, PIPIBIBS = 3;
+
+localparam PIPIBIBS = 3;
+
 wire RESET = rst48;
 wire CLK = clk48;
 wire CLK96 = clk;
@@ -116,19 +126,29 @@ wire CLK6 = clk6;
 wire RESET96 = rst;
 wire RESET24 = rst24;
 wire RESET6 = rst6;
+
 //GAME selector
 wire [7:0] GAME;
 
-wire CEN16, CEN16B;
-wire FLIP = GAME==DEFAULT  ? dipsw[1]:  // Placeholder
-            GAME==PIPIBIBS ? dipsw[1]:  // Screen inversion for PIPIBIBS
+wire CEN10;
+wire CEN10B;
+
+wire FLIP = GAME==PIPIBIBS ? dipsw[1]: // Screen inversion
             0;
 
 // assign game_led = downloading ? 1'b0 : 1'b1;
 
 /*CLOCKS*/
-wire CEN675, CEN675B, CEN1350, CEN1350B;
-wire CEN3p375, CEN3p375B, CEN1p6875, CEN1p6875B;
+
+wire CEN675;
+wire CEN675B;
+wire CEN1350;
+wire CEN1350B;
+wire CEN3p375;
+wire CEN3p375B;
+wire CEN1p6875;
+wire CEN1p6875B;
+
 pipibibs_clock u_clocken (
     .CLK(CLK),
     .CLK96(CLK96),
@@ -148,48 +168,52 @@ assign pxl_cen = CEN675;
 assign pxl2_cen = CEN1350;
 
 /*MEMORY CONNECTS*/
+
 //68K ROM
-wire ROM68K_CS;
-wire ROM68K_OK;
+wire        ROM68K_CS;
+wire        ROM68K_OK;
 wire [16:0] ROM68K_ADDR;
 wire [15:0] ROM68K_DOUT;
 
 //sound
-wire                YM3812_CS;
-wire                YM3812_WE;
-wire                YM3812_WR_CMD;
-wire          [7:0] YM3812_DIN;
-wire          [7:0] YM3812_DOUT;
+wire        YM3812_CS;
+wire        YM3812_WE;
+wire        YM3812_WR_CMD;
+wire  [7:0] YM3812_DIN;
+wire  [7:0] YM3812_DOUT;
 
 //Z80 ROM
-wire ROMZ80_CS;
-wire ROMZ80_OK;
+wire        ROMZ80_CS;
+wire        ROMZ80_OK;
 wire [14:0] ROMZ80_ADDR;
-wire [7:0] ROMZ80_DOUT;
+wire  [7:0] ROMZ80_DOUT;
 
 //TILE GFX ROM
-wire  GFX_CS;
-wire  GFX_OK;
+wire        GFX_CS;
+wire        GFX_OK;
 wire [21:0] GFX0_ADDR;
 wire [31:0] GFX0_DOUT;
 
-wire  GFXSCR0_CS;
-wire  GFXSCR0_OK;
+wire        GFXSCR0_CS;
+wire        GFXSCR0_OK;
 wire [21:0] GFX0SCR0_ADDR;
 wire [31:0] GFX0SCR0_DOUT;
 
-wire  GFXSCR1_CS;
-wire  GFXSCR1_OK;
+wire        GFXSCR1_CS;
+wire        GFXSCR1_OK;
 wire [21:0] GFX0SCR1_ADDR;
 wire [31:0] GFX0SCR1_DOUT;
 
-wire  GFXSCR2_CS;
-wire  GFXSCR2_OK;
+wire        GFXSCR2_CS;
+wire        GFXSCR2_OK;
 wire [21:0] GFX0SCR2_ADDR;
 wire [31:0] GFX0SCR2_DOUT;
 
 //EEPROM
-wire EEPROM_SCLK, EEPROM_SCS, EEPROM_SDI, EEPROM_SDO;
+wire EEPROM_SCLK;
+wire EEPROM_SCS;
+wire EEPROM_SDI;
+wire EEPROM_SDO;
 
 /*EXTERNAL DEVICES*/
 
@@ -202,26 +226,28 @@ wire [15:0] CPU_DOUT;
 wire [15:0] GCU_DOUT;
 wire [10:0] GP9001OUT;
 
-//z80
-//wire [7:0] SOUNDLATCH;
-wire Z80INT, Z80WAIT;
-
 //bus sharing
 wire BUSACK;
 wire BR = 1'b0;
 
 //dip switch
-wire [23:0] DIPSW = GAME == DEFAULT ? {dipsw[23:2], 1'b0, dipsw[0]} :    // Placeholder
-                    GAME == PIPIBIBS ? {dipsw[23:2], 1'b0, dipsw[0]} :   // Screen inversion for PIPIBIBS
+wire [23:0] DIPSW = GAME == PIPIBIBS ? {dipsw[23:2], 1'b0, dipsw[0]} :   // Screen inversion
                     dipsw[23:0];
-wire DIP_TEST = dip_test;
-wire DIP_PAUSE = dip_pause;
-wire [7:0] DIPSW_C, DIPSW_B, DIPSW_A;
+
+wire       DIP_TEST = dip_test;
+wire       DIP_PAUSE = dip_pause;
+wire [7:0] DIPSW_A;
+wire [7:0] DIPSW_B;
+wire [7:0] DIPSW_C;
+
 assign { DIPSW_C, DIPSW_B, DIPSW_A } = DIPSW[23:0];
 
 //video timings
-wire HSYNC, VSYNC, FBLANK;
-wire LHBLL, LVBLL;
+wire       HSYNC;
+wire       VSYNC;
+wire       FBLANK;
+wire       LHBLL;
+wire       LVBLL;
 wire [8:0] V;
 
 //vrams
@@ -236,8 +262,8 @@ wire SRAM_WE;
 pipibibs_cpu u_cpu (
     .CLK(CLK),
     .CLK96(CLK96),
-    .CEN16(CEN16),
-    .CEN16B(CEN16B),
+    .CEN10(CEN10),
+    .CEN10B(CEN10B),
     .BUSACK(BUSACK),
     .BR(BR),
     .RESET(RESET),
@@ -285,9 +311,6 @@ pipibibs_cpu u_cpu (
     .FBLANK(FBLANK),
 
     //z80 communications
-    .Z80INT(Z80INT),
-    .Z80WAIT(Z80WAIT),
-    .SOUNDLATCH(SOUNDLATCH),
     .SRAM_ADDR(SRAM_ADDR),
     .SRAM_DATA(SRAM_DATA),
     .SRAM_DIN(SRAM_DIN),
@@ -374,8 +397,7 @@ raizing_video u_video(
 );
 
 wire YM3812_cen;
-assign YM3812_cen = GAME == PIPIBIBS ? CEN3p375 :
-                    CEN3p375;
+assign YM3812_cen = CEN3p375;
 
 pipibibs_sound u_sound(
     .CLK(CLK),
@@ -392,8 +414,6 @@ pipibibs_sound u_sound(
     .right(snd_right),
     .sample(sample),
     .peak(peak),
-    .Z80INT(Z80INT),
-    .WAIT(Z80WAIT),
     .YM3812_CS(YM3812_CS),
     .YM3812_WE(YM3812_WE),
     .YM3812_WR_CMD(YM3812_WR_CMD),

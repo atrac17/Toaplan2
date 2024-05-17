@@ -6,6 +6,13 @@
 *
 * Copyright (c) 2022 Pramod Somashekar
 *
+* <-- atrac17 -->
+* https://coinopcollection.org
+* https://twitter.com/_atrac17
+* https://github.com/atrac17
+*
+* Copyright (c) 2022 atrac17
+*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
@@ -37,7 +44,7 @@ module pipibibs_sound (
     output               sample,
     output reg           peak,
     // combined output
-    output  signed  [15:0] snd,
+    output signed [15:0] snd,
 
     input                YM3812_CS,
     input                YM3812_WE,
@@ -46,9 +53,6 @@ module pipibibs_sound (
     output         [7:0] YM3812_DOUT,
 
     //interface with m68k
-    output               WAIT,
-    input                Z80INT,
-    input          [7:0] SOUNDLATCH,
     output        [10:0] SRAM_ADDR,
     input          [7:0] SRAM_DATA,
     output         [7:0] SRAM_DIN,
@@ -62,31 +66,34 @@ module pipibibs_sound (
     input                DIP_PAUSE
 );
 
-localparam DEFAULT = 'h0, PIPIBIBS = 'h3;
-wire signed [15:0] fm_left, fm_right;
-wire peak_l, peak_r;
+localparam PIPIBIBS = 'h3;
+
+wire signed [15:0] fm_left;
+wire signed [15:0] fm_right;
+wire peak_l;
+wire peak_r;
 
 //debugging 
- wire debug = 1'b1;
- integer fd;
+wire debug = 1'b1;
+integer fd;
 
- `ifdef SIMULATION
+`ifdef SIMULATION
  initial fd = $fopen("logsound.txt", "w");
 `endif
 
 reg [7:0] fmgain;
 
 always @(posedge CLK96, posedge RESET96) begin
-if(RESET96) begin
-fmgain<=0;
-end else begin
-case( FM_LEVEL )
-0: fmgain <= 8'h08 ;   // 50%
-1: fmgain <= 8'h04 ;   // 25%
-2: fmgain <= 8'h10 ;   // 100% aka Default
-3: fmgain <= 8'h0c ;   // 75%
-endcase
-end
+    if(RESET96) begin
+        fmgain<=0;
+    end else begin
+        case( FM_LEVEL )
+            0: fmgain <= 8'h08 ;   // 50%
+            1: fmgain <= 8'h04 ;   // 25%
+            2: fmgain <= 8'h10 ;   // 100% aka Default
+            3: fmgain <= 8'h0c ;   // 75%
+        endcase
+    end
 end
 
 always @(posedge CLK96) begin
@@ -94,7 +101,9 @@ always @(posedge CLK96) begin
 end
 
 reg [7:0] gain1;
-reg signed [15:0] final_left, final_right;
+reg signed [15:0] final_left;
+reg signed [15:0] final_right;
+
 always @(posedge CLK96) begin
     final_left<=fm_left;
     final_right<=fm_right;
@@ -105,21 +114,21 @@ assign fm_right = fm_left;
 assign peak_r = peak_l;
 
 jtframe_mixer #(.W0(16), .W1(14), .W2(16), .WOUT(16)) u_mix_left(
-    .rst    ( RESET96     ),
-    .clk    ( CLK96       ),
-    .cen    ( 1'b1        ),
+    .rst    ( RESET96                ),
+    .clk    ( CLK96                  ),
+    .cen    ( 1'b1                   ),
     // input signals
-    .ch0    ( final_left  ),
-    .ch1    ( 16'd0       ),
-    .ch2    ( final_right ),
-    .ch3    ( 16'd0       ),
+    .ch0    ( final_left             ),
+    .ch1    ( 16'd0                  ),
+    .ch2    ( final_right            ),
+    .ch3    ( 16'd0                  ),
     // gain for each channel in 4.4 fixed point format
-    .gain0  ( FM_EN ? fmgain : 16'd0   ),
-    .gain1  ( 1'b1                     ),
-    .gain2  ( FM_EN ? fmgain : 16'd0   ),
-    .gain3  ( 8'd0                     ),
-    .mixed  ( left                     ),
-    .peak   ( peak_l                   )
+    .gain0  ( FM_EN ? fmgain : 16'd0 ),
+    .gain1  ( 8'd0                   ),
+    .gain2  ( FM_EN ? fmgain : 16'd0 ),
+    .gain3  ( 8'd0                   ),
+    .mixed  ( left                   ),
+    .peak   ( peak_l                 )
 );
 
 wire cpu_cen;
@@ -146,26 +155,25 @@ always @(posedge CLK96) begin
     if(RESET96) begin
         ymsnd_rd <= 0;
         ymsnd_wr <= 0;
-        ram_cs <= 0; // > 0x8000 to 0x87ff
+        ram_cs <= 0;
         ROMZ80_CS <= 0;
         ROMZ80_ADDR<=0;
     end else begin
         ymsnd_rd <= !rd_n && ym_cs;
         ymsnd_wr <= !wr_n && ym_cs;
-        ram_cs <= !mreq_n && A[15:11] == 5'b10000; // > 0x8000 to 0x87ff
+        ram_cs <= !mreq_n && A[15:11] == 5'b10000; //0x8000 to 0x87ff
         ROMZ80_CS <= !mreq_n && !rd_n && A<='h7FFF;
         ROMZ80_ADDR<=A;
     end
 end
 
-//io switch
-
-//ram
+//RAM assignments
 assign SRAM_WE = ram_cs && !wr_n;
 assign SRAM_DIN = dout;
 assign SRAM_ADDR = A[10:0];
 wire [7:0] fm0_dout;
 reg [7:0] fm_din;
+
 always @(posedge CLK96) begin
     if(RESET96) begin
     end else begin
@@ -180,27 +188,27 @@ always @(posedge CLK96) begin
 end
 
 jtframe_z80_romwait u_cpu(
-    .rst_n      ( ~RESET96    ),
-    .clk        ( CLK96       ),
-    .cen        ( Z80_CEN     ), // 3.375mhz
-    .cpu_cen    ( cpu_cen     ),
-    .int_n      ( opl_irq_n   ), // opl2 interrupt
-    .nmi_n      ( nmi_n       ),
-    .busrq_n    ( 1'b1        ),
-    .m1_n       ( m1_n        ),
-    .mreq_n     ( mreq_n      ),
-    .iorq_n     ( iorq_n      ),
-    .rd_n       ( rd_n        ),
-    .wr_n       ( wr_n        ),
-    .rfsh_n     (             ),
-    .halt_n     (             ),
-    .busak_n    (             ),
-    .A          ( A           ),
-    .din        ( din         ),
-    .dout       ( dout        ),
+    .rst_n      ( ~RESET96  ),
+    .clk        ( CLK96     ),
+    .cen        ( Z80_CEN   ), // 3.375mhz
+    .cpu_cen    ( cpu_cen   ),
+    .int_n      ( opl_irq_n ), // opl2 interrupt
+    .nmi_n      ( nmi_n     ),
+    .busrq_n    ( 1'b1      ),
+    .m1_n       ( m1_n      ),
+    .mreq_n     ( mreq_n    ),
+    .iorq_n     ( iorq_n    ),
+    .rd_n       ( rd_n      ),
+    .wr_n       ( wr_n      ),
+    .rfsh_n     (           ),
+    .halt_n     (           ),
+    .busak_n    (           ),
+    .A          ( A         ),
+    .din        ( din       ),
+    .dout       ( dout      ),
     // manage access to ROM data from SDRAM
-    .rom_cs     ( ROMZ80_CS   ),
-    .rom_ok     ( ROMZ80_OK   )
+    .rom_cs     ( ROMZ80_CS ),
+    .rom_ok     ( ROMZ80_OK )
 );
 
 jtopl2 u_base(

@@ -185,7 +185,6 @@
         <patch offset="0x7f772">10 04 4a 4e f9</patch>
         <patch offset="0x7f778">02 35 02</patch>
     </rom>
-    <!-- Vertical game -->
     <rom index="1">
         <part>01</part>
     </rom>

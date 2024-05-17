@@ -6,6 +6,13 @@
 *
 * Copyright (c) 2022 Pramod Somashekar
 *
+* <-- atrac17 -->
+* https://coinopcollection.org
+* https://twitter.com/_atrac17
+* https://github.com/atrac17
+*
+* Copyright (c) 2022 atrac17
+*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
@@ -23,11 +30,7 @@ module pipibibs_sdram #(
     //8 bit addressing
     parameter PIPIBIBS_ROM01_PRG_LEN = 25'h40000,
               PIPIBIBS_ROMZ80_PRG_LEN = 25'h8000,
-              PIPIBIBS_GP9001_TILE_LEN = 25'h200000,
-
-              DEFAULT_ROM01_PRG_LEN = 25'h40000,
-              DEFAULT_ROMZ80_PRG_LEN = 25'h8000,
-              DEFAULT_GP9001_TILE_LEN = 25'h200000
+              PIPIBIBS_GP9001_TILE_LEN = 25'h200000
 )(
     input RESET48,
     input CLK48,
@@ -37,17 +40,17 @@ module pipibibs_sdram #(
 
     //ROM loader
     input  [25:0] IOCTL_ADDR,
-    input  [7:0]  IOCTL_DOUT,
-    output [7:0]  IOCTL_DIN,
-    input           IOCTL_WR,
-    input           IOCTL_RAM,
+    input   [7:0] IOCTL_DOUT,
+    output  [7:0] IOCTL_DIN,
+    input         IOCTL_WR,
+    input         IOCTL_RAM,
     output [21:0] PROG_ADDR,
     output [15:0] PROG_DATA,
-    output [1:0]  PROG_MASK,
-    output [1:0]  PROG_BA,
-    output reg      PROG_WE,
-    output           PROG_RD,
-    input           PROG_RDY,
+    output  [1:0] PROG_MASK,
+    output  [1:0] PROG_BA,
+    output reg    PROG_WE,
+    output        PROG_RD,
+    input         PROG_RDY,
     input         DOWNLOADING,
     output        DWNLD_BUSY,
 
@@ -59,16 +62,16 @@ module pipibibs_sdram #(
     output [ 3:0] BA_RD,
     output        BA_WR,
     output [15:0] BA0_DIN,
-    output [ 1:0] BA0_DIN_M,  // write mask
-    input  [ 3:0] BA_ACK,
-    input  [ 3:0] BA_DST,
-    input  [ 3:0] BA_DOK,
-    input  [ 3:0] BA_RDY,
+    output  [1:0] BA0_DIN_M,  // write mask
+    input   [3:0] BA_ACK,
+    input   [3:0] BA_DST,
+    input   [3:0] BA_DOK,
+    input   [3:0] BA_RDY,
     input  [15:0] DATA_READ,
 
     //main cpu prg (Read)
-    input           ROM68K_CS,
-    output          ROM68K_OK,
+    input         ROM68K_CS,
+    output        ROM68K_OK,
     input  [16:0] ROM68K_ADDR,
     output [15:0] ROM68K_DOUT,
 
@@ -79,26 +82,26 @@ module pipibibs_sdram #(
     output  [7:0] ROMZ80_DOUT,
 
     //tile data (Read) (it is split across 2 banks)
-    input            GFX_CS,
-    output           GFX_OK,
+    input         GFX_CS,
+    output        GFX_OK,
     input  [21:0] GFX0_ADDR,
     output [31:0] GFX0_DOUT,
 
     //extra port for scroll0
-    input            GFXSCR0_CS,
-    output           GFXSCR0_OK,
+    input         GFXSCR0_CS,
+    output        GFXSCR0_OK,
     input  [21:0] GFX0SCR0_ADDR,
     output [31:0] GFX0SCR0_DOUT,
 
     //extra port for scroll1
-    input            GFXSCR1_CS,
-    output           GFXSCR1_OK,
+    input         GFXSCR1_CS,
+    output        GFXSCR1_OK,
     input  [21:0] GFX0SCR1_ADDR,
     output [31:0] GFX0SCR1_DOUT,
 
     //extra port for scroll2
-    input           GFXSCR2_CS,
-    output          GFXSCR2_OK,
+    input         GFXSCR2_CS,
+    output        GFXSCR2_OK,
     input  [21:0] GFX0SCR2_ADDR,
     output [31:0] GFX0SCR2_DOUT,
 
@@ -107,14 +110,12 @@ module pipibibs_sdram #(
 
 //loader
 assign DWNLD_BUSY = DOWNLOADING;
-localparam DEFAULT = 0, PIPIBIBS = 3;
 
-wire [24:0] ROM01_PRG_LEN = GAME == PIPIBIBS ? PIPIBIBS_ROM01_PRG_LEN :
-                            DEFAULT_ROM01_PRG_LEN,
-            ROMZ80_PRG_LEN = GAME == PIPIBIBS ? PIPIBIBS_ROMZ80_PRG_LEN :
-                            DEFAULT_ROMZ80_PRG_LEN,
-            GP9001_TILE_LEN = GAME == PIPIBIBS ? PIPIBIBS_GP9001_TILE_LEN :
-                            DEFAULT_GP9001_TILE_LEN;
+localparam PIPIBIBS = 3;
+
+wire [24:0] ROM01_PRG_LEN   = PIPIBIBS_ROM01_PRG_LEN,
+            ROMZ80_PRG_LEN  = PIPIBIBS_ROMZ80_PRG_LEN,
+            GP9001_TILE_LEN = PIPIBIBS_GP9001_TILE_LEN;
 
 wire [25:0] ROM_BASE = 26'h1,
             SND_BASE = ROM_BASE + ROM01_PRG_LEN,
@@ -126,10 +127,10 @@ wire is_snd = IOCTL_ADDR >= SND_BASE && IOCTL_ADDR < TILE_BASE;
 wire is_tile = IOCTL_ADDR >= TILE_BASE && IOCTL_ADDR < ROM_END;
 wire is_game = IOCTL_ADDR == 0;
 
-reg [7:0] pre_data;
-reg [1:0] pre_mask;
+reg  [7:0] pre_data;
+reg  [1:0] pre_mask;
 reg [21:0] pre_addr;
-reg [1:0] pre_ba;
+reg  [1:0] pre_ba;
 
 //where it loads to in sdram
 localparam cpu_offs=0, snd_offs='h100000;
@@ -184,6 +185,7 @@ initial $readmemh("rom/68kprg.hex",  prg, 0, 'h3FFFF);
 
 assign ROM68K_OK=1'b1;
 assign ROM68K_DOUT={prg[(ROM68K_ADDR<<1)],prg[(ROM68K_ADDR<<1)+1]};
+
 assign ROMZ80_OK=1'b1;
 assign ROMZ80_DOUT = z80prg[ROMZ80_ADDR];
 

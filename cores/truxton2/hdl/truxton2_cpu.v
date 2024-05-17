@@ -6,6 +6,13 @@
 *
 * Copyright (c) 2022 Pramod Somashekar
 *
+* <-- atrac17 -->
+* https://coinopcollection.org
+* https://twitter.com/_atrac17
+* https://github.com/atrac17
+*
+* Copyright (c) 2022 atrac17
+*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
@@ -20,48 +27,49 @@
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 module truxton2_cpu (
-    input CLK,
-    input CLK96,
-    input RESET,
-    input RESET96,
-    input GP9001ACK,
-    input VINT,
-    input BR,
+    input       CLK,
+    input       CLK96,
+    input       RESET,
+    input       RESET96,
+    input       GP9001ACK,
+    input       VINT,
+    input       BR,
     input [8:0] V,
-    output BUSACK,
-    input LVBL,
-    input FLIP,
+    output      BUSACK,
+    input       LVBL,
+    input       FLIP,
 
     output [19:1] ADDR,
     output [15:0] DOUT,
-    output RW,
-    output RD,
-    output LDS,
-    output LDSWR,
-    output GP9001CS,
-    output LTABLECS,
-    output VCOUNTCS,
-    output CEN16,
-    output CEN16B,
+    output        RW,
+    output        RD,
+    output        LDS,
+    output        LDSWR,
+    output        GP9001CS,
+    output        LTABLECS,
+    output        VCOUNTCS,
+    output        CEN16,
+    output        CEN16B,
 
     // cabinet I/O
-    input [1:0]  JOYMODE,
-    input [9:0]  JOYSTICK1,
-    input [9:0]  JOYSTICK2,
-    input [3:0]  START_BUTTON,
-    input [3:0]  COIN_INPUT,
-    input        SERVICE,
-    input        TILT,
-    input        FASTSCROLL,
-    input        P1_SOCD,
-    input        P2_SOCD,
+    input [1:0] JOYMODE,
+    input [9:0] JOYSTICK1,
+    input [9:0] JOYSTICK2,
+    input [3:0] START_BUTTON,
+    input [3:0] COIN_INPUT,
+    input       SERVICE,
+    input       TILT,
+    input       FASTSCROLL,
+    input       P1_SOCD,
+    input       P2_SOCD,
 
     // DIP switches
-    input        DIP_TEST,
-    input        DIP_PAUSE,
-    input [7:0]  DIPSW_A,
-    input [7:0]  DIPSW_B,
-    input [7:0]  DIPSW_C,
+    input       DIP_TEST,
+    input       DIP_PAUSE,
+    input [7:0] DIPSW_A,
+    input [7:0] DIPSW_B,
+    input [7:0] DIPSW_C,
+    input [7:0] DIPSW_D,
 
     //68k rom interface
     output            CPU_PRG_CS,
@@ -70,19 +78,24 @@ module truxton2_cpu (
     input      [15:0] CPU_PRG_DATA,
 
     //gcu interface
-    output reg       GP9001_OP_SELECT_REG,
-    output reg       GP9001_OP_WRITE_REG,
-    output reg       GP9001_OP_WRITE_RAM,
-    output reg       GP9001_OP_READ_RAM_H,
-    output reg       GP9001_OP_READ_RAM_L,
-    output reg       GP9001_OP_SET_RAM_PTR,
-    input     [15:0] GP9001_DOUT,
-    input            HSYNC,
-    input            VSYNC,
-    input            FBLANK,
-    input      [7:0] GAME,
+    output reg   GP9001_OP_SELECT_REG,
+    output reg   GP9001_OP_WRITE_REG,
+    output reg   GP9001_OP_WRITE_RAM,
+    output reg   GP9001_OP_READ_RAM_H,
+    output reg   GP9001_OP_READ_RAM_L,
+    output reg   GP9001_OP_SET_RAM_PTR,
+    input [15:0] GP9001_DOUT,
+    input        HSYNC,
+    input        VSYNC,
+    input        FBLANK,
+    input  [7:0] GAME,
 
     //text VRAM interface
+    output [15:0] TEXTROM_CPU_DIN,
+    input  [15:0] TEXTROM_CPU_DOUT,
+    output  [1:0] TEXTROM_CPU_WE,
+    output [13:0] TEXTROM_CPU_ADDR,
+
     //text vram
     input  [11:0] TEXTVRAM_ADDR,
     output [15:0] TEXTVRAM_DATA,
@@ -92,54 +105,60 @@ module truxton2_cpu (
     output [15:0] PALRAM_DATA,
 
     //text select ram
-    input  [7:0]  TEXTSELECT_ADDR,
+    input   [7:0] TEXTSELECT_ADDR,
     output [15:0] TEXTSELECT_DATA,
 
     //text scroll ram
-    input  [7:0]  TEXTSCROLL_ADDR,
+    input   [7:0] TEXTSCROLL_ADDR,
     output [15:0] TEXTSCROLL_DATA,
 
     //sound interface
-    output                YM2151_CS,
-    output                OKI_CS,
-    output                YM2151_WE,
-    output                YM2151_WR_CMD,
-    output                OKI_WE,
-    output          [7:0] OKI_DIN,
-    output          [7:0] YM2151_DIN,
-    input           [7:0] YM2151_DOUT,
-    input           [7:0] OKI_DOUT,
-
-    output  [15:0] TEXTROM_CPU_DIN,
-    input   [15:0] TEXTROM_CPU_DOUT,
-    output   [1:0] TEXTROM_CPU_WE,
-    output  [13:0] TEXTROM_CPU_ADDR
+    output       YM2151_CS,
+    output       OKI_CS,
+    output       YM2151_WE,
+    output       YM2151_WR_CMD,
+    output       OKI_WE,
+    output [7:0] OKI_DIN,
+    output [7:0] YM2151_DIN,
+    input  [7:0] YM2151_DOUT,
+    input  [7:0] OKI_DOUT
 );
 
-localparam DEFAULT  = 'h0;  // DEFAULT (GAREGGA)
-localparam TRUXTON2 = 'h1;  // TRUXTON2 MODULE
+localparam TRUXTON2 = 'h1;
 
 //address bus
 wire [23:1] A;
 wire [23:0] addr_8 = {A[23:1], 1'b0}; //this makes it easier to follow the memory map.
 wire [15:0] cpu_dout;
-wire sel_ram, sel_txgfxram, sel_rom, sel_ram2;
+wire sel_ram;
+wire sel_txgfxram;
+wire sel_rom;
+wire sel_ram2;
 reg ram_ok = 1'b1;
-reg sel_gp9001, sel_io;
+reg sel_gp9001;
+reg sel_io;
 reg dsn_dly;
-reg pre_sel_ram, pre_sel_rom, pre_sel_zrom, pre_sel_txgfxram,
-    reg_sel_ram, reg_sel_rom, reg_sel_zrom, reg_sel_txgfxram;
-reg pre_sel_palram,
-    pre_sel_txvram,
-    pre_sel_txlineselect,
-    pre_sel_txlinescroll,
-    pre_sel_ram2;
-reg reg_sel_palram,
-    reg_sel_txvram,
-    reg_sel_txlineselect,
-    reg_sel_txlinescroll,
-    reg_sel_ram2;
-wire sel_palram, sel_txvram, sel_txlineselect, sel_txlinescroll, sel_txram;
+reg pre_sel_ram;
+reg pre_sel_rom;
+reg pre_sel_txgfxram;
+reg reg_sel_ram;
+reg reg_sel_rom;
+reg reg_sel_txgfxram;
+reg pre_sel_palram;
+reg pre_sel_txvram;
+reg pre_sel_txlineselect;
+reg pre_sel_txlinescroll;
+reg pre_sel_ram2;
+reg reg_sel_palram;
+reg reg_sel_txvram;
+reg reg_sel_txlineselect;
+reg reg_sel_txlinescroll;
+reg reg_sel_ram2;
+wire sel_palram;
+wire sel_txvram;
+wire sel_txlineselect;
+wire sel_txlinescroll;
+wire sel_txram;
 wire [15:0] wram_cpu_data = !RW && (sel_ram || sel_txgfxram || sel_palram || sel_txvram || sel_txlineselect || sel_txlinescroll || sel_ram2) ? cpu_dout : 16'h0000;
 wire [15:0] main_ram_q0;
 wire [15:0] main_palram_q0;
@@ -147,8 +166,6 @@ wire [15:0] main_txvram_q0;
 wire [15:0] main_txlineselect_q0;
 wire [15:0] main_txlinescroll_q0;
 wire [15:0] main_ram2_q0;
-
-wire [15:0] main_vram_q1;
 
 //the first 19 bits are used to address other devices (ie. ROM/RAM). The rest are used for selects.
 assign ADDR[19:1] = A[19:1];
@@ -164,9 +181,10 @@ assign LDSWn = RW | LDSn;
 // ram_cs and vram_cs signals go down before DSWn signals
 // that causes a false read request to the SDRAM. In order
 // to avoid that a little bit of logic is needed:
-assign sel_ram   = pre_sel_ram; //~BUSn & (dsn_dly ? reg_sel_ram  : pre_sel_ram);
-assign sel_txgfxram = pre_sel_txgfxram;
-assign sel_rom   = ~BUSn & (dsn_dly ? reg_sel_rom : pre_sel_rom);
+
+assign sel_ram = pre_sel_ram; // ~BUSn & (dsn_dly ? reg_sel_ram  : pre_sel_ram);
+assign sel_txgfxram = pre_sel_txgfxram; // ~BUSn & (dsn_dly ? reg_sel_txgfxram  : pre_sel_txgfxram);
+assign sel_rom = pre_sel_rom; // ~BUSn & (dsn_dly ? reg_sel_rom : pre_sel_rom);
 assign sel_palram = pre_sel_palram;
 assign sel_txvram = pre_sel_txvram;
 assign sel_txlineselect = pre_sel_txlineselect;
@@ -181,7 +199,7 @@ assign TEXTROM_CPU_ADDR = (addr_8&'hFFFF)>>2;
 
 //sound assigns
 reg sel_oki;
-wire sel_ym2151 = YM2151_CS & ~RW;
+wire sel_ym2151 = YM2151_CS;
 assign YM2151_CS = sel_io && (addr_8[7:0] == 'h14 || addr_8[7:0] == 'h16);
 assign OKI_CS = sel_oki;
 assign YM2151_WE = RW;
@@ -210,29 +228,33 @@ always @(posedge CLK96, posedge RESET96) begin
         reg_sel_txlineselect <= pre_sel_txlineselect;
         reg_sel_txlinescroll <= pre_sel_txlineselect;
         reg_sel_ram2 <= pre_sel_ram2;
-        dsn_dly     <= &{UDSWn,LDSWn}; // low if any DSWn was low
+        dsn_dly <= &{UDSWn,LDSWn}; // low if any DSWn was low
     end
 end
 
 wire FC0, FC1, FC2;
 wire VPAn = ~&{ FC0, FC1, FC2, ~ASn};
 wire BRn, BGACKn, BGn, DTACKn;
-wire bus_cs = |{ pre_sel_rom, pre_sel_ram, pre_sel_palram, pre_sel_txvram, pre_sel_txgfxram || pre_sel_txlineselect,
-                 pre_sel_txlinescroll, pre_sel_ram2, sel_gp9001, sel_io, sel_ym2151};
-wire bus_busy = |{ (sel_ram || sel_palram || sel_txgfxram ||
-                    sel_txvram || sel_txlineselect || 
-                    sel_txlinescroll || sel_ram2) & ~ram_ok, sel_rom & ~CPU_PRG_OK, sel_gp9001 & ~GP9001ACK, sel_ym2151 & YM2151_DOUT[7]};
+wire bus_cs = |{ pre_sel_rom, pre_sel_ram, pre_sel_palram, pre_sel_txvram, pre_sel_txgfxram || pre_sel_txlineselect, pre_sel_txlinescroll, pre_sel_ram2, sel_gp9001, sel_io, sel_ym2151};
+wire bus_busy = |{ (sel_ram || sel_palram || sel_txgfxram || sel_txvram || sel_txlineselect || sel_txlinescroll || sel_ram2) & ~ram_ok, sel_rom & ~CPU_PRG_OK, sel_gp9001 & ~GP9001ACK, sel_ym2151 & YM2151_DOUT[7]};
 
 //i/o bus ports
-reg gp9001_vdp_device_r_cs, gp9001_vdp_device_w_cs, read_port_in1_r_cs, read_port_in2_r_cs, 
-    read_port_sys_r_cs, read_port_dswa_r_cs, read_port_dswb_r_cs, read_port_jmpr_r_cs, 
-    toaplan2_coinword_w_cs, soundlatch_w, video_count_r_cs;
+reg gp9001_vdp_device_r_cs;
+reg gp9001_vdp_device_w_cs;
+reg read_port_in1_r_cs;
+reg read_port_in2_r_cs;
+reg read_port_sys_r_cs;
+reg read_port_dswa_r_cs;
+reg read_port_dswb_r_cs;
+reg read_port_jmpr_r_cs;
+reg toaplan2_coinword_w_cs;
+reg video_count_r_cs;
 
 //debugging 
- wire debug = 1'b1;
- integer fd;
+wire debug = 1'b1;
+integer fd;
 
- `ifdef SIMULATION
+`ifdef SIMULATION
  initial fd = $fopen("log.txt", "w");
 `endif
 
@@ -259,28 +281,27 @@ always @(posedge CLK96 or posedge RESET96) begin
                 $fwrite(fd, "time: %t, addr: %h, uds: %h, lds: %h, rw: %h, cpu_dout: %h, cpu_din: %h, sel_status: %b\n", $time/1000, addr_8, UDSn, LDSn, RW, cpu_dout, cpu_din, {sel_rom, sel_ram, sel_txgfxram, sel_gp9001, sel_io});
 
             //68k ROM
-            pre_sel_rom <= GAME == TRUXTON2 ? addr_8 <= 'h7FFFF :                              // (TRUXTON2)
-                                              addr_8 <= 'h7FFFF;
+            pre_sel_rom <= addr_8 >= 0 && addr_8 <= 'h80000;
+
             CPU_PRG_ADDR <= A[19:1];
 
             //RAM
-            pre_sel_ram <= addr_8[23:16] == 8'b0001_0000;                                      // 0x100000 - 0x10FFFF (TRUXTON2)
+            pre_sel_ram <= addr_8[23:16] == 8'b0001_0000; // 0x100000 - 0x10FFFF
 
-            pre_sel_txgfxram <= addr_8[23:20] == 4'b0101;                                      // 0x500000 - 0x50FFFF (TRUXTON2)
+            pre_sel_txgfxram <= addr_8[23:20] == 4'b0101; // 0x500000 - 0x50FFFF
 
             //GP9001
-            sel_gp9001 <= addr_8[23:20] == 4'b0010;                                            // 0x200000 - 0X20000D (TRUXTON2)
+            sel_gp9001 <= addr_8[23:20] == 4'b0010; // 0x200000 - 0X20000D
 
             //direct access to vtx ram, no dma controller
-            pre_sel_palram <= addr_8[23:20] == 4'b0011;                                        // 0x300000 - 0x300FFF (TRUXTON2)
-            pre_sel_txvram <= GAME == TRUXTON2 ? addr_8 >= 'h400000 && addr_8 <= 'h401FFF :
-                                                 addr_8 >= 'h400000 && addr_8 <= 'h401FFF;     // 0x400000 - 0x401FFF (TRUXTON2)
-            pre_sel_txlineselect <= addr_8 >= 'h402000 && addr_8 <= 'h402FFF;                  // 0x402000 - 0x402FFF (TRUXTON2) // first 0x200 is lineselect
-            pre_sel_txlinescroll <= addr_8 >= 'h403000 && addr_8 <= 'h4031FF;                  // 0x403000 - 0x4031FF (TRUXTON2) // first 0x200 is linescroll
-            pre_sel_ram2 <= addr_8[23:12] == 12'b0100_0000_0011;                               // 0x403200 - 0x403FFF (TRUXTON2)
+            pre_sel_palram <= addr_8[23:20] == 4'b0011; // 0x300000 - 0x300FFF
+            pre_sel_txvram <= addr_8 >= 'h400000 && addr_8 <= 'h401FFF; // 0x400000 - 0x401FFF
+            pre_sel_txlineselect <= addr_8 >= 'h402000 && addr_8 <= 'h402FFF; // 0x402000 - 0x402FFF (first 0x200 is lineselect)
+            pre_sel_txlinescroll <= addr_8 >= 'h403000 && addr_8 <= 'h4031FF; // 0x403000 - 0x4031FF (first 0x200 is linescroll)
+            pre_sel_ram2 <= addr_8[23:12] == 12'b0100_0000_0011; // 0x403200 - 0x403FFF
 
             //IO
-            sel_io <= addr_8[23:12] == 12'b0111_0000_0000;                                     // 0x700000 - 0x70001F (TRUXTON2)
+            sel_io <= addr_8[23:12] == 12'b0111_0000_0000; // 0x700000 - 0x70001F
 
         end else begin
             pre_sel_rom<=0;
@@ -300,25 +321,25 @@ end
 // I/O
 always @(*) begin
     //gp9001
-    gp9001_vdp_device_r_cs = sel_gp9001 && RW;                       // 0x200000-D Read (TRUXTON2)
-    gp9001_vdp_device_w_cs = sel_gp9001 && !RW;                      // 0x200000-D Write (TRUXTON2)
+    gp9001_vdp_device_r_cs = sel_gp9001 && RW; // 0x200000-D Read
+    gp9001_vdp_device_w_cs = sel_gp9001 && !RW; // 0x200000-D Write
 
     //vcount
-    video_count_r_cs = (addr_8[23:20] == 4'b0110) && RW;             // 0x600000-01 (TRUXTON2)
+    video_count_r_cs = (addr_8[23:20] == 4'b0110) && RW; // 0x600000-01
 
     //dips, controls
-    read_port_dswa_r_cs = sel_io && (addr_8[11:0] == 11'h000) && RW; // 0x700000-01 (TRUXTON2)
-    read_port_dswb_r_cs = sel_io && (addr_8[11:0] == 11'h002) && RW; // 0x700002-03 (TRUXTON2)
-    read_port_jmpr_r_cs = sel_io && (addr_8[11:0] == 11'h004) && RW; // 0x700004-05 (TRUXTON2)
-    read_port_in1_r_cs = sel_io && (addr_8[11:0] == 11'h006) && RW;  // 0x700006-07 (TRUXTON2)
-    read_port_in2_r_cs = sel_io && (addr_8[11:0] == 11'h008) && RW;  // 0x700008-09 (TRUXTON2)
-    read_port_sys_r_cs = sel_io && (addr_8[11:0] == 11'h00A) && RW;  // 0x70000A-0B (TRUXTON2)
+    read_port_dswa_r_cs = sel_io && (addr_8[11:0] == 11'h000) && RW; // 0x700000-01
+    read_port_dswb_r_cs = sel_io && (addr_8[11:0] == 11'h002) && RW; // 0x700002-03
+    read_port_jmpr_r_cs = sel_io && (addr_8[11:0] == 11'h004) && RW; // 0x700004-05
+    read_port_in1_r_cs = sel_io && (addr_8[11:0] == 11'h006) && RW; // 0x700006-07
+    read_port_in2_r_cs = sel_io && (addr_8[11:0] == 11'h008) && RW; // 0x700008-09
+    read_port_sys_r_cs = sel_io && (addr_8[11:0] == 11'h00A) && RW; // 0x70000A-0B
 
     //coin
-    toaplan2_coinword_w_cs = sel_io && (addr_8[11:0] == 11'h01F);    // 0x70001F (TRUXTON2)
+    toaplan2_coinword_w_cs = sel_io && (addr_8[11:0] == 11'h01F); // 0x70001F
 
     //sound
-    sel_oki<= sel_io && (addr_8[7:0] == 'h10);
+    sel_oki<= sel_io && (addr_8[7:0] == 'h10) && !RW; // 0x700011
 end
 
 wire [15:0] video_status_hs = (16'hFF00 & (!HSYNC ? ~16'h8000 : 16'hFFFF));
@@ -328,9 +349,25 @@ wire [15:0] video_status = V < 256 ? (video_status_hs & video_status_vs & video_
                                      (video_status_hs & video_status_vs & video_status_fb) | 8'hFF;
 wire vint_n, int1;
 
-//JTFRAME is low active, but batrider is high active.
+//JTFRAME is low active, but Toaplan2 is high active.
 reg [7:0] p1_ctrl;
 reg [7:0] p2_ctrl;
+
+`ifdef POCKET
+always @(posedge CLK96) begin
+    if (P1_SOCD == 0) begin
+        p1_ctrl = {FASTSCROLL, ~JOYSTICK1[6],~JOYSTICK1[5],~JOYSTICK1[4],~p1_r_l_socd,~JOYSTICK1[1],~p1_d_u_socd,~JOYSTICK1[3]};
+    end else begin
+        p1_ctrl = {FASTSCROLL, ~JOYSTICK1[6],~JOYSTICK1[5],~JOYSTICK1[4],~JOYSTICK1[0],~JOYSTICK1[1],~JOYSTICK1[2],~JOYSTICK1[3]};
+    end
+
+    if (P2_SOCD == 0) begin
+        p2_ctrl = {1'b0, ~JOYSTICK2[6],~JOYSTICK2[5],~JOYSTICK2[4],~p2_r_l_socd,~JOYSTICK2[1],~p2_d_u_socd,~JOYSTICK2[3]};
+    end else begin
+        p2_ctrl = {1'b0, ~JOYSTICK2[6],~JOYSTICK2[5],~JOYSTICK2[4],~JOYSTICK2[0],~JOYSTICK2[1],~JOYSTICK2[2],~JOYSTICK2[3]};
+    end
+end
+`else
 always @(posedge CLK96) begin
    if (P1_SOCD == 0) begin
         p1_ctrl = {(~FASTSCROLL & ~JOYSTICK1[7]), ~JOYSTICK1[6],~JOYSTICK1[5],~JOYSTICK1[4],~p1_r_l_socd,~JOYSTICK1[1],~p1_d_u_socd,~JOYSTICK1[3]};
@@ -344,6 +381,7 @@ always @(posedge CLK96) begin
         p2_ctrl = {1'b0, ~JOYSTICK2[6],~JOYSTICK2[5],~JOYSTICK2[4],~JOYSTICK2[0],~JOYSTICK2[1],~JOYSTICK2[2],~JOYSTICK2[3]};
     end
 end
+`endif
 
 wire p1_r_l_socd = JOYSTICK1[0] | ~JOYSTICK1[1];
 wire p1_d_u_socd = JOYSTICK1[2] | ~JOYSTICK1[3];
@@ -423,15 +461,15 @@ end
 //address bits 19 to 23 go to the E68DEC1B chip.
 
 jtframe_ff u_int_ff(
-    .clk      ( CLK96       ),
-    .rst      ( RESET96     ),
-    .cen      ( 1'b1        ),
-    .din      ( 1'b1        ),
-    .q        (             ),
-    .qn       ( vint_n      ),
-    .set      ( 1'b0        ),    // active high
-    .clr      ( ~inta_n     ),    // active high
-    .sigedge  ( VINT        )     // signal whose edge will trigger the FF
+    .clk      ( CLK96   ),
+    .rst      ( RESET96 ),
+    .cen      ( 1'b1    ),
+    .din      ( 1'b1    ),
+    .q        (         ),
+    .qn       ( vint_n  ),
+    .set      ( 1'b0    ), // active high
+    .clr      ( ~inta_n ), // active high
+    .sigedge  ( VINT    )  // signal whose edge will trigger the FF
 );
 
 jtframe_virq u_virq(
@@ -449,77 +487,77 @@ jtframe_virq u_virq(
 );
 
 //68k cpu running at 16mhz
-jtframe_68kdtack #(.W(16)) u_dtack(
-    .rst        (RESET96),
-    .clk        (CLK96),
-    .cpu_cen    (CEN16),
-    .cpu_cenb   (CEN16B),
-    .bus_cs     (bus_cs),
-    .bus_busy   (bus_busy),
-    .bus_legit  (1'b0),
-    .ASn        (ASn),
-    .DSn        ({UDSn, LDSn}),
-    .num        (8'd32),
-    .den        (8'd189),
-    .DTACKn     (DTACKn),
+jtframe_68kdtack #(.W(8)) u_dtack(
+    .rst        ( RESET96      ),
+    .clk        ( CLK96        ),
+    .cpu_cen    ( CEN16        ),
+    .cpu_cenb   ( CEN16B       ),
+    .bus_cs     ( bus_cs       ),
+    .bus_busy   ( bus_busy     ),
+    .bus_legit  ( 1'b0         ),
+    .ASn        ( ASn          ),
+    .DSn        ( {UDSn, LDSn} ),
+    .num        ( 7'd32        ),
+    .den        ( 8'd189       ),
+    .DTACKn     ( DTACKn       ),
     // unused
-    .fave       (),
-    .fworst     (),
-    .frst       ()
+    .fave       (              ),
+    .fworst     (              ),
+    .frst       (              )
 );
 
 assign BUSACK = ~BGACKn;
 
 jtframe_68kdma #(.BW(1)) u_arbitration(
-    .clk        (CLK96),
-    .cen        (CEN16B),
-    .rst        (RESET96),
-    .cpu_BRn    (BRn),
-    .cpu_BGACKn (BGACKn),
-    .cpu_BGn    (BGn),
-    .cpu_ASn    (ASn),
-    .cpu_DTACKn (DTACKn),
-    .dev_br     (BR)
+    .clk        ( CLK96   ),
+    .cen        ( CEN16B  ),
+    .rst        ( RESET96 ),
+    .cpu_BRn    ( BRn     ),
+    .cpu_BGACKn ( BGACKn  ),
+    .cpu_BGn    ( BGn     ),
+    .cpu_ASn    ( ASn     ),
+    .cpu_DTACKn ( DTACKn  ),
+    .dev_br     ( BR      )
 );
 
 fx68k u_011 (
-    .clk        (CLK96),
-    .extReset   (RESET96),
-    .pwrUp      (RESET96),
-    .enPhi1     (CEN16),
-    .enPhi2     (CEN16B),
+    .clk        ( CLK96     ),
+    .extReset   ( RESET96   ),
+    .pwrUp      ( RESET96   ),
+    .enPhi1     ( CEN16     ),
+    .enPhi2     ( CEN16B    ),
 
     // Buses
-    .eab        (A),
-    .iEdb       (cpu_din),
-    .oEdb       (cpu_dout),
+    .eab        ( A         ),
+    .iEdb       ( cpu_din   ),
+    .oEdb       ( cpu_dout  ),
 
-    .eRWn       (RW),
-    .LDSn       (LDSn),
-    .UDSn       (UDSn),
-    .ASn        (ASn),
-    .VPAn       (VPAn),
-    .FC0        (FC0), 
-    .FC1        (FC1),
-    .FC2        (FC2),
+    .eRWn       ( RW        ),
+    .LDSn       ( LDSn      ),
+    .UDSn       ( UDSn      ),
+    .ASn        ( ASn       ),
+    .VPAn       ( VPAn      ),
+    .FC0        ( FC0       ), 
+    .FC1        ( FC1       ),
+    .FC2        ( FC2       ),
 
-    .BERRn      (1'b1),
+    .BERRn      ( 1'b1      ),
 
-    .HALTn      (DIP_PAUSE),
-    .BRn        (BRn),
-    .BGACKn     (BGACKn),
-    .BGn        (BGn),
+    .HALTn      ( DIP_PAUSE ),
+    .BRn        ( BRn       ),
+    .BGACKn     ( BGACKn    ),
+    .BGn        ( BGn       ),
 
-    .DTACKn     (DTACKn),
-    .IPL0n      (1'b1),
-    .IPL1n      (int1),
-    .IPL2n      (1'b1),
+    .DTACKn     ( DTACKn    ),
+    .IPL0n      ( 1'b1      ),
+    .IPL1n      ( int1      ),
+    .IPL2n      ( 1'b1      ),
 
     // Unused
-    .oRESETn    (),
-    .oHALTEDn   (),
-    .VMAn       (),
-    .E          ()
+    .oRESETn    (           ),
+    .oHALTEDn   (           ),
+    .VMAn       (           ),
+    .E          (           )
 );
 
 //CPU WRAM 0x100000-0x10FFFF

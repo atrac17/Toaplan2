@@ -6,6 +6,13 @@
 *
 * Copyright (c) 2022 Pramod Somashekar
 *
+* <-- atrac17 -->
+* https://coinopcollection.org
+* https://twitter.com/_atrac17
+* https://github.com/atrac17
+*
+* Copyright (c) 2022 atrac17
+*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
@@ -23,11 +30,7 @@ module snowbro2_sdram #(
     //8 bit addressing
     parameter SNOWBRO2_ROM01_PRG_LEN = 25'h80000,
               SNOWBRO2_GP9001_TILE_LEN = 25'h300000,
-              SNOWBRO2_PCM_DATA_LEN = 25'h80000,
-
-              DEFAULT_ROM01_PRG_LEN = 25'h80000,
-              DEFAULT_GP9001_TILE_LEN = 25'h300000,
-              DEFAULT_PCM_DATA_LEN = 25'h80000
+              SNOWBRO2_PCM_DATA_LEN = 25'h80000
 )(
     input RESET48,
     input CLK48,
@@ -37,17 +40,17 @@ module snowbro2_sdram #(
 
     //ROM loader
     input  [25:0] IOCTL_ADDR,
-    input  [7:0]  IOCTL_DOUT,
-    output [7:0]  IOCTL_DIN,
-    input           IOCTL_WR,
-    input           IOCTL_RAM,
+    input   [7:0] IOCTL_DOUT,
+    output  [7:0] IOCTL_DIN,
+    input         IOCTL_WR,
+    input         IOCTL_RAM,
     output [21:0] PROG_ADDR,
     output [15:0] PROG_DATA,
-    output [1:0]  PROG_MASK,
-    output [1:0]  PROG_BA,
-    output reg      PROG_WE,
-    output           PROG_RD,
-    input           PROG_RDY,
+    output  [1:0] PROG_MASK,
+    output  [1:0] PROG_BA,
+    output reg    PROG_WE,
+    output        PROG_RD,
+    input         PROG_RDY,
     input         DOWNLOADING,
     output        DWNLD_BUSY,
 
@@ -59,62 +62,60 @@ module snowbro2_sdram #(
     output [ 3:0] BA_RD,
     output        BA_WR,
     output [15:0] BA0_DIN,
-    output [ 1:0] BA0_DIN_M,  // write mask
-    input  [ 3:0] BA_ACK,
-    input  [ 3:0] BA_DST,
-    input  [ 3:0] BA_DOK,
-    input  [ 3:0] BA_RDY,
+    output  [1:0] BA0_DIN_M,  // write mask
+    input   [3:0] BA_ACK,
+    input   [3:0] BA_DST,
+    input   [3:0] BA_DOK,
+    input   [3:0] BA_RDY,
     input  [15:0] DATA_READ,
 
     //main cpu prg (Read)
-    input           ROM68K_CS,
-    output           ROM68K_OK,
+    input         ROM68K_CS,
+    output        ROM68K_OK,
     input  [18:0] ROM68K_ADDR,
     output [15:0] ROM68K_DOUT,
     
     //tile data (Read) (it is split across 2 banks)
-    input             GFX_CS,
-    output            GFX_OK,
+    input         GFX_CS,
+    output        GFX_OK,
     input  [21:0] GFX0_ADDR,
     output [31:0] GFX0_DOUT,
 
     //extra port for scroll0
-    input            GFXSCR0_CS,
-    output            GFXSCR0_OK,
+    input         GFXSCR0_CS,
+    output        GFXSCR0_OK,
     input  [21:0] GFX0SCR0_ADDR,
     output [31:0] GFX0SCR0_DOUT,
 
     //extra port for scroll1
-    input            GFXSCR1_CS,
-    output            GFXSCR1_OK,
+    input         GFXSCR1_CS,
+    output        GFXSCR1_OK,
     input  [21:0] GFX0SCR1_ADDR,
     output [31:0] GFX0SCR1_DOUT,
 
     //extra port for scroll2
-    input           GFXSCR2_CS,
-    output           GFXSCR2_OK,
+    input         GFXSCR2_CS,
+    output        GFXSCR2_OK,
     input  [21:0] GFX0SCR2_ADDR,
     output [31:0] GFX0SCR2_DOUT,
     
     //PCM data (Read, 6)
-    input           PCM_CS,
-    output           PCM_OK,
+    input         PCM_CS,
+    output        PCM_OK,
     input  [19:0] PCM_ADDR,
-    output [7:0]  PCM_DOUT,
+    output  [7:0] PCM_DOUT,
 
     output reg [7:0] GAME
 );
 
 //loader
 assign DWNLD_BUSY = DOWNLOADING;
-localparam DEFAULT = 0, SNOWBRO2 = 2;
 
-wire [24:0] ROM01_PRG_LEN = GAME == SNOWBRO2 ? SNOWBRO2_ROM01_PRG_LEN :
-                            DEFAULT_ROM01_PRG_LEN,
-           GP9001_TILE_LEN = GAME == SNOWBRO2 ? SNOWBRO2_GP9001_TILE_LEN :
-                             DEFAULT_GP9001_TILE_LEN,
-           PCM_DATA_LEN = GAME == SNOWBRO2 ? SNOWBRO2_PCM_DATA_LEN :
-                          DEFAULT_PCM_DATA_LEN;
+localparam SNOWBRO2 = 2;
+
+wire [24:0] ROM01_PRG_LEN   = SNOWBRO2_ROM01_PRG_LEN,
+            GP9001_TILE_LEN = SNOWBRO2_GP9001_TILE_LEN,
+            PCM_DATA_LEN    = SNOWBRO2_PCM_DATA_LEN;
 
 wire [25:0] ROM_BASE = 26'h1,
             TILE_BASE = ROM_BASE + ROM01_PRG_LEN,
@@ -159,9 +160,9 @@ always @(posedge CLK) begin
                         is_tile ? tile_addr >>1 :
                         'hxx;
             pre_ba <=  is_cpu ? 2'h0 : //cpu program
-                    is_pcm ? 2'h0 : //pcm data
-                    is_tile ? 2'h1 : //tiles/gfx
-                    2'hxx; //nothing
+                       is_pcm ? 2'h0 : //pcm data
+                       is_tile ? 2'h1 : //tiles/gfx
+                                 2'hxx; //nothing
             // $display("%h, %h, %h", pre_addr, IOCTL_ADDR, IOCTL_DOUT);
         end
     end else begin

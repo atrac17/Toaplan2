@@ -6,6 +6,13 @@
 *
 * Copyright (c) 2022 Pramod Somashekar
 *
+* <-- atrac17 -->
+* https://coinopcollection.org
+* https://twitter.com/_atrac17
+* https://github.com/atrac17
+*
+* Copyright (c) 2022 atrac17
+*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
@@ -20,24 +27,26 @@
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 module snowbro2_clock (
-    input CLK, //48mhz
-    input CLK96,
-    input CLK24,
-    input CLK6,
-    output CEN675,
-    output CEN675B,
-    output CEN2p7,
-    output CEN2p7B,
-    output CEN3p375,
-    output CEN3p375B,
-    output CEN1p6875,
-    output CEN1p6875B,
-    output CEN1350,
-    output CEN1350B
+    input CLK,         //47.25 mhz
+    input CLK96,       //94.5 mhz
+    input CLK24,       //27 mhz
+    input CLK6,        //6.75 mhz
+    output CEN675,     //6.75 mhz
+    output CEN675B,    //6.75 mhz
+    output CEN4,       //4 mhz
+    output CEN4B,      //4 mhz
+    output CEN3p375,   //3.375 mhz
+    output CEN3p375B,  //3.375 mhz
+    output CEN1p6875,  //1.6875 mhz
+    output CEN1p6875B, //1.6875 mhz
+    output CEN1350,    //13.5 mhz
+    output CEN1350B    //13.5 mhz
 );
 
-// 13.50mhz / 6.75mhz for GP9001; 3.375 for YM2151 (SNOWBRO2)
-// 94.5/7=13.5 // 94.5/14=6.75 // 94.5/28=3.375 // 94.5/56=1.6875
+// 94.5/7  = 13.5
+// 94.5/14 = 6.75
+// 94.5/28 = 3.375
+// 94.5/56 = 1.6875
 
 jtframe_frac_cen #(.W(4)) u_frac_cen_1350(
     .clk(CLK96),
@@ -47,15 +56,14 @@ jtframe_frac_cen #(.W(4)) u_frac_cen_1350(
     .cenb()
 );
 
-// 4mhz for OKI (SNOWBRO2)
-// 94.5*(1/35) == 2.7
+// 94.5*(8/189) = 4
 
-jtframe_frac_cen u_frac_cen_27(
+jtframe_frac_cen u_frac_cen_4(
     .clk(CLK96),
-    .n(1),
-    .m(35),
-    .cen(CEN2p7),
-    .cenb(CEN2p7B)
+    .n(8),
+    .m(189),
+    .cen(CEN4),
+    .cenb(CEN4B)
 );
 
 endmodule

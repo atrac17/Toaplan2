@@ -6,6 +6,13 @@
 *
 * Copyright (c) 2022 Pramod Somashekar
 *
+* <-- atrac17 -->
+* https://coinopcollection.org
+* https://twitter.com/_atrac17
+* https://github.com/atrac17
+*
+* Copyright (c) 2022 atrac17
+*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
@@ -20,47 +27,46 @@
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 module pipibibs_cpu (
-    input CLK,
-    input CLK96,
-    input RESET,
-    input RESET96,
-    input GP9001ACK,
-    input Z80ACK,
-    input VINT,
-    input BR,
+    input       CLK,
+    input       CLK96,
+    input       RESET,
+    input       RESET96,
+    input       GP9001ACK,
+    input       VINT,
+    input       BR,
     input [8:0] V,
-    output BUSACK,
-    input LVBL,
-    input FLIP,
+    output      BUSACK,
+    input       LVBL,
+    input       FLIP,
 
     output [19:1] ADDR,
     output [15:0] DOUT,
-    output RW,
-    output RD,
-    output LDS,
-    output LDSWR,
-    output GP9001CS,
-    output LTABLECS,
-    output VCOUNTCS,
-    output Z80RST,
-    output CEN16,
-    output CEN16B,
+    output        RW,
+    output        RD,
+    output        LDS,
+    output        LDSWR,
+    output        GP9001CS,
+    output        LTABLECS,
+    output        VCOUNTCS,
+    output        Z80RST,
+    output        CEN10,
+    output        CEN10B,
 
     // cabinet I/O
-    input [1:0]  JOYMODE,
-    input [9:0]  JOYSTICK1,
-    input [9:0]  JOYSTICK2,
-    input [3:0]  START_BUTTON,
-    input [3:0]  COIN_INPUT,
-    input        SERVICE,
-    input        TILT,
+    input [1:0] JOYMODE,
+    input [9:0] JOYSTICK1,
+    input [9:0] JOYSTICK2,
+    input [3:0] START_BUTTON,
+    input [3:0] COIN_INPUT,
+    input       SERVICE,
+    input       TILT,
 
     // DIP switches
-    input        DIP_TEST,
-    input        DIP_PAUSE,
-    input [7:0]  DIPSW_A,
-    input [7:0]  DIPSW_B,
-    input [7:0]  DIPSW_C,
+    input       DIP_TEST,
+    input       DIP_PAUSE,
+    input [7:0] DIPSW_A,
+    input [7:0] DIPSW_B,
+    input [7:0] DIPSW_C,
 
     //68k rom interface
     output            CPU_PRG_CS,
@@ -86,45 +92,49 @@ module pipibibs_cpu (
     output [15:0] PALRAM_DATA,
 
     //z80 interface
-    output reg [7:0] SOUNDLATCH,
-    input [10:0] SRAM_ADDR,
-    output [7:0] SRAM_DATA,
-    input [7:0] SRAM_DIN,
-    input SRAM_WE,
-    input Z80WAIT,
-    output reg Z80INT,
+    input     [10:0] SRAM_ADDR,
+    output     [7:0] SRAM_DATA,
+    input      [7:0] SRAM_DIN,
+    input            SRAM_WE,
 
     //sound interface
-    output                YM3812_CS,
-    output                YM3812_WE,
-    output                YM3812_WR_CMD,
-    output          [7:0] YM3812_DIN,
-    input           [7:0] YM3812_DOUT
+    output       YM3812_CS,
+    output       YM3812_WE,
+    output       YM3812_WR_CMD,
+    output [7:0] YM3812_DIN,
+    input  [7:0] YM3812_DOUT
 );
 
-localparam DEFAULT  = 'h0;  // DEFAULT (GAREGGA)
-localparam PIPIBIBS = 'h3;  // PIPIBIBS MODULE
+localparam PIPIBIBS = 'h3;
 
 //address bus
 wire [23:1] A;
 wire [23:0] addr_8 = {A[23:1], 1'b0}; //this makes it easier to follow the memory map.
 wire [15:0] cpu_dout;
-wire sel_z80, sel_ram, sel_sram, sel_rom;
-reg ram_ok = 1'b1;
-reg sel_gp9001, sel_io;
-reg dsn_dly;
-reg pre_sel_ram, pre_sel_sram, pre_sel_rom, pre_sel_zrom,
-    reg_sel_ram, reg_sel_sram, reg_sel_rom, reg_sel_zrom;
-reg pre_sel_palram;
-reg reg_sel_palram;
+wire sel_z80;
+wire sel_ram;
+wire sel_sram;
+wire sel_rom;
 wire sel_palram;
+reg ram_ok = 1'b1;
+reg sel_gp9001;
+reg sel_io;
+reg dsn_dly;
+reg pre_sel_ram;
+reg pre_sel_sram;
+reg pre_sel_rom;
+reg pre_sel_zrom;
+reg pre_sel_palram;
+reg reg_sel_ram;
+reg reg_sel_sram;
+reg reg_sel_rom;
+reg reg_sel_zrom;
+reg reg_sel_palram;
 wire [15:0] wram_cpu_data = !RW && (sel_ram || sel_sram || sel_palram) ? cpu_dout : 16'h0000;
 wire [15:0] main_ram_q0;
 wire [15:0] main_palram_q0;
 wire [15:0] main_ram2_q0;
 wire [7:0] main_sram_q0;
-
-wire [15:0] main_vram_q1;
 
 //the first 19 bits are used to address other devices (ie. ROM/RAM). The rest are used for selects.
 assign ADDR[19:1] = A[19:1];
@@ -140,9 +150,10 @@ assign LDSWn = RW | LDSn;
 // ram_cs and vram_cs signals go down before DSWn signals
 // that causes a false read request to the SDRAM. In order
 // to avoid that a little bit of logic is needed:
-assign sel_ram   = pre_sel_ram; //~BUSn & (dsn_dly ? reg_sel_ram  : pre_sel_ram);
-assign sel_sram  = pre_sel_sram; //~BUSn & (dsn_dly ? reg_sel_sram : pre_sel_sram);
-assign sel_rom   = ~BUSn & (dsn_dly ? reg_sel_rom : pre_sel_rom);
+
+assign sel_ram = pre_sel_ram; //~BUSn & (dsn_dly ? reg_sel_ram  : pre_sel_ram);
+assign sel_sram = pre_sel_sram; //~BUSn & (dsn_dly ? reg_sel_sram : pre_sel_sram);
+assign sel_rom = pre_sel_rom; //~BUSn & (dsn_dly ? reg_sel_rom : pre_sel_rom);
 assign sel_palram = pre_sel_palram;
 assign CPU_PRG_CS = sel_rom;
 
@@ -160,16 +171,14 @@ always @(posedge CLK96, posedge RESET96) begin
         reg_sel_sram <= 0;
         reg_sel_palram <= 0;
         dsn_dly  <= 1;
-    end else if(CEN16) begin
+    end else if(CEN10) begin
         reg_sel_rom <= pre_sel_rom;
         reg_sel_ram  <= pre_sel_ram;
         reg_sel_sram <= pre_sel_sram;
         reg_sel_palram <= pre_sel_palram;
-        dsn_dly     <= &{UDSWn,LDSWn}; // low if any DSWn was low
+        dsn_dly <= &{UDSWn,LDSWn}; // low if any DSWn was low
     end
 end
-
-wire bus_legit = sel_z80 & Z80WAIT;
 
 wire FC0, FC1, FC2;
 wire VPAn = ~&{ FC0, FC1, FC2, ~ASn};
@@ -178,24 +187,22 @@ wire bus_cs = |{ pre_sel_rom, pre_sel_ram, pre_sel_sram, pre_sel_palram || sel_g
 wire bus_busy = |{ (sel_ram || sel_sram || sel_palram) & ~ram_ok, sel_rom & ~CPU_PRG_OK, sel_gp9001 & ~GP9001ACK, sel_YM3812 & YM3812_DOUT[7]};
 
 //i/o bus ports
-reg gp9001_vdp_device_r_cs,
-    gp9001_vdp_device_w_cs,
-    read_port_in1_r_cs,
-    read_port_in2_r_cs,
-    read_port_in3_r_cs,
-    read_port_in4_r_cs,
-    read_port_sys_r_cs,
-    read_port_dswa_r_cs,
-    read_port_dswb_r_cs,
-    read_port_jmpr_r_cs,
-    toaplan2_coinword_w_cs,
-    video_count_r_cs;
+reg gp9001_vdp_device_r_cs;
+reg gp9001_vdp_device_w_cs;
+reg read_port_in1_r_cs;
+reg read_port_in2_r_cs;
+reg read_port_sys_r_cs;
+reg read_port_dswa_r_cs;
+reg read_port_dswb_r_cs;
+reg read_port_jmpr_r_cs;
+reg toaplan2_coinword_w_cs;
+reg video_count_r_cs;
 
 //debugging 
- wire debug = 1'b1;
- integer fd;
+wire debug = 1'b1;
+integer fd;
 
- `ifdef SIMULATION
+`ifdef SIMULATION
  initial fd = $fopen("log.txt", "w");
 `endif
 
@@ -208,7 +215,6 @@ always @(posedge CLK96 or posedge RESET96) begin
         sel_gp9001<=0;
         sel_io<=0;
         CPU_PRG_ADDR<=19'd0;
-        //sel_z80<=1'b0;
     end else begin
         if(!ASn && BGACKn) begin
             //debugging 
@@ -217,26 +223,25 @@ always @(posedge CLK96 or posedge RESET96) begin
                 $fwrite(fd, "time: %t, addr: %h, uds: %h, lds: %h, rw: %h, cpu_dout: %h, cpu_din: %h, sel_status: %b\n", $time/1000, addr_8, UDSn, LDSn, RW, cpu_dout, cpu_din, {sel_rom, sel_ram, sel_sram, sel_gp9001, sel_io});
 
            //68k ROM
-            pre_sel_rom <= GAME == PIPIBIBS ? addr_8 <= 'h3FFFF :  // (PIPIBIBS)
-                                              addr_8 <= 'h3FFFF;
+            pre_sel_rom <= addr_8 >= 0 && addr_8 <= 'h40000;
 
             CPU_PRG_ADDR <= A[17:1];
 
             //RAM
-            pre_sel_ram <= addr_8[23:16] == 8'b0000_1000;            // 0x080000 - 0x082FFF (PIPIBIBS)
+            pre_sel_ram <= addr_8[23:16] == 8'b0000_1000; // 0x080000 - 0x082FFF
 
             //Shared RAM
-            pre_sel_sram <= addr_8[23:12] == 12'b0001_1001_0000;      // 0x190000 - 0x190FFF (PIPIBIBS)
+            pre_sel_sram <= addr_8[23:12] == 12'b0001_1001_0000; // 0x190000 - 0x190FFF
 
             //GP9001
-            sel_gp9001 <= addr_8[23:16] == 8'b0001_0100;              // 0x140000 - 0x14000D (PIPIBIBS)
+            sel_gp9001 <= addr_8[23:16] == 8'b0001_0100; // 0x140000 - 0x14000D
 
             //direct access to vtx ram, no dma controller, no sel_ram_2
-            pre_sel_palram <= addr_8[23:12] == 12'b0000_1100_0000;    // 0x0C0000 - 0X0C0FFF (PIPIBIBS)
+            pre_sel_palram <= addr_8[23:12] == 12'b0000_1100_0000; // 0x0C0000 - 0X0C0FFF
 
             //IO
-            sel_io <= addr_8[23:12] == 12'b0001_1001_1100;            // 0x19C000 - 0x19C035 (PIPIBIBS)
-            //sel_z80 <= soundlatch_w;
+            sel_io <= addr_8[23:12] == 12'b0001_1001_1100; // 0x19C000 - 0x19C035
+			
         end else begin
             pre_sel_rom<=0;
             pre_sel_ram<=0;
@@ -244,7 +249,6 @@ always @(posedge CLK96 or posedge RESET96) begin
             pre_sel_palram<=0;
             sel_gp9001<=0;
             sel_io<=0;
-            //sel_z80<=1'b0;
         end
     end
 end
@@ -252,21 +256,21 @@ end
 // I/O
 always @(*) begin
     //gp9001
-    gp9001_vdp_device_r_cs = sel_gp9001 && RW;                       // 0x140000-D Read (PIPIBIBS)
-    gp9001_vdp_device_w_cs = sel_gp9001 && !RW;                      // 0x140000-D Write (PIPIBIBS)
+    gp9001_vdp_device_r_cs = sel_gp9001 && RW; // 0x140000-D Read
+    gp9001_vdp_device_w_cs = sel_gp9001 && !RW; // 0x140000-D Write
 
     //dips, controls
-    read_port_dswa_r_cs = sel_io && (addr_8[11:0] == 11'h020) && RW; // 0X19C020-21 (PIPIBIBS)
-    read_port_dswb_r_cs = sel_io && (addr_8[11:0] == 11'h024) && RW; // 0X19C024-25 (PIPIBIBS)
-    read_port_jmpr_r_cs = sel_io && (addr_8[11:0] == 11'h028) && RW; // 0X19C028-29 (PIPIBIBS)
-    read_port_in1_r_cs = sel_io && (addr_8[11:0] == 11'h030) && RW;  // 0X19C030-31 (PIPIBIBS)
-    read_port_in2_r_cs = sel_io && (addr_8[11:0] == 11'h034) && RW;  // 0X19C034-35 (PIPIBIBS)
-    read_port_sys_r_cs = sel_io && (addr_8[11:0] == 11'h02C) && RW;  // 0X19C02C-2D (PIPIBIBS)
-    video_count_r_cs = gp9001_vdp_device_r_cs && (addr_8[11:0] == 11'h00c);  // 0X1900C-D (PIPIBIBS)
+    read_port_dswa_r_cs = sel_io && (addr_8[11:0] == 11'h020) && RW; // 0X19C020-21
+    read_port_dswb_r_cs = sel_io && (addr_8[11:0] == 11'h024) && RW; // 0X19C024-25
+    read_port_jmpr_r_cs = sel_io && (addr_8[11:0] == 11'h028) && RW; // 0X19C028-29
+    read_port_in1_r_cs = sel_io && (addr_8[11:0] == 11'h030) && RW; // 0X19C030-31
+    read_port_in2_r_cs = sel_io && (addr_8[11:0] == 11'h034) && RW; // 0X19C034-35
+    read_port_sys_r_cs = sel_io && (addr_8[11:0] == 11'h02C) && RW; // 0X19C02C-2D
+    video_count_r_cs = gp9001_vdp_device_r_cs && (addr_8[11:0] == 11'h00c); // 0X1900C-D
 
 
     //coin
-    toaplan2_coinword_w_cs = sel_io && (addr_8[11:0] == 11'h01D);    // 0x19C01D (PIPIBIBS)
+    toaplan2_coinword_w_cs = sel_io && (addr_8[11:0] == 11'h01D); // 0x19C01D
 end
 
 wire [15:0] video_status_hs = (16'hFF00 & (!HSYNC ? ~16'h8000 : 16'hFFFF));
@@ -276,7 +280,7 @@ wire [15:0] video_status = V < 256 ? (video_status_hs & video_status_vs & video_
                                      (video_status_hs & video_status_vs & video_status_fb) | 8'hFF;
 wire vint_n, int1;
 
-//JTFRAME is low active, but batrider is high active.
+//JTFRAME is low active, but Toaplan2 is high active.
 wire [7:0] p1_ctrl = {1'b0, ~JOYSTICK1[6],~JOYSTICK1[5],~JOYSTICK1[4],~JOYSTICK1[0],~JOYSTICK1[1],~JOYSTICK1[2],~JOYSTICK1[3]};
 wire [7:0] p2_ctrl = {1'b0, ~JOYSTICK2[6],~JOYSTICK2[5],~JOYSTICK2[4],~JOYSTICK2[0],~JOYSTICK2[1],~JOYSTICK2[2],~JOYSTICK2[3]};
 
@@ -315,8 +319,6 @@ always @(posedge CLK96) begin
         GP9001_OP_READ_RAM_H <= 1'b0;
         GP9001_OP_READ_RAM_L <= 1'b0;
         GP9001_OP_SET_RAM_PTR <= 1'b0;
-        Z80INT<=1'b0;
-        SOUNDLATCH <= cpu_dout[7:0];
     end else begin
         if(gp9001_vdp_device_r_cs) begin
             case(addr_8[3:0])
@@ -348,15 +350,15 @@ end
 //address bits 19 to 23 go to the E68DEC1B chip.
 
 jtframe_ff u_int_ff(
-    .clk      ( CLK96       ),
-    .rst      ( RESET96     ),
-    .cen      ( 1'b1        ),
-    .din      ( 1'b1        ),
-    .q        (             ),
-    .qn       ( vint_n      ),
-    .set      ( 1'b0        ),    // active high
-    .clr      ( ~inta_n     ),    // active high
-    .sigedge  ( VINT        )     // signal whose edge will trigger the FF
+    .clk      ( CLK96   ),
+    .rst      ( RESET96 ),
+    .cen      ( 1'b1    ),
+    .din      ( 1'b1    ),
+    .q        (         ),
+    .qn       ( vint_n  ),
+    .set      ( 1'b0    ),    // active high
+    .clr      ( ~inta_n ),    // active high
+    .sigedge  ( VINT    )     // signal whose edge will trigger the FF
 );
 
 jtframe_virq u_virq(
@@ -374,77 +376,77 @@ jtframe_virq u_virq(
 );
 
 //68k cpu running at 10mhz
-jtframe_68kdtack #(.W(16)) u_dtack(
-    .rst        (RESET96),
-    .clk        (CLK96),
-    .cpu_cen    (CEN16),
-    .cpu_cenb   (CEN16B),
-    .bus_cs     (bus_cs),
-    .bus_busy   (bus_busy),
-    .bus_legit  (1'b0),
-    .ASn        (ASn),
-    .DSn        ({UDSn, LDSn}),
-    .num        (16'd20),
-    .den        (16'd189),
-    .DTACKn     (DTACKn),
+jtframe_68kdtack #(.W(8)) u_dtack(
+    .rst        ( RESET96      ),
+    .clk        ( CLK96        ),
+    .cpu_cen    ( CEN10        ),
+    .cpu_cenb   ( CEN10B       ),
+    .bus_cs     ( bus_cs       ),
+    .bus_busy   ( bus_busy     ),
+    .bus_legit  ( 1'b0         ),
+    .ASn        ( ASn          ),
+    .DSn        ( {UDSn, LDSn} ),
+    .num        ( 8'd20        ),
+    .den        ( 8'd189       ),
+    .DTACKn     ( DTACKn       ),
     // unused
-    .fave       (),
-    .fworst     (),
-    .frst       ()
+    .fave       (              ),
+    .fworst     (              ),
+    .frst       (              )
 );
 
 assign BUSACK = ~BGACKn;
 
 jtframe_68kdma #(.BW(1)) u_arbitration(
-    .clk        (CLK96),
-    .cen        (CEN16B),
-    .rst        (RESET96),
-    .cpu_BRn    (BRn),
-    .cpu_BGACKn (BGACKn),
-    .cpu_BGn    (BGn),
-    .cpu_ASn    (ASn),
-    .cpu_DTACKn (DTACKn),
-    .dev_br     (BR)
+    .clk        ( CLK96   ),
+    .cen        ( CEN10B  ),
+    .rst        ( RESET96 ),
+    .cpu_BRn    ( BRn     ),
+    .cpu_BGACKn ( BGACKn  ),
+    .cpu_BGn    ( BGn     ),
+    .cpu_ASn    ( ASn     ),
+    .cpu_DTACKn ( DTACKn  ),
+    .dev_br     ( BR      )
 );
 
 fx68k u_011 (
-    .clk        (CLK96),
-    .extReset   (RESET96),
-    .pwrUp      (RESET96),
-    .enPhi1     (CEN16),
-    .enPhi2     (CEN16B),
+    .clk        ( CLK96   ),
+    .extReset   ( RESET96 ),
+    .pwrUp      ( RESET96 ),
+    .enPhi1     ( CEN10   ),
+    .enPhi2     ( CEN10B  ),
 
     // Buses
-    .eab        (A),
-    .iEdb       (cpu_din),
-    .oEdb       (cpu_dout),
+    .eab        ( A         ),
+    .iEdb       ( cpu_din   ),
+    .oEdb       ( cpu_dout  ),
 
-    .eRWn       (RW),
-    .LDSn       (LDSn),
-    .UDSn       (UDSn),
-    .ASn        (ASn),
-    .VPAn       (VPAn),
-    .FC0        (FC0), 
-    .FC1        (FC1),
-    .FC2        (FC2),
+    .eRWn       ( RW        ),
+    .LDSn       ( LDSn      ),
+    .UDSn       ( UDSn      ),
+    .ASn        ( ASn       ),
+    .VPAn       ( VPAn      ),
+    .FC0        ( FC0       ), 
+    .FC1        ( FC1       ),
+    .FC2        ( FC2       ),
 
-    .BERRn      (1'b1),
+    .BERRn      ( 1'b1      ),
 
-    .HALTn      (DIP_PAUSE),
-    .BRn        (BRn),
-    .BGACKn     (BGACKn),
-    .BGn        (BGn),
+    .HALTn      ( DIP_PAUSE ),
+    .BRn        ( BRn       ),
+    .BGACKn     ( BGACKn    ),
+    .BGn        ( BGn       ),
 
-    .DTACKn     (DTACKn),
-    .IPL0n      (1'b1),
-    .IPL1n      (1'b1),
-    .IPL2n      (int1),
+    .DTACKn     ( DTACKn    ),
+    .IPL0n      ( 1'b1      ),
+    .IPL1n      ( 1'b1      ),
+    .IPL2n      ( int1      ),
 
     // Unused
-    .oRESETn    (),
-    .oHALTEDn   (),
-    .VMAn       (),
-    .E          ()
+    .oRESETn    (           ),
+    .oHALTEDn   (           ),
+    .VMAn       (           ),
+    .E          (           )
 );
 
 //CPU WRAM 0x080000 - 0x082FFF

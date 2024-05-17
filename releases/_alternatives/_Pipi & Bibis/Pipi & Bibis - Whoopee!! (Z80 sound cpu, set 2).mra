@@ -30,6 +30,9 @@
         </interleave>
         <!-- Total 0x248000 bytes - 2336 kBytes -->
     </rom>
+    <rom index="1">
+        <part>00</part>
+    </rom>
     <switches default="00,00,F8">
         <!-- DSWA -->
         <dip name="Screen Flip" bits="1" ids="Off,On"/>
@@ -43,7 +46,7 @@
         <dip name="Hero Counts" bits="12,13" ids="3,5,2,1"/>
         <dip name="Invulnerability" bits="14" ids="Off,On"/>
         <!-- JMPR -->
-        <dip name="Nudity" bits="19" ids="Low,High (Censored)"/>
+        <dip name="Nudity" bits="19" ids="High (Censored),Low"/>
         <dip name="Region" bits="16,18" ids="JPN,SEA,HK (Honest Trading),TWN,USA,USA (Romstar Inc.),EU,EU (GMBH Co.)"/>
     </switches>
     <buttons names="Attack,-,-,Start,Coin,Pause" default="Y,X,R,L,Start" count="3"/>
