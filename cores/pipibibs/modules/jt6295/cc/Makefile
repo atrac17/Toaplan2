@@ -1,2 +1,0 @@
-okidump: okidump.c
-

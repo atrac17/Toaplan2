@@ -1,4 +1,0 @@
-`verilator_config
-lint_off -msg CASEX
-lint_off -msg WIDTH
-lint_off -msg CASEINCOMPLETE

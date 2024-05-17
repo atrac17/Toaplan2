@@ -18,4 +18,3 @@ set_global_assignment -name VERILOG_FILE modules/jtframe/hdl/clocking/jtframe_ce
 #sound
 set_global_assignment -name QIP_FILE modules/jt51/hdl/jt51.qip
 set_global_assignment -name QIP_FILE modules/jt6295/hdl/jt6295.qip
-set_global_assignment -name QIP_FILE modules/jtopl/hdl/jtopl2.qip
