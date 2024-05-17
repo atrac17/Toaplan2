@@ -52,7 +52,7 @@ module raizing_extratext (
     input [7:0] GAME
 );
 
-localparam DEFAULT = 'h0, TRUXTON2 = 'h1;
+localparam SNOWBRO2 = 'h2;
 
 reg [10:0] buf_data = 0;
 reg [8:0] buf_addr = 0;
@@ -64,7 +64,7 @@ reg [31:0] tile_data;
 reg [8:0] xpos;
 reg [7:0] st = 0;
 
-wire [5:0] extratoffs = GAME == DEFAULT ? 6'h2B : 6'h2C; // Used in SSTRIKER
+wire [5:0] extratoffs = 6'h2C; // Used in SSTRIKER and TRUXTON2
 wire [11:0] textpal_offs = 12'h800;
 
 wire [5:0] tile_max=6'd41;
