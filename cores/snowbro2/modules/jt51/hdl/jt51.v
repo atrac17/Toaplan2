@@ -18,12 +18,12 @@
     Date: 27-10-2016
     */
 
-
+`ifdef VERILATOR_KEEP_JT51 /* verilator tracing_on */ `endif
 module jt51(
     input               rst,    // reset
     input               clk,    // main clock
-    input               cen,    // clock enable
-    input               cen_p1, // clock enable at half the speed
+    (* direct_enable *) input cen,    // clock enable
+    (* direct_enable *) input cen_p1, // clock enable at half the speed
     input               cs_n,   // chip select
     input               wr_n,   // write
     input               a0,
@@ -39,14 +39,8 @@ module jt51(
     output  signed  [15:0] right,
     // Full resolution output
     output  signed  [15:0] xleft,
-    output  signed  [15:0] xright,
-    // unsigned outputs for sigma delta converters, full resolution
-    output  [15:0] dacleft,
-    output  [15:0] dacright
+    output  signed  [15:0] xright
 );
-
-assign dacleft  = { ~xleft [15],  xleft[14:0] };
-assign dacright = { ~xright[15], xright[14:0] };
 
 // Timers
 wire [9:0]  value_A;
@@ -76,8 +70,6 @@ jt51_timers u_timers(
     .overflow_A ( overflow_A    ),
     .irq_n      ( irq_n         )
 );
-
-/*verilator tracing_on*/
 
 `ifndef JT51_ONLYTIMERS
 `define YM_TIMER_CTRL 8'h14
@@ -144,9 +136,6 @@ wire    [ 4:0]  keycode_III;
 wire    [ 9:0]  ph_X;
 wire            pg_rst_III;
 
-/*verilator tracing_on*/
-
-
 jt51_pg u_pg(
     .rst        ( rst       ),
     .clk        ( clk       ),              // P1
@@ -201,7 +190,6 @@ jt51_eg u_eg(
     .eg_XI      ( eg_XI )
 );
 
-/*verilator tracing_off*/
 wire signed [13:0] op_out;
 
 jt51_op u_op(
@@ -280,8 +268,6 @@ wire    busy;
 wire    write = !cs_n && !wr_n;
 
 assign  dout = { busy, 5'h0, flag_B, flag_A };
-
-/*verilator tracing_on*/
 
 jt51_mmr u_mmr(
     .rst        ( rst           ),

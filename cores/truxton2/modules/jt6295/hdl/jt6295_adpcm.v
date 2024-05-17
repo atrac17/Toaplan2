@@ -67,8 +67,8 @@ always @(posedge clk, posedge rst ) begin
         sign_II      <= data[3];
         delta_idx_II <= en ? delta_idx_I : 6'd0;
         factor_II    <= en ? data[2:0] : 3'd0;
-        dn_II        <= { 1'b0, lut[delta_idx_I] };
-        qn_II        <= { 1'd0, lut[delta_idx_I]>>3};
+        qn_II        <= { 1'd0, lut[delta_idx_I]>>3};   // next value, starts at 1/8 of step size
+        dn_II        <= { 1'b0, lut[delta_idx_I] };     // step size
         // II
         sign_III      <= sign_II;
         delta_idx_III <= factor_II[2] ? (delta_idx_II+idx_inc_II) : (delta_idx_II-6'd1);
@@ -113,29 +113,23 @@ jt6295_sh_rst #(.WIDTH(4), .STAGES(4) ) u_att
 );
 
 
-wire signed [11:0] snd_in, snd_out;
-reg  signed [11:0] snd_VI;
+wire signed [11:0] snd_out;
+reg  signed [11:0] snd_V, snd_VI;
+reg  signed [12:0] unlim_V;
 reg  signed [ 6:0] gain_lut[0:15];
 reg  signed [ 6:0] gain_VI; // leave the MSB for the sign
+reg                ov_V;
 wire signed [16:0] mul_VI = snd_VI * gain_VI; // multipliers are abundant
     // in the FPGA, so I just use one.
-reg  signed [12:0] snd_V;
-
-wire signed [12:0] lim_pos =  13'd2047;
-wire signed [12:0] lim_neg = -13'd2048;
-
-function [12:0] extend;
-    input [11:0] a;
-    extend = { a[11], a };
-endfunction
 
 always @(*) begin
-    snd_V = !en_V ? 13'd0 : (sign_V ? extend(snd_out) - { 1'b0, qn_V }  :
-                                      extend(snd_out) + { 1'b0, qn_V } );
+    unlim_V =  sign_V ? { snd_out[11], snd_out } - qn_V :
+                        { snd_out[11], snd_out } + qn_V;
+    ov_V  = &{snd_out[11],sign_V,~unlim_V[11]}|&{~snd_out[11],~sign_V,unlim_V[11]}; // overflow check
+    if( ^unlim_V[12:11] ) ov_V=1;
+    snd_V = !en_V ? 12'd0 :
+             ov_V ? {unlim_V[12],{11{~unlim_V[12]}}} : unlim_V[11:0]; // clamp
 end
-
-assign snd_in = snd_V > lim_pos ? lim_pos[11:0] :
-    (snd_V < lim_neg ? lim_neg[11:0] : snd_V[11:0]);
 
 always @(posedge clk, posedge rst) begin
     if(rst) begin
@@ -143,18 +137,17 @@ always @(posedge clk, posedge rst) begin
         gain_VI <= 7'd0;
         sound   <= 12'd0;
     end else if(cen) begin
-        snd_VI  <= snd_in;
+        snd_VI  <= snd_V;
         gain_VI <= gain_lut[att_V];
         sound   <= mul_VI[16:5];
     end
 end
 
-jt6295_sh_rst #(.WIDTH(12), .STAGES(4) ) u_sound
-(
+jt6295_sh_rst #(.WIDTH(12), .STAGES(4) ) u_sound(
     .rst    ( rst       ),
     .clk    ( clk       ),
     .clk_en ( cen       ),
-    .din    ( snd_in    ),
+    .din    ( snd_V     ),
     .drop   ( snd_out   )
 );
 
@@ -168,6 +161,19 @@ lut[35] = 11'd0449; lut[36] = 11'd0494; lut[37] = 11'd0544; lut[38] = 11'd0598; 
 lut[42] = 11'd0876; lut[43] = 11'd0963; lut[44] = 11'd1060; lut[45] = 11'd1166; lut[46] = 11'd1282; lut[47] = 11'd1411; lut[48] = 11'd1552;
 end
 
+// Attenuation has been verified against two CPS1 boards
+//     Magic Sword         SF2               JTCPS1
+//     88617A             89626A             fbb89f0
+// set dB      delta     dB    delta    dB     delta
+// 0   1,1              0,9            -9,1
+// 1   -2,2    -3,3    -2,4    -3,3    -12,4   -3,3
+// 2   -4,9    -2,7    -5,1    -2,7    -15,2   -2,8
+// 3   -8,2    -3,3    -8,4    -3,3    -18,4   -3,2
+// 4   -11     -2,8    -11,1   -2,7    -21,2   -2,8
+// 5   -13,5   -2,5    -13,6   -2,5    -23,7   -2,5
+// 6   -16,9   -3,4    -17,2   -3,6    -27,2   -3,5
+// 7   -19,3   -2,4    -19,7   -2,5    -29,7   -2,5
+// sampled at 192kHz, using an FFT bin size of 4096 samples, power at 637 Hz
 initial begin
     gain_lut[0]  = 7'd32;
     gain_lut[1]  = 7'd22;
@@ -194,10 +200,11 @@ end
 
 always @(posedge clk) if(cen) begin
     case(ch)
-        4'd1: snd0 <= snd_in;
-        4'd2: snd1 <= snd_in;
-        4'd4: snd2 <= snd_in;
-        4'd8: snd3 <= snd_in;
+        4'd1: snd0 <= snd_V;
+        4'd2: snd1 <= snd_V;
+        4'd4: snd2 <= snd_V;
+        4'd8: snd3 <= snd_V;
+        default:;
     endcase
 end
 `endif
