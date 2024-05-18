@@ -1,8 +1,8 @@
 <misterromdescription>
     <about author="atrac17" webpage="https://coinopcollection.org" source="https://github.com/Coin-OpCollection" twitter="@_atrac17"/>
-    <name>Pipi &amp; Bibis / Whoopee!! (Z80 sound cpu, set 2)</name>
-    <setname>pipibibsa</setname>
-    <rbf>pipibibs</rbf>
+    <name>Pipi &amp; Bibis / Whoopee!! (Teki Paki hardware)</name>
+    <setname>whoopee</setname>
+    <rbf>tekipaki</rbf>
     <mameversion>0265</mameversion>
     <year>1991</year>
     <manufacturer>Toaplan</manufacturer>
@@ -14,15 +14,15 @@
     <category>Platform</category>
     <catver>Platform / Run Jump</catver>
     <mraauthor>atrac17</mraauthor>
-    <rom index="0" zip="pipibibsa.zip|pipibibs.zip" md5="None" address="0x30000000">
-        <part>03</part>
+    <rom index="0" zip="whoopee.zip|pipibibs.zip" md5="None" address="0x30000000">
+        <part>05</part>
         <!-- maincpu - starts at 0x0 -->
         <interleave output="16">
-            <part name="tp025-1.alt.bin" crc="3e522d98" map="01"/>
-            <part name="tp025-2.alt.bin" crc="48370485" map="10"/>
+            <part name="whoopee.1" crc="28882e7e" map="01"/>
+            <part name="whoopee.2" crc="6796f133" map="10"/>
         </interleave>
         <!-- audiocpu - starts at 0x40000 -->
-        <part name="tp025-5.bin" crc="bf8ffde5"/>
+        <part name="hd647180.025" crc="c02436f6"/>
         <!-- gp9001_0 - starts at 0x48000 -->
         <interleave output="16">
             <part name="tp025-4.bin" crc="ab97f744" map="01"/>

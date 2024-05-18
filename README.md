@@ -2,7 +2,7 @@
 
 FPGA compatible cores of Toaplan Version 2 arcade hardware titles for [**MiSTerFPGA**](https://github.com/MiSTer-devel/Main_MiSTer/wiki) and [**OpenFPGA**](https://github.com/open-fpga) written by [**atrac17**](https://github.com/atrac17). Based on the [**Raizing FPGA**](https://github.com/psomashekar/Raizing_FPGA) implementation by Pramod Somashekar.
 
-Implementation references Knuckle Bash (TP-023) schematics and verified against Teki Paki (TP-020), Dogyūn!! (TP-022), Knuckle Bash (TP-023), Tatsujin Ō (TP-024), FixEight (TP-026) and Batsugun (TP-030).
+Implementation references TP-023 schematics and verified against Teki Paki (TP-020), Dogyūn!! (TP-022), Knuckle Bash (TP-023), Tatsujin Ō (TP-024), FixEight (TP-026) and Batsugun (TP-030).
 
 The intent is for these cores to be a 1:1 playable implementation of Toaplan V2 hardware titles. Currently in beta state and in active development.
 
@@ -12,7 +12,7 @@ The intent is for these cores to be a 1:1 playable implementation of Toaplan V2 
 
 | Title                                                                                              | PCB<br>Number | Encrypted<br>Program | Secondary<br>CPU | CPU<br>Usage | Status          | Released |
 |----------------------------------------------------------------------------------------------------|---------------|----------------------|------------------|--------------|-----------------|----------|
-| [**Teki Paki**](https://en.wikipedia.org/wiki/Teki_Paki)                                           | TP-020        | No                   | HD647180         | Audio        | Implemented     | 20240517 |
+| [**Teki Paki**](https://en.wikipedia.org/wiki/Teki_Paki)                                           | TP-020        | No                   | HD647180         | Audio        | Implemented     | 20240511 |
 | [**Ghox**](https://en.wikipedia.org/wiki/Ghox)                                                     | TP-021        | No                   | HD647180         | Audio & I/O  | WIP             | -        |
 | [**Dogyūn!! (Test Location)**](https://en.wikipedia.org/wiki/Dogyuun)                              | TX-022        | Yes                  | Z80              | Audio        | WIP             | -        |
 | [**Dogyūn!!**](https://en.wikipedia.org/wiki/Dogyuun)                                              | TP-022        | Yes                  | NEC V25          | Audio        | -               | -        |
@@ -26,15 +26,15 @@ The intent is for these cores to be a 1:1 playable implementation of Toaplan V2 
 
 ## External Modules
 
-| Module                                                        | Function                                                                     | Author                                                 |
-|---------------------------------------------------------------|------------------------------------------------------------------------------|--------------------------------------------------------|
-| [**fx68k**](https://github.com/ijor/fx68k)                    | [**Motorola 68000 CPU**](https://en.wikipedia.org/wiki/Motorola_68000)       | Jorge Cwik                                             |
-| [**t80**](https://opencores.org/projects/t80)                 | [**Zilog Z80 CPU**](https://en.wikipedia.org/wiki/Zilog_Z80)                 | Daniel Wallner                                         |
-| [**jt51**](https://github.com/jotego/jt51)                    | [**Yamaha YM2151**](https://en.wikipedia.org/wiki/Yamaha_YM2151)             | Jose Tejada Gomez                                      |
-| [**jt6295**](https://github.com/jotego/jt6295)                | [**OKI MSM6295**](https://dtsheet.com/doc/957023/oki-m6295)                  | Jose Tejada Gomez                                      |
-| [**jtopl2**](https://github.com/jotego/jtopl)                 | [**Yamaha OPL 2**](https://en.wikipedia.org/wiki/Yamaha_OPL#OPL2)            | Jose Tejada Gomez                                      |
-| [**jtframe**](https://github.com/jotego/jtframe)              | [**FPGA Framework**](https://github.com/jotego/jtframe)                      | Jose Tejada; modified by Pramod Somashekar and atrac17 |
-| [**GP9001**](https://gamerepair.info/parts/77_toaplan_gp9001) | [**Toaplan Graphics ASIC**](https://gamerepair.info/parts/77_toaplan_gp9001) | Pramod Somashekar                                      |
+| Module                                                        | Function                                                                     | Author                                                       |
+|---------------------------------------------------------------|------------------------------------------------------------------------------|--------------------------------------------------------------|
+| [**fx68k**](https://github.com/ijor/fx68k)                    | [**Motorola 68000 CPU**](https://en.wikipedia.org/wiki/Motorola_68000)       | Jorge Cwik                                                   |
+| [**t80**](https://opencores.org/projects/t80)                 | [**Zilog Z80 CPU**](https://en.wikipedia.org/wiki/Zilog_Z80)                 | Daniel Wallner                                               |
+| [**jt51**](https://github.com/jotego/jt51)                    | [**Yamaha YM2151**](https://en.wikipedia.org/wiki/Yamaha_YM2151)             | Jose Tejada Gomez                                            |
+| [**jt6295**](https://github.com/jotego/jt6295)                | [**OKI MSM6295**](https://dtsheet.com/doc/957023/oki-m6295)                  | Jose Tejada Gomez                                            |
+| [**jtopl2**](https://github.com/jotego/jtopl)                 | [**Yamaha OPL 2**](https://en.wikipedia.org/wiki/Yamaha_OPL#OPL2)            | Jose Tejada Gomez                                            |
+| [**jtframe**](https://github.com/jotego/jtframe)              | [**FPGA Framework**](https://github.com/jotego/jtframe)                      | Jose Tejada Gomez; modified by Pramod Somashekar and atrac17 |
+| [**GP9001**](https://gamerepair.info/parts/77_toaplan_gp9001) | [**Toaplan Graphics ASIC**](https://gamerepair.info/parts/77_toaplan_gp9001) | Pramod Somashekar                                            |
 
 # Known Issues
 
@@ -258,7 +258,7 @@ Chip | Use |
 
 [**Pramod Somashekar**](https://github.com/MiSTer-devel/Arcade-Raizing_MiSTer) for his extensive work on the GP9001, Raizing FPGA implementation, general knowledge, and assistance with implementing Tatsujin Ō.<br><br>
 [**Jose Tejada**](https://github.com/MiSTer-devel/Arcade-Raizing_MiSTer) for his extensive work on FPGA modules utilized in this implementation, general knowledge, and assistance.<br><br>
-[**@90s_cyber_thriller**](https://www.instagram.com/90s_cyber_thriller/) for loaning all Toaplan V2 hardware used in the development process.
+[**@90s_cyber_thriller**](https://www.instagram.com/90s_cyber_thriller/) for loaning Dogyūn!!, Knuckle Bash, Tatsujin Ō, and Batsugun PCBs referenced for core development.
 
 # Support
 
