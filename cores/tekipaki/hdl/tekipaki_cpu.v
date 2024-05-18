@@ -376,76 +376,75 @@ jtframe_virq u_virq(
 
 //68k cpu running at 10mhz
 jtframe_68kdtack #(.W(8)) u_dtack(
-    .rst        (RESET96),
-    .clk        (CLK96),
-    .cpu_cen    (CEN10),
-    .cpu_cenb   (CEN10B),
-    .bus_cs     (bus_cs),
-    .bus_busy   (bus_busy),
-    .bus_legit  (1'b0),
-    .ASn        (ASn),
-    .DSn        ({UDSn, LDSn}),
-    .num        (8'd20),
-    .den        (8'd189),
-    .DTACKn     (DTACKn),
+    .rst        ( RESET96      ),
+    .clk        ( CLK96        ),
+    .cpu_cen    ( CEN10        ),
+    .cpu_cenb   ( CEN10B       ),
+    .bus_cs     ( bus_cs       ),
+    .bus_busy   ( bus_busy     ),
+    .bus_legit  ( 1'b0         ),
+    .ASn        ( ASn          ),
+    .DSn        ( {UDSn, LDSn} ),
+    .num        ( 7'd20         ),
+    .den        ( 8'd189        ),
+    .DTACKn     ( DTACKn       ),
     // unused
-    .fave       (),
-    .fworst     (),
-    .frst       ()
+    .fave       (              ),
+    .fworst     (              ),
+    .frst       (              )
 );
-
 assign BUSACK = ~BGACKn;
 
 jtframe_68kdma #(.BW(1)) u_arbitration(
-    .clk        (CLK96),
-    .cen        (CEN10B),
-    .rst        (RESET96),
-    .cpu_BRn    (BRn),
-    .cpu_BGACKn (BGACKn),
-    .cpu_BGn    (BGn),
-    .cpu_ASn    (ASn),
-    .cpu_DTACKn (DTACKn),
-    .dev_br     (BR)
+    .clk        ( CLK96   ),
+    .cen        ( CEN10B  ),
+    .rst        ( RESET96 ),
+    .cpu_BRn    ( BRn     ),
+    .cpu_BGACKn ( BGACKn  ),
+    .cpu_BGn    ( BGn     ),
+    .cpu_ASn    ( ASn     ),
+    .cpu_DTACKn ( DTACKn  ),
+    .dev_br     ( BR      )
 );
 
 fx68k u_011 (
-    .clk        (CLK96),
-    .extReset   (RESET96),
-    .pwrUp      (RESET96),
-    .enPhi1     (CEN10),
-    .enPhi2     (CEN10B),
+    .clk        ( CLK96     ),
+    .extReset   ( RESET96   ),
+    .pwrUp      ( RESET96   ),
+    .enPhi1     ( CEN10     ),
+    .enPhi2     ( CEN10B    ),
 
     // Buses
-    .eab        (A),
-    .iEdb       (cpu_din),
-    .oEdb       (cpu_dout),
+    .eab        ( A         ),
+    .iEdb       ( cpu_din   ),
+    .oEdb       ( cpu_dout  ),
 
-    .eRWn       (RW),
-    .LDSn       (LDSn),
-    .UDSn       (UDSn),
-    .ASn        (ASn),
-    .VPAn       (VPAn),
-    .FC0        (FC0), 
-    .FC1        (FC1),
-    .FC2        (FC2),
+    .eRWn       ( RW        ),
+    .LDSn       ( LDSn      ),
+    .UDSn       ( UDSn      ),
+    .ASn        ( ASn       ),
+    .VPAn       ( VPAn      ),
+    .FC0        ( FC0       ),
+    .FC1        ( FC1       ),
+    .FC2        ( FC2       ),
 
-    .BERRn      (1'b1),
+    .BERRn      ( 1'b1      ),
 
-    .HALTn      (DIP_PAUSE),
-    .BRn        (BRn),
-    .BGACKn     (BGACKn),
-    .BGn        (BGn),
+    .HALTn      ( DIP_PAUSE ),
+    .BRn        ( BRn       ),
+    .BGACKn     ( BGACKn    ),
+    .BGn        ( BGn       ),
 
-    .DTACKn     (DTACKn),
-    .IPL0n      (1'b1),
-    .IPL1n      (1'b1),
-    .IPL2n      (int1),
+    .DTACKn     ( DTACKn    ),
+    .IPL0n      ( 1'b1      ),
+    .IPL1n      ( 1'b1      ),
+    .IPL2n      ( int1      ),
 
     // Unused
-    .oRESETn    (),
-    .oHALTEDn   (),
-    .VMAn       (),
-    .E          ()
+    .oRESETn    (           ),
+    .oHALTEDn   (           ),
+    .VMAn       (           ),
+    .E          (           )
 );
 
 //CPU WRAM 0x080000 - 0x082FFF
@@ -466,12 +465,12 @@ jtframe_dual_ram16 #(.aw(13)) u_cpu_wram(
 
 //HD647180 RAM 0xFE00 - 0xFFFF
 jtframe_ram #(.aw(9)) internal_ram (
-    .clk    ( CLK96      ),
-    .cen    ( 1'b1       ),
-    .data   ( SRAM_DIN   ),
-    .addr   ( SRAM_ADDR  ),
-    .we     ( SRAM_WE    ),
-    .q      ( SRAM_DATA  )
+    .clk    (CLK96),
+    .cen    (1'b1),
+    .data   (SRAM_DIN),
+    .addr   (SRAM_ADDR),
+    .we     (SRAM_WE),
+    .q      (SRAM_DATA)
 );
 
 //Palette RAM 0x0C0000 - 0x0C0FFF
