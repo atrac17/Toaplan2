@@ -5,7 +5,7 @@
 // 0123456789ABCDEFGHIJKLMNOPQRSTUV 0123456789ABCDEFGHIJKLMNOPQRSTUV
 // XXXXXX    X     XXXX                  XX  XXXXXXXXXXXXXXXXXXXXXX 
 
-JTOAPLAN2;;
+JTEKIPAKI;;
 P1,Video Settings;
 H0P1OGH,Aspect Ratio,Original,Full Screen,[ARC1],[ARC2];
 P1-;
@@ -25,7 +25,7 @@ P2O9,OPM Audio,On,Off;
 DIP;
 -;
 R0,Reset;
-V,v20230120
+V,v20240518
 
 // Status Bit Map: JTFRAME
 //              Upper Case                     Lower Case           

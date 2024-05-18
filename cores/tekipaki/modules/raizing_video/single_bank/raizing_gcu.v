@@ -136,7 +136,7 @@ module raizing_gcu (
     input   [8:0] VS_END
 );
 
-localparam DEFAULT = 'h0, TRUXTON2 = 'h1, SNOWBRO2 = 'h2, PIPIBIPS = 'h3, TEKIPAKI = 'h4;
+localparam TEKIPAKI = 'h4, WHOOPEE = 'h5;
 
 //debugging 
 //  wire debug = 1'b1;
@@ -144,17 +144,17 @@ localparam DEFAULT = 'h0, TRUXTON2 = 'h1, SNOWBRO2 = 'h2, PIPIBIPS = 'h3, TEKIPA
 //  initial fd = $fopen("log_gp9001.txt", "w");
 
 // layer offsets
-wire signed [12:0] background_scroll_xoffs = GAME == TRUXTON2 ? -12'h1D6 :
-                                             GAME == TEKIPAKI ? -12'h1D6 :
-                                                                -12'h1D6 ;
+wire signed [12:0] background_scroll_xoffs = GAME == TEKIPAKI ? -12'h1D6 :
+                                             GAME == WHOOPEE  ? -12'h1D6 :
+                                                                -12'h1D6;
 wire signed [12:0] background_scroll_xoffs_f = -12'h229;
-wire signed [12:0] foreground_scroll_xoffs = GAME == TRUXTON2 ? -12'h1D8 :
-                                             GAME == TEKIPAKI ? -12'h1D8 :
-                                                                -12'h1D8 ;
+wire signed [12:0] foreground_scroll_xoffs = GAME == TEKIPAKI ? -12'h1D8 :
+                                             GAME == WHOOPEE  ? -12'h1D8 :
+                                                                -12'h1D8;
 wire signed [12:0] foreground_scroll_xoffs_f = -12'h227;
-wire signed [12:0] text_scroll_xoffs = GAME == TRUXTON2 ? -12'h1DA :
-                                       GAME == TEKIPAKI ? -12'h1DA :
-                                                          -12'h1DA ;
+wire signed [12:0] text_scroll_xoffs = GAME == TEKIPAKI ? -12'h1DA :
+                                       GAME == WHOOPEE  ? -12'h1DA :
+                                                          -12'h1DA;
 wire signed [12:0] text_scroll_xoffs_f = -12'h225;
 wire signed [12:0] sprite_scroll_xoffs = 12'h024; //12'h1CC;
 wire signed [12:0] sprite_scroll_xoffs_f = -12'h17B;
@@ -165,10 +165,9 @@ wire signed [12:0] foreground_scroll_yoffs = -12'h1EF;
 wire signed [12:0] foreground_scroll_yoffs_f = -12'h210;
 wire signed [12:0] text_scroll_yoffs = -12'h1EF;
 wire signed [12:0] text_scroll_yoffs_f = -12'h210;
-wire signed [12:0] sprite_scroll_yoffs = GAME == TRUXTON2 ? 12'h001 :
-                                         GAME == SNOWBRO2 ? 12'h011 :
-                                         GAME == TEKIPAKI ? 12'h011 :
-                                         12'h001; //-12'h1EF;
+wire signed [12:0] sprite_scroll_yoffs = GAME == TEKIPAKI ? 12'h011 :
+                                         GAME == WHOOPEE  ? 12'h001 :
+                                                            12'h001; //-12'h1EF;
 wire signed [12:0] sprite_scroll_yoffs_f = -12'h108;
 
 //blanking signal generation
@@ -177,7 +176,7 @@ assign VSYNC = V >= VS_START && V <= VS_END ? 0 : 1;
 assign FBLANK = !HSYNC || !VSYNC ? 0 : 1;
 
 //ram pointer
-reg [13:0] GP9001RAM_ADDR;
+reg [12:0] GP9001RAM_ADDR;
 wire [15:0] GP9001RAM_DOUT;
 reg [15:0] GP9001RAM_DIN;
 reg GP9001RAM_WE;
@@ -348,7 +347,7 @@ always @(posedge CLK96, posedge RESET96) begin
             LAST_OP <= {GP9001_OP_SELECT_REG, GP9001_OP_WRITE_REG, GP9001_OP_SET_RAM_PTR, GP9001_OP_WRITE_RAM, GP9001_OP_READ_RAM_H, GP9001_OP_READ_RAM_L};
         end else if (GP9001_OP_WRITE_RAM) begin
             if(!INC_LAST_CYCLE) begin
-                GP9001RAM_ADDR <= (cur_ram_ptr & 16'h3FFF);
+                GP9001RAM_ADDR <= (cur_ram_ptr & 16'h1FFF);
                 GP9001RAM_DIN <= DIN;
                 GP9001RAM_WE <= 1'b1;
                 INC_LAST_CYCLE <= 1'b1;
@@ -365,7 +364,7 @@ always @(posedge CLK96, posedge RESET96) begin
         end else if(GP9001_OP_READ_RAM_H || GP9001_OP_READ_RAM_L) begin
             case(st)
                 0: begin
-                    GP9001RAM_ADDR <= (cur_ram_ptr & 16'h3FFF) + (GP9001_OP_READ_RAM_L ? 1'b1 : 1'b0);
+                    GP9001RAM_ADDR <= (cur_ram_ptr & 16'h1FFF) + (GP9001_OP_READ_RAM_L ? 1'b1 : 1'b0);
                     GP9001RAM_WE <=1'b0;
                     ACK<=1'b0;
                     st<=1;
@@ -390,7 +389,7 @@ end
 
 //GP9001 RAM
 
-jtframe_dual_ram #(.dw(16), .aw(14)) u_gp9001ram_044_045(
+jtframe_dual_ram #(.dw(16), .aw(13)) u_gp9001ram_044_045(
     .clk0(CLK96),
     .clk1(CLK96),
     // Port 0
@@ -412,9 +411,10 @@ wire scroll2ram_we = GP9001RAM_WE && (GP9001RAM_ADDR>=14'h1000 && GP9001RAM_ADDR
 wire spriteram_we = GP9001RAM_WE && (GP9001RAM_ADDR>=14'h1800 && GP9001RAM_ADDR<14'h1C00);
 
 //sprite lag fix
-wire spritelag_en = (GAME == DEFAULT);
+wire spritelag_en = (GAME == WHOOPEE);
 
-wire [1:0] spritelag_amt = GAME == DEFAULT ? 0 : 0; // Indicates frames behind live 0 = 1 | 1 = 2
+wire [1:0] spritelag_amt = GAME == WHOOPEE ? 0 :
+                                             0; // Indicates frames behind live 0 = 1 | 1 = 2
 
 reg [1:0] cur_buf = 0;
 wire [1:0] cur_buf_rd = cur_buf + (spritelag_en ? (~spritelag_amt[1:0] + 1) : 0);

@@ -32,7 +32,7 @@ module tekipaki_sdram #(
               TEKIPAKI_ROMZ80_PRG_LEN = 25'h8000,
               TEKIPAKI_GP9001_TILE_LEN = 25'h100000,
 
-              WHOOPEE_ROM01_PRG_LEN = 25'h20000,
+              WHOOPEE_ROM01_PRG_LEN = 25'h40000,
               WHOOPEE_ROMZ80_PRG_LEN = 25'h8000,
               WHOOPEE_GP9001_TILE_LEN = 25'h100000
 )(
@@ -115,8 +115,8 @@ module tekipaki_sdram #(
 //loader
 assign DWNLD_BUSY = DOWNLOADING;
 
-localparam TEKIPAKI = 4;
-localparam WHOOPEE  = 5;
+localparam TEKIPAKI = 'h4;
+localparam WHOOPEE  = 'h5;
 
 wire [24:0] ROM01_PRG_LEN = GAME == TEKIPAKI ? TEKIPAKI_ROM01_PRG_LEN :
                             WHOOPEE_ROM01_PRG_LEN,

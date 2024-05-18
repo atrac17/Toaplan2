@@ -206,7 +206,9 @@ always @(posedge CLK96 or posedge RESET96) begin
                 $fwrite(fd, "time: %t, addr: %h, uds: %h, lds: %h, rw: %h, cpu_dout: %h, cpu_din: %h, sel_status: %b\n", $time/1000, addr_8, UDSn, LDSn, RW, cpu_dout, cpu_din, {sel_rom, sel_ram, sel_z80, sel_gp9001, sel_io});
 
            //68k ROM
-            pre_sel_rom  <= addr_8 >= 0 && addr_8 <= 'h20000;
+            pre_sel_rom  <= GAME == TEKIPAKI ? addr_8 >= 'h0 && addr_8 <= 'h20000 :
+                            GAME == WHOOPEE  ? addr_8 >= 'h0 && addr_8 <= 'h40000 :
+                                               addr_8 >= 'h0 && addr_8 <= 'h20000;
 
             CPU_PRG_ADDR <= A[17:1];
 

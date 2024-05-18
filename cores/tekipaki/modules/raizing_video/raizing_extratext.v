@@ -53,6 +53,7 @@ module raizing_extratext (
 );
 
 localparam TEKIPAKI = 'h4;
+localparam WHOOPEE  = 'h5;
 
 reg [10:0] buf_data = 0;
 reg [8:0] buf_addr = 0;
@@ -64,7 +65,9 @@ reg [31:0] tile_data;
 reg [8:0] xpos;
 reg [7:0] st = 0;
 
-wire [5:0] extratoffs = GAME == TEKIPAKI ? 6'h2B : 6'h2C; // Used in SSTRIKER
+wire [5:0] extratoffs = GAME == TEKIPAKI ? 6'h2B :
+                        GAME == WHOOPEE  ? 6'h2B :
+                                           6'h2C; // Used in SSTRIKER and TRUXTON2
 wire [11:0] textpal_offs = 12'h800;
 
 wire [5:0] tile_max=6'd41;

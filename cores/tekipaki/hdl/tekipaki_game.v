@@ -115,8 +115,8 @@ module tekipaki_game(
 
 /*MAIN GLOBALS*/
 
-localparam TEKIPAKI = 4;
-localparam WHOOPEE  = 5;
+localparam TEKIPAKI = 'h4;
+localparam WHOOPEE  = 'h5;
 
 wire RESET = rst48;
 wire CLK = clk48;
