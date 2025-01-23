@@ -57,11 +57,12 @@ jtframe_frac_cen #(.W(4)) u_frac_cen_1350(
 );
 
 // 94.5*(8/189) = 4
+// 94.5*(1/35) == 2.7
 
 jtframe_frac_cen u_frac_cen_4(
     .clk(CLK96),
-    .n(8),
-    .m(189),
+    .n(1),
+    .m(35),
     .cen(CEN4),
     .cenb(CEN4B)
 );
